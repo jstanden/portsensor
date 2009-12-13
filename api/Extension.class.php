@@ -100,21 +100,21 @@ abstract class PortSensorCronExtension extends DevblocksExtension {
 	public function saveConfigurationAction() {}
 };
 
-//abstract class Extension_AppPreBodyRenderer extends DevblocksExtension {
-//	function __construct($manifest) {
-//		$this->DevblocksExtension($manifest,1);
-//	}
-//	
-//	function render() { }
-//};
-//
-//abstract class Extension_AppPostBodyRenderer extends DevblocksExtension {
-//	function __construct($manifest) {
-//		$this->DevblocksExtension($manifest,1);
-//	}
-//	
-//	function render() { }
-//};
+abstract class Extension_AppPreBodyRenderer extends DevblocksExtension {
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+	
+	function render() { }
+};
+
+abstract class Extension_AppPostBodyRenderer extends DevblocksExtension {
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+	
+	function render() { }
+};
 
 abstract class Extension_CustomFieldSource extends DevblocksExtension {
 	const EXTENSION_POINT = 'portsensor.fields.source';
