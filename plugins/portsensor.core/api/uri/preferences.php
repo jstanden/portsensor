@@ -85,7 +85,7 @@ class PsPreferencesPage extends PortSensorPageExtension {
 	}
 	
 	// Ajax [TODO] This should probably turn into Extension_PreferenceTab
-	function showGeneralAction() {
+	function showTabGeneralAction() {
 		$date_service = DevblocksPlatform::getDateService();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
@@ -96,41 +96,29 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$worker = PortSensorApplication::getActiveWorker();
 		$tpl->assign('worker', $worker);
 		
-//		$tour_enabled = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));
-//		$tpl->assign('assist_mode', $tour_enabled);
-//
-//		$keyboard_shortcuts = intval(DAO_WorkerPref::get($worker->id, 'keyboard_shortcuts', 1));
-//		$tpl->assign('keyboard_shortcuts', $keyboard_shortcuts);
-//
-//		$mail_inline_comments = DAO_WorkerPref::get($worker->id,'mail_inline_comments',1);
-//		$tpl->assign('mail_inline_comments', $mail_inline_comments);
-//		
-//		$mail_always_show_all = DAO_WorkerPref::get($worker->id,'mail_always_show_all',0);
-//		$tpl->assign('mail_always_show_all', $mail_always_show_all);
-//		
-//		$addresses = DAO_AddressToWorker::getByWorker($worker->id);
-//		$tpl->assign('addresses', $addresses);
-//				
-//		// Timezones
-//		$tpl->assign('timezones', $date_service->getTimezones());
-//		@$server_timezone = date_default_timezone_get();
-//		$tpl->assign('server_timezone', $server_timezone);
-//		
-//		// Languages
-//		$langs = DAO_Translation::getDefinedLangCodes();
-//		$tpl->assign('langs', $langs);
-//		$tpl->assign('selected_language', DAO_WorkerPref::get($worker->id,'locale','en_US')); 
+		$assist_mode = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));
+		$tpl->assign('assist_mode', $assist_mode);
+
+		$keyboard_shortcuts = intval(DAO_WorkerPref::get($worker->id, 'keyboard_shortcuts', 1));
+		$tpl->assign('keyboard_shortcuts', $keyboard_shortcuts);
+
+		// Timezones
+		$tpl->assign('timezones', $date_service->getTimezones());
+		@$server_timezone = date_default_timezone_get();
+		$tpl->assign('server_timezone', $server_timezone);
+		
+		// Languages
+		$langs = DAO_Translation::getDefinedLangCodes();
+		$tpl->assign('langs', $langs);
+		$tpl->assign('selected_language', DAO_WorkerPref::get($worker->id,'locale','en_US')); 
 		
 		$tpl->display('file:' . $tpl_path . 'preferences/tabs/general.tpl');
 	}
 	
 	// Post [TODO] This should probably turn into Extension_PreferenceTab
-	function saveDefaultsAction() {
-//		@$timezone = DevblocksPlatform::importGPC($_REQUEST['timezone'],'string');
-//		@$lang_code = DevblocksPlatform::importGPC($_REQUEST['lang_code'],'string','en_US');
-//		@$default_signature = DevblocksPlatform::importGPC($_REQUEST['default_signature'],'string');
-//		@$default_signature_pos = DevblocksPlatform::importGPC($_REQUEST['default_signature_pos'],'integer',0);
-//		@$reply_box_height = DevblocksPlatform::importGPC($_REQUEST['reply_box_height'],'integer');
+	function saveTabGeneralAction() {
+		@$timezone = DevblocksPlatform::importGPC($_REQUEST['timezone'],'string');
+		@$lang_code = DevblocksPlatform::importGPC($_REQUEST['lang_code'],'string','en_US');
 	    
 		$worker = PortSensorApplication::getActiveWorker();
 		$translate = DevblocksPlatform::getTranslationService();
@@ -139,12 +127,12 @@ class PsPreferencesPage extends PortSensorPageExtension {
    		// Time
    		$_SESSION['timezone'] = $timezone;
    		@date_default_timezone_set($timezone);
-//   		DAO_WorkerPref::set($worker->id,'timezone',$timezone);
+   		DAO_WorkerPref::set($worker->id,'timezone',$timezone);
    		
    		// Language
    		$_SESSION['locale'] = $lang_code;
    		DevblocksPlatform::setLocale($lang_code);
-//   		DAO_WorkerPref::set($worker->id,'locale',$lang_code);
+   		DAO_WorkerPref::set($worker->id,'locale',$lang_code);
    		
 		@$new_password = DevblocksPlatform::importGPC($_REQUEST['change_pass'],'string');
 		@$verify_password = DevblocksPlatform::importGPC($_REQUEST['change_pass_verify'],'string');
@@ -158,18 +146,12 @@ class PsPreferencesPage extends PortSensorPageExtension {
 			DAO_Worker::update($worker->id, $fields);
 		}
 
-//		@$assist_mode = DevblocksPlatform::importGPC($_REQUEST['assist_mode'],'integer',0);
-//		DAO_WorkerPref::set($worker->id, 'assist_mode', $assist_mode);
-//
-//		@$keyboard_shortcuts = DevblocksPlatform::importGPC($_REQUEST['keyboard_shortcuts'],'integer',0);
-//		DAO_WorkerPref::set($worker->id, 'keyboard_shortcuts', $keyboard_shortcuts);
-//
-//		@$mail_inline_comments = DevblocksPlatform::importGPC($_REQUEST['mail_inline_comments'],'integer',0);
-//		DAO_WorkerPref::set($worker->id, 'mail_inline_comments', $mail_inline_comments);
-//		
-//		@$mail_always_show_all = DevblocksPlatform::importGPC($_REQUEST['mail_always_show_all'],'integer',0);
-//		DAO_WorkerPref::set($worker->id, 'mail_always_show_all', $mail_always_show_all);
-		
+		@$assist_mode = DevblocksPlatform::importGPC($_REQUEST['assist_mode'],'integer',0);
+		DAO_WorkerPref::set($worker->id, 'assist_mode', $assist_mode);
+
+		@$keyboard_shortcuts = DevblocksPlatform::importGPC($_REQUEST['keyboard_shortcuts'],'integer',0);
+		DAO_WorkerPref::set($worker->id, 'keyboard_shortcuts', $keyboard_shortcuts);
+
 		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('preferences')));
 	}
 	

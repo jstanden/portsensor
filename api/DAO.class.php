@@ -774,7 +774,11 @@ class DAO_Worker extends Ps_ORMHelper {
 		);
 		
 		if(!empty($whos_online_workers))
-			return self::getList(array_keys($whos_online_workers));
+			return self::getWhere(
+				sprintf("%s IN (%s)",
+					DAO_Worker::ID,
+					implode(',',array_keys($whos_online_workers))
+				));
 			
 		return array();
 	}
@@ -848,8 +852,11 @@ class DAO_Worker extends Ps_ORMHelper {
 			$object->pass = $rs->fields['pass'];
 			$object->is_superuser = $rs->fields['is_superuser'];
 			$object->last_activity_date = $rs->fields['last_activity_date'];
-			$object->last_activity = $rs->fields['last_activity'];
 			$object->is_disabled = $rs->fields['is_disabled'];
+
+			if(!empty($rs->fields['last_activity']))
+			    $object->last_activity = unserialize($rs->fields['last_activity']);
+			
 			$objects[$object->id] = $object;
 			$rs->MoveNext();
 		}

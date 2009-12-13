@@ -10,7 +10,7 @@
 			<tuv xml:lang="en_US"><seg>Home</seg></tuv>
 		</tu>
 		<tu tuid='core.menu.preferences'>
-			<tuv xml:lang="en_US"><seg>Preferences</seg></tuv>
+			<tuv xml:lang="en_US"><seg>My Account</seg></tuv>
 		</tu>
 		<tu tuid='core.menu.setup'>
 			<tuv xml:lang="en_US"><seg>Setup</seg></tuv>
@@ -59,6 +59,9 @@
 		</tu>
 		<tu tuid='common.email'>
 			<tuv xml:lang="en_US"><seg>E-mail</seg></tuv>
+		</tu>
+		<tu tuid='common.enabled'>
+			<tuv xml:lang="en_US"><seg>enabled</seg></tuv>
 		</tu>
 		<tu tuid='common.export'>
 			<tuv xml:lang="en_US"><seg>export</seg></tuv>
@@ -143,6 +146,43 @@
 		</tu>
 		<tu tuid='header.signon'>
 			<tuv xml:lang="en_US"><seg>Sign on</seg></tuv>
+		</tu>
+
+	    <!-- Preferences (My Account) -->
+		
+	    <tu tuid='preferences.general.account_settings'>
+			<tuv xml:lang="en_US"><seg>Account Settings</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.assist'>
+			<tuv xml:lang="en_US"><seg>Assist Mode:</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.current'>
+			<tuv xml:lang="en_US"><seg>current:</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.keyboard.shortcuts'>
+			<tuv xml:lang="en_US"><seg>Keyboard Shortcuts:</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.language'>
+			<tuv xml:lang="en_US"><seg>Language:</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.password.change'>
+			<tuv xml:lang="en_US"><seg>Change Password: </seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.password.new'>
+			<tuv xml:lang="en_US"><seg>New Password: </seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.password.verify'>
+	    	<tuv xml:lang="en_US"><seg>Verify Password: </seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.preferences'>
+	    	<tuv xml:lang="en_US"><seg>Preferences</seg></tuv>
+	    </tu>
+	    <tu tuid='preferences.general.timezone'>
+			<tuv xml:lang="en_US"><seg>Timezone:</seg></tuv>
+	    </tu>
+
+		<tu tuid='preferences.tab.general'>
+			<tuv xml:lang="en_US"><seg>General</seg></tuv>
 		</tu>
 		
 		<!-- Search -->
@@ -263,6 +303,12 @@ For example: *receipt*</seg></tuv>
 		</tu>
 		<tu tuid='views.showing_from_to'>
 			<tuv xml:lang="en_US"><seg>Showing %s-%s of %s</seg></tuv>
+		</tu>
+		
+		<!-- Whos Online -->
+
+		<tu tuid='whos_online.heading'>
+			<tuv xml:lang="en_US"><seg>%s Worker(s) Signed On:</seg></tuv>
 		</tu>
 
 		<!-- Worker -->

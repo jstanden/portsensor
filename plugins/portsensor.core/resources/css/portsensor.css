@@ -141,6 +141,13 @@ form {
 	font-size: 11px;
 }
 
+.line {
+	margin: 0px;
+	padding: 0px;
+	display: block;
+	background-color: rgb(220, 220, 220);
+	height: 1px;
+}
 
 DIV.block {
 	padding:5px;

@@ -5,6 +5,8 @@
 <div id="homeTabs"></div> 
 <br>
 
+{include file="file:$core_tpl/whos_online.tpl"}
+
 <script type="text/javascript">
 {literal}
 var tabView = new YAHOO.widget.TabView();

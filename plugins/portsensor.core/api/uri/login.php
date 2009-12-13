@@ -84,19 +84,19 @@ class PsSignInPage extends PortSensorPageExtension {
 			$devblocks_response = new DevblocksHttpResponse($original_path);
 
 			// Worker
-			//$worker = PortSensorApplication::getActiveWorker();
+			$worker = PortSensorApplication::getActiveWorker();
 
 			// Timezone
-//			if(null != ($timezone = DAO_WorkerPref::get($worker->id,'timezone'))) {
-//				$_SESSION['timezone'] = $timezone;
-//				@date_default_timezone_set($timezone);
-//			}
-//			
-//			// Language
-//			if(null != ($lang_code = DAO_WorkerPref::get($worker->id,'locale'))) {
-//				$_SESSION['locale'] = $lang_code;
-//				DevblocksPlatform::setLocale($lang_code);
-//			}
+			if(null != ($timezone = DAO_WorkerPref::get($worker->id,'timezone'))) {
+				$_SESSION['timezone'] = $timezone;
+				@date_default_timezone_set($timezone);
+			}
+			
+			// Language
+			if(null != ($lang_code = DAO_WorkerPref::get($worker->id,'locale'))) {
+				$_SESSION['locale'] = $lang_code;
+				DevblocksPlatform::setLocale($lang_code);
+			}
 			
 			if(!empty($devblocks_response->path) && $devblocks_response->path[0]=='login') {
 //				$tour_enabled = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));

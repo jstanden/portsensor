@@ -61,7 +61,7 @@ if(!isset($indexes['last_activity_date'])) {
 if(!isset($tables['worker_pref'])) {
     $flds = "
 		worker_id I2 DEFAULT 0 NOTNULL PRIMARY,
-		setting C(255) DEFAULT '' NOTNULL,
+		setting C(255) DEFAULT '' NOTNULL PRIMARY,
 		value XL
     ";
     $sql = $datadict->CreateTableSQL('worker_pref', $flds);

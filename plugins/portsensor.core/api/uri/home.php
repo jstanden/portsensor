@@ -46,6 +46,13 @@ class PsHomePage extends PortSensorPageExtension {
 //		$workspaces = DAO_WorkerWorkspaceList::getWorkspaces($active_worker->id);
 //		$tpl->assign('workspaces', $workspaces);
 		
+		// ====== Who's Online
+		$whos_online = DAO_Worker::getAllOnline();
+		if(!empty($whos_online)) {
+			$tpl->assign('whos_online', $whos_online);
+			$tpl->assign('whos_online_count', count($whos_online));
+		}
+		
 		$tpl->display('file:' . $this->_TPL_PATH . 'home/index.tpl');
 	}
 	
