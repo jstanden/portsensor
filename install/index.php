@@ -59,7 +59,7 @@ define('TOTAL_STEPS', 11);
  */
 if(empty($step)) $step = STEP_ENVIRONMENT;
 
-// [TODO] Could convert to CerberusApplication::checkRequirements()
+// [TODO] Could convert to PortSensorApplication::checkRequirements()
 
 @chmod(APP_TEMP_PATH, 0774);
 @mkdir(APP_TEMP_PATH . '/templates_c/');
@@ -576,7 +576,8 @@ switch($step) {
 		@$worker_pass = DevblocksPlatform::importGPC($_POST['worker_pass'],'string');
 		@$worker_pass2 = DevblocksPlatform::importGPC($_POST['worker_pass2'],'string');
 
-		//$settings = CerberusSettings::getInstance();
+		$settings = PortSensorSettings::getInstance();
+		$db = DevblocksPlatform::getDatabaseService();
 		
 		if(!empty($form_submit)) {
 			// Persist form scope
@@ -629,21 +630,23 @@ switch($step) {
 //				}
 				
 				// If this worker doesn't exist, create them
-//				if(null === ($lookup = DAO_Worker::lookupAgentEmail($worker_email))) {
-//					$worker_id = DAO_Worker::create(
-//						$worker_email, // email
-//						$worker_pass, // pass
-//						'Super', // first
-//						'User', // last
-//						'Administrator' // title
-//					);
-//	
-//					// Superuser bit
-//					$fields = array(
-//						DAO_Worker::IS_SUPERUSER => 1, 
-//					);
-//					DAO_Worker::updateAgent($worker_id, $fields);
-//					
+				$results = DAO_Worker::getWhere(sprintf("%s = %s",
+					DAO_Worker::EMAIL,
+					$db->qstr($worker_email)
+				));
+				
+				if(empty($results)) {
+					$fields = array(
+						DAO_Worker::EMAIL => $worker_email,
+						DAO_Worker::PASS => md5($worker_pass),
+						DAO_Worker::FIRST_NAME => 'Super',
+						DAO_Worker::LAST_NAME => 'User',
+						DAO_Worker::TITLE => 'Administrator',
+						DAO_Worker::IS_SUPERUSER => 1,
+					);
+					
+					$worker_id = DAO_Worker::create($fields);
+					
 //					// Add the worker e-mail to the addresses table
 //					if(!empty($worker_email))
 //						DAO_Address::lookupAddress($worker_email, true);
@@ -661,7 +664,7 @@ switch($step) {
 //						DAO_Group::setTeamMember($support_gid,$worker_id,true);			
 //					if(!empty($sales_gid))
 //						DAO_Group::setTeamMember($sales_gid,$worker_id,true);			
-//				}
+				}
 				
 				// Send a first ticket which allows people to reply for support
 //				if(null !== ($default_from = $settings->get(CerberusSettings::DEFAULT_REPLY_FROM,''))) {
@@ -798,37 +801,25 @@ switch($step) {
 	case STEP_FINISHED:
 		
 		// Set up the default cron jobs
-//		$crons = DevblocksPlatform::getExtensions('cerberusweb.cron', true, true);
-//		if(is_array($crons))
-//		foreach($crons as $id => $cron) { /* @var $cron CerberusCronPageExtension */
-//			switch($id) {
-//				case 'cron.pop3':
-//					$cron->setParam(CerberusCronPageExtension::PARAM_ENABLED, true);
-//					$cron->setParam(CerberusCronPageExtension::PARAM_DURATION, '5');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_TERM, 'm');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_LASTRUN, strtotime('Today'));
-//					break;
-//				case 'cron.parser':
-//					$cron->setParam(CerberusCronPageExtension::PARAM_ENABLED, true);
-//					$cron->setParam(CerberusCronPageExtension::PARAM_DURATION, '1');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_TERM, 'm');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_LASTRUN, strtotime('Today'));
-//					break;
-//				case 'cron.maint':
-//					$cron->setParam(CerberusCronPageExtension::PARAM_ENABLED, true);
-//					$cron->setParam(CerberusCronPageExtension::PARAM_DURATION, '24');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_TERM, 'h');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_LASTRUN, strtotime('Yesterday'));
-//					break;
-//				case 'cron.heartbeat':
-//					$cron->setParam(CerberusCronPageExtension::PARAM_ENABLED, true);
-//					$cron->setParam(CerberusCronPageExtension::PARAM_DURATION, '5');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_TERM, 'm');
-//					$cron->setParam(CerberusCronPageExtension::PARAM_LASTRUN, strtotime('Yesterday'));
-//					break;
-//			}
-//			
-//		}
+		$crons = DevblocksPlatform::getExtensions('portsensor.cron', true, true);
+		if(is_array($crons))
+		foreach($crons as $id => $cron) { /* @var $cron PortSensorCronExtension */
+			switch($id) {
+				case 'cron.maint':
+					$cron->setParam(PortSensorCronExtension::PARAM_ENABLED, true);
+					$cron->setParam(PortSensorCronExtension::PARAM_DURATION, '24');
+					$cron->setParam(PortSensorCronExtension::PARAM_TERM, 'h');
+					$cron->setParam(PortSensorCronExtension::PARAM_LASTRUN, strtotime('Yesterday'));
+					break;
+				case 'cron.heartbeat':
+					$cron->setParam(PortSensorCronExtension::PARAM_ENABLED, true);
+					$cron->setParam(PortSensorCronExtension::PARAM_DURATION, '5');
+					$cron->setParam(PortSensorCronExtension::PARAM_TERM, 'm');
+					$cron->setParam(PortSensorCronExtension::PARAM_LASTRUN, strtotime('Yesterday'));
+					break;
+			}
+			
+		}
 		
 		$tpl->assign('template', 'steps/step_finished.tpl');
 		break;
