@@ -7,28 +7,26 @@
 
 <H3>You are now operating in Unlicensed Mode</H3>
 
-Each new Cerberus Helpdesk installation defaults to a "Unlicensed Free Version",
-allowing nearly full functionality with no expiration. In this mode, a small tagline 
-about Cerberus Helpdesk will be appended to all outgoing e-mail, and you are limited to 3
-workers and 3 groups. Companies with light requirements may find the unlicensed free version
+Each new PortSensor installation defaults to a "Unlicensed Free Version",
+allowing nearly full functionality with no expiration. In this mode you are limited to XX
+workers and XX sensors. Companies with light requirements may find the unlicensed free version
 does everything they need. Go ahead, enjoy!<br>
 <br>
 
 <b>If you answer a few questions below to introduce yourself, we'll send you a free 
-registered license</b> for 3 workers.  A registered license will allow you to set up 
-unlimited groups, and it will remove the Cerberus Helpdesk tagline from your outgoing e-mail.<br>
+registered license</b> for XX workers.<br>
 <br>
 
-For organizations with more than 3 workers, <a href="http://www.cerberusweb.com/buy/" target="_blank">we offer affordable and flexible licensing
+For organizations with more than 3 workers, <a href="http://www.portsensor.com/buy/" target="_blank">we offer affordable and flexible licensing
 options</a>.<br>
 
-<H3>How can we help improve your e-mail management?</H3>
+<H3>How can we help improve your service monitoring?</H3>
 
 <p style="margin-bottom:0px;">
 	We respect the fact that you likely have
 	a pile of things to do, and we'd like to make a small part of your day
 	easier by helping you quickly find useful information during your
-	Cerberus Helpdesk evaluation.<br>
+	PortSensor evaluation.<br>
 	<br>
 	If you can take a couple minutes out of your day to answer these quick
 	questions we'll be able to focus our conversation on your most important
@@ -51,7 +49,7 @@ options</a>.<br>
 <input size="64" name="contact_email"><br>
 <br>
 
-<b>How did you hear about Cerberus Helpdesk?</b><br>
+<b>How did you hear about PortSensor?</b><br>
 <input size="64" name="contact_refer"><br>
 <br>
 
@@ -63,7 +61,7 @@ options</a>.<br>
 <h3>#1: Briefly, what does your organization do?</h3>
 <textarea cols="65" rows="3" name="q1"></textarea><br>
 
-<h3>#2: How is your team currently handling e-mail management?</h3>
+<h3>#2: How is your team currently handling service monitoring?</h3>
 <textarea cols="65" rows="3" name="q2"></textarea><br>
 
 <h3>#3: Are you considering both free and commercial solutions?</h3>
@@ -73,7 +71,7 @@ options</a>.<br>
 	<label><input name="q3" value="Only Paid" type="radio"> No, only commercial solutions</label><br>
 </p>
 
-<h3>#4: What will be your first important milestone to measure the success of your new helpdesk implementation?</h3>
+<h3>#4: What will be your first important milestone to measure the success of your new monitoring implementation?</h3>
 <textarea cols="65" rows="3" name="q4"></textarea><br>
 
 <h3>#5: How important are the following benefits in making your decision?</h3>
@@ -162,7 +160,7 @@ options</a>.<br>
 
 <i>Privacy Notice: Being in the e-mail business, we hate spam even more
 than most people! We will use the information you provide to personally 
-contact you about Cerberus Helpdesk. We will not share or sell your 
+contact you about PortSensor. We will not share or sell your 
 personal information, or otherwise abuse your trust.</i> <br>
 <br>
 

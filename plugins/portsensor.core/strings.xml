@@ -265,11 +265,18 @@ For example: *receipt*</seg></tuv>
 		
 		<!-- Setup -->
 		
+		<tu tuid='setup.mail.smtp.failed'>
+			<tuv xml:lang="en_US"><seg>SMTP Connection Failed:</seg></tuv>
+		</tu>
+		
 		<tu tuid='setup.tab.acl'>
 			<tuv xml:lang="en_US"><seg>Permissions</seg></tuv>
 		</tu>
 		<tu tuid='setup.tab.fields'>
 			<tuv xml:lang="en_US"><seg>Custom Fields</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.mail_setup'>
+			<tuv xml:lang="en_US"><seg>Mail Setup</seg></tuv>
 		</tu>
 		<tu tuid='setup.tab.plugins'>
 			<tuv xml:lang="en_US"><seg>Plugins &amp; Features</seg></tuv>

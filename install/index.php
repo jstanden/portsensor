@@ -435,7 +435,7 @@ switch($step) {
 					DAO_Translation::reloadPluginStrings();
 					
 					// success
-					$tpl->assign('step', STEP_DEFAULTS);
+					$tpl->assign('step', STEP_CONTACT);
 					$tpl->display('steps/redirect.tpl');
 					exit;
 				}
@@ -459,115 +459,115 @@ switch($step) {
 		
 
 	// Personalize system information (title, timezone, language)
-//	case STEP_CONTACT:
-//		$settings = CerberusSettings::getInstance();
-//		
-////		@$default_reply_from = DevblocksPlatform::importGPC($_POST['default_reply_from'],'string',$settings->get(CerberusSettings::DEFAULT_REPLY_FROM));
-////		@$default_reply_personal = DevblocksPlatform::importGPC($_POST['default_reply_personal'],'string',$settings->get(CerberusSettings::DEFAULT_REPLY_PERSONAL));
-//		@$helpdesk_title = DevblocksPlatform::importGPC($_POST['helpdesk_title'],'string',$settings->get(CerberusSettings::HELPDESK_TITLE));
-//		@$form_submit = DevblocksPlatform::importGPC($_POST['form_submit'],'integer');
-//		
-//		if(!empty($form_submit)) { // && !empty($default_reply_from)
-//			
-////			$validate = imap_rfc822_parse_adrlist(sprintf("<%s>", $default_reply_from),"localhost");
-//			
-////			if(!empty($default_reply_from) && is_array($validate) && 1==count($validate)) {
-////				$settings->set(CerberusSettings::DEFAULT_REPLY_FROM, $default_reply_from);
-////			}
-////			
-////			if(!empty($default_reply_personal)) {
-////				$settings->set(CerberusSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
-////			}
-//			
-//			if(!empty($helpdesk_title)) {
-//				$settings->set(CerberusSettings::HELPDESK_TITLE, $helpdesk_title);
-//			}
-//			
-//			$tpl->assign('step', STEP_OUTGOING_MAIL);
-//			$tpl->display('steps/redirect.tpl');
-//			exit;
-//		}
-//		
-//		if(!empty($form_submit) && empty($default_reply_from)) {
-//			$tpl->assign('failed', true);
-//		}
-//		
-////		$tpl->assign('default_reply_from', $default_reply_from);
-////		$tpl->assign('default_reply_personal', $default_reply_personal);
-//		$tpl->assign('helpdesk_title', $helpdesk_title);
-//		
-//		$tpl->assign('template', 'steps/step_contact.tpl');
-//		
-//		break;
+	case STEP_CONTACT:
+		$settings = PortSensorSettings::getInstance();
+		
+		@$default_reply_from = DevblocksPlatform::importGPC($_POST['default_reply_from'],'string',$settings->get(PortSensorSettings::DEFAULT_REPLY_FROM));
+		@$default_reply_personal = DevblocksPlatform::importGPC($_POST['default_reply_personal'],'string',$settings->get(PortSensorSettings::DEFAULT_REPLY_PERSONAL));
+		@$app_title = DevblocksPlatform::importGPC($_POST['app_title'],'string',$settings->get(PortSensorSettings::APP_TITLE));
+		@$form_submit = DevblocksPlatform::importGPC($_POST['form_submit'],'integer');
+		
+		if(!empty($form_submit)) { // && !empty($default_reply_from)
+			
+			$validate = imap_rfc822_parse_adrlist(sprintf("<%s>", $default_reply_from),"localhost");
+			
+			if(!empty($default_reply_from) && is_array($validate) && 1==count($validate)) {
+				$settings->set(PortSensorSettings::DEFAULT_REPLY_FROM, $default_reply_from);
+			}
+			
+			if(!empty($default_reply_personal)) {
+				$settings->set(PortSensorSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
+			}
+			
+			if(!empty($helpdesk_title)) {
+				$settings->set(PortSensorSettings::APP_TITLE, $app_title);
+			}
+			
+			$tpl->assign('step', STEP_OUTGOING_MAIL);
+			$tpl->display('steps/redirect.tpl');
+			exit;
+		}
+		
+		if(!empty($form_submit) && empty($default_reply_from)) {
+			$tpl->assign('failed', true);
+		}
+		
+		$tpl->assign('default_reply_from', $default_reply_from);
+		$tpl->assign('default_reply_personal', $default_reply_personal);
+		$tpl->assign('app_title', $app_title);
+		
+		$tpl->assign('template', 'steps/step_contact.tpl');
+		
+		break;
 	
 	// Set up and test the outgoing SMTP
-//	case STEP_OUTGOING_MAIL:
-//		$settings = CerberusSettings::getInstance();
-//		
-//		@$smtp_host = DevblocksPlatform::importGPC($_POST['smtp_host'],'string',$settings->get(CerberusSettings::SMTP_HOST,'localhost'));
-//		@$smtp_port = DevblocksPlatform::importGPC($_POST['smtp_port'],'integer',$settings->get(CerberusSettings::SMTP_PORT,25));
-//		@$smtp_enc = DevblocksPlatform::importGPC($_POST['smtp_enc'],'string',$settings->get(CerberusSettings::SMTP_ENCRYPTION_TYPE,'None'));
-//		@$smtp_auth_user = DevblocksPlatform::importGPC($_POST['smtp_auth_user'],'string');
-//		@$smtp_auth_pass = DevblocksPlatform::importGPC($_POST['smtp_auth_pass'],'string');
-//		@$form_submit = DevblocksPlatform::importGPC($_POST['form_submit'],'integer');
-//		@$passed = DevblocksPlatform::importGPC($_POST['passed'],'integer');
-//		
-//		if(!empty($form_submit)) {
-//			$mail_service = DevblocksPlatform::getMailService();
-//			
-//			$mailer = null;
-//			try {
-//				$mailer = $mail_service->getMailer(array(
-//					'host' => $smtp_host,
-//					'port' => $smtp_port,
-//					'auth_user' => $smtp_auth_user,
-//					'auth_pass' => $smtp_auth_pass,
-//					'enc' => $smtp_enc,
-//				));
-//				
-//				$transport = $mailer->getTransport();
-//				$transport->start();
-//				$transport->stop();
-//				
-//				if(!empty($smtp_host))
-//					$settings->set(CerberusSettings::SMTP_HOST, $smtp_host);
-//				if(!empty($smtp_port))
-//					$settings->set(CerberusSettings::SMTP_PORT, $smtp_port);
-//				if(!empty($smtp_auth_user)) {
-//					$settings->set(CerberusSettings::SMTP_AUTH_ENABLED, 1);
-//					$settings->set(CerberusSettings::SMTP_AUTH_USER, $smtp_auth_user);
-//					$settings->set(CerberusSettings::SMTP_AUTH_PASS, $smtp_auth_pass);
-//				} else {
-//					$settings->set(CerberusSettings::SMTP_AUTH_ENABLED, 0);
-//				}
-//				if(!empty($smtp_enc))
-//					$settings->set(CerberusSettings::SMTP_ENCRYPTION_TYPE, $smtp_enc);
-//				
-//				$tpl->assign('step', STEP_DEFAULTS);
-//				$tpl->display('steps/redirect.tpl');
-//				exit;
-//				
-//			}
-//			catch(Exception $e) {
-//				$form_submit = 0;
-//				$tpl->assign('smtp_error_display', 'SMTP Connection Failed! ' . $e->getMessage());
-//			}
-//			$tpl->assign('smtp_host', $smtp_host);
-//			$tpl->assign('smtp_port', $smtp_port);
-//			$tpl->assign('smtp_auth_user', $smtp_auth_user);
-//			$tpl->assign('smtp_auth_pass', $smtp_auth_pass);
-//			$tpl->assign('smtp_enc', $smtp_enc);
-//			$tpl->assign('form_submit', $form_submit);
-//		} else {
-//			$tpl->assign('smtp_host', 'localhost');
-//			$tpl->assign('smtp_port', '25');
-//			$tpl->assign('smtp_enc', 'None');
-//		}
-//		
-//		// First time, or retry
-//		$tpl->assign('template', 'steps/step_outgoing_mail.tpl');
-//		
-//		break;
+	case STEP_OUTGOING_MAIL:
+		$settings = PortSensorSettings::getInstance();
+		
+		@$smtp_host = DevblocksPlatform::importGPC($_POST['smtp_host'],'string',$settings->get(PortSensorSettings::SMTP_HOST,'localhost'));
+		@$smtp_port = DevblocksPlatform::importGPC($_POST['smtp_port'],'integer',$settings->get(PortSensorSettings::SMTP_PORT,25));
+		@$smtp_enc = DevblocksPlatform::importGPC($_POST['smtp_enc'],'string',$settings->get(PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None'));
+		@$smtp_auth_user = DevblocksPlatform::importGPC($_POST['smtp_auth_user'],'string');
+		@$smtp_auth_pass = DevblocksPlatform::importGPC($_POST['smtp_auth_pass'],'string');
+		@$form_submit = DevblocksPlatform::importGPC($_POST['form_submit'],'integer');
+		@$passed = DevblocksPlatform::importGPC($_POST['passed'],'integer');
+		
+		if(!empty($form_submit)) {
+			$mail_service = DevblocksPlatform::getMailService();
+			
+			$mailer = null;
+			try {
+				$mailer = $mail_service->getMailer(array(
+					'host' => $smtp_host,
+					'port' => $smtp_port,
+					'auth_user' => $smtp_auth_user,
+					'auth_pass' => $smtp_auth_pass,
+					'enc' => $smtp_enc,
+				));
+				
+				$transport = $mailer->getTransport();
+				$transport->start();
+				$transport->stop();
+				
+				if(!empty($smtp_host))
+					$settings->set(PortSensorSettings::SMTP_HOST, $smtp_host);
+				if(!empty($smtp_port))
+					$settings->set(PortSensorSettings::SMTP_PORT, $smtp_port);
+				if(!empty($smtp_auth_user)) {
+					$settings->set(PortSensorSettings::SMTP_AUTH_ENABLED, 1);
+					$settings->set(PortSensorSettings::SMTP_AUTH_USER, $smtp_auth_user);
+					$settings->set(PortSensorSettings::SMTP_AUTH_PASS, $smtp_auth_pass);
+				} else {
+					$settings->set(PortSensorSettings::SMTP_AUTH_ENABLED, 0);
+				}
+				if(!empty($smtp_enc))
+					$settings->set(PortSensorSettings::SMTP_ENCRYPTION_TYPE, $smtp_enc);
+				
+				$tpl->assign('step', STEP_DEFAULTS);
+				$tpl->display('steps/redirect.tpl');
+				exit;
+				
+			}
+			catch(Exception $e) {
+				$form_submit = 0;
+				$tpl->assign('smtp_error_display', 'SMTP Connection Failed! ' . $e->getMessage());
+			}
+			$tpl->assign('smtp_host', $smtp_host);
+			$tpl->assign('smtp_port', $smtp_port);
+			$tpl->assign('smtp_auth_user', $smtp_auth_user);
+			$tpl->assign('smtp_auth_pass', $smtp_auth_pass);
+			$tpl->assign('smtp_enc', $smtp_enc);
+			$tpl->assign('form_submit', $form_submit);
+		} else {
+			$tpl->assign('smtp_host', 'localhost');
+			$tpl->assign('smtp_port', '25');
+			$tpl->assign('smtp_enc', 'None');
+		}
+		
+		// First time, or retry
+		$tpl->assign('template', 'steps/step_outgoing_mail.tpl');
+		
+		break;
 
 	// Set up the default objects
 	case STEP_DEFAULTS:
@@ -684,8 +684,8 @@ switch($step) {
 			@$contact_company = stripslashes($_REQUEST['contact_company']);
 			
 			if(empty($skip) && !empty($contact_name)) {
-				$settings = CerberusSettings::getInstance();
-				@$default_from = $settings->get(CerberusSettings::DEFAULT_REPLY_FROM,'');
+				$settings = PortSensorSettings::getInstance();
+				@$default_from = $settings->get(PortSensorSettings::DEFAULT_REPLY_FROM,'');
 				
 				@$contact_phone = stripslashes($_REQUEST['contact_phone']);
 				@$contact_refer = stripslashes($_REQUEST['contact_refer']);
@@ -709,7 +709,7 @@ switch($step) {
 				    "Phone: %s\r\n".
 				    "\r\n".
 				    "#1: Briefly, what does your organization do?\r\n%s\r\n\r\n".
-				    "#2: How is your team currently handling e-mail management?\r\n%s\r\n\r\n".
+				    "#2: How is your team currently handling service monitoring?\r\n%s\r\n\r\n".
 				    "#3: Are you considering both free and commercial solutions?\r\n%s\r\n\r\n".
 				    "#4: What will be your first important milestone?\r\n%s\r\n\r\n".
 				    "#5: How important are the following benefits in making your decision?\r\n".
@@ -735,7 +735,7 @@ switch($step) {
 				    $comments
 				  );
 
-				  //CerberusMail::quickSend('aboutme@cerberusweb.com',"About: $contact_name of $contact_company",$msg, $contact_email, $contact_name);
+				  PortSensorMail::quickSend('sales@portsensor.com',"About: $contact_name of $contact_company",$msg, $contact_email, $contact_name);
 				}
 			}
 			

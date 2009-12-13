@@ -32,6 +32,13 @@ tabView.addTab( new YAHOO.widget.Tab({
 }));
 
 tabView.addTab( new YAHOO.widget.Tab({
+    label: '{/literal}{$translate->_('setup.tab.mail_setup')|escape:'quotes'}{literal}',
+    dataSrc: '{/literal}{devblocks_url}ajax.php?c=setup&a=showTabMailSetup&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
+    cacheData: false,
+    {/literal}active: {if 'mail'==$tab_selected}true{else}false{/if}{literal}
+}));
+
+tabView.addTab( new YAHOO.widget.Tab({
     label: '{/literal}{$translate->_('setup.tab.scheduler')|escape:'quotes'}{literal}',
     dataSrc: '{/literal}{devblocks_url}ajax.php?c=setup&a=showTabScheduler&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
     cacheData: false,

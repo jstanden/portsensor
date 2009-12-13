@@ -356,17 +356,74 @@ class PortSensorLicense {
 	}
 };
 
+class PortSensorMail {
+	private function __construct() {}
+	
+	static function getMailerDefaults() {
+		$settings = PortSensorSettings::getInstance();
+
+		return array(
+			'host' => $settings->get(PortSensorSettings::SMTP_HOST,'localhost'),
+			'port' => $settings->get(PortSensorSettings::SMTP_PORT,'25'),
+			'auth_user' => $settings->get(PortSensorSettings::SMTP_AUTH_USER,null),
+			'auth_pass' => $settings->get(PortSensorSettings::SMTP_AUTH_PASS,null),
+			'enc' => $settings->get(PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None'),
+			'max_sends' => $settings->get(PortSensorSettings::SMTP_MAX_SENDS,20),
+			'timeout' => $settings->get(PortSensorSettings::SMTP_TIMEOUT,30),
+		);
+	}
+	
+	static function quickSend($to, $subject, $body, $from_addy=null, $from_personal=null) {
+		try {
+			$mail_service = DevblocksPlatform::getMailService();
+			$mailer = $mail_service->getMailer(PortSensorMail::getMailerDefaults());
+			$mail = $mail_service->createMessage();
+	
+		    $settings = PortSensorSettings::getInstance();
+		    
+		    if(empty($from_addy))
+				@$from_addy = $settings->get(PortSensorSettings::DEFAULT_REPLY_FROM, $_SERVER['SERVER_ADMIN']);
+		    
+		    if(empty($from_personal))
+				@$from_personal = $settings->get(PortSensorSettings::DEFAULT_REPLY_PERSONAL,'');
+			
+			$mail->setTo(array($to));
+			$mail->setFrom(array($from_addy => $from_personal));
+			$mail->setSubject($subject);
+			$mail->generateId();
+			
+			$headers = $mail->getHeaders();
+			
+			$headers->addTextHeader('X-Mailer','PortSensor (Build '.APP_BUILD.')');
+			
+			$mail->setBody($body);
+		
+			// [TODO] Report when the message wasn't sent.
+			if(!$mailer->send($mail)) {
+				return false;
+			}
+			
+		} catch (Exception $e) {
+			return false;
+		}
+		
+		return true;
+	}
+};
+
 class PortSensorSettings {
 	const APP_TITLE = 'app_title'; 
 	const APP_LOGO_URL = 'app_logo_url'; 
-//	const SMTP_HOST = 'smtp_host'; 
-//	const SMTP_AUTH_ENABLED = 'smtp_auth_enabled'; 
-//	const SMTP_AUTH_USER = 'smtp_auth_user'; 
-//	const SMTP_AUTH_PASS = 'smtp_auth_pass'; 
-//	const SMTP_PORT = 'smtp_port'; 
-//	const SMTP_ENCRYPTION_TYPE = 'smtp_enc';
-//	const SMTP_MAX_SENDS = 'smtp_max_sends';
-//	const SMTP_TIMEOUT = 'smtp_timeout';
+	const DEFAULT_REPLY_FROM = 'default_reply_from'; 
+	const DEFAULT_REPLY_PERSONAL = 'default_reply_personal'; 
+	const SMTP_HOST = 'smtp_host'; 
+	const SMTP_AUTH_ENABLED = 'smtp_auth_enabled'; 
+	const SMTP_AUTH_USER = 'smtp_auth_user'; 
+	const SMTP_AUTH_PASS = 'smtp_auth_pass'; 
+	const SMTP_PORT = 'smtp_port'; 
+	const SMTP_ENCRYPTION_TYPE = 'smtp_enc';
+	const SMTP_MAX_SENDS = 'smtp_max_sends';
+	const SMTP_TIMEOUT = 'smtp_timeout';
 	const AUTHORIZED_IPS = 'authorized_ips';
 	const LICENSE = 'license';
 //	const ACL_ENABLED = 'acl_enabled';
@@ -376,14 +433,16 @@ class PortSensorSettings {
 	private $settings = array( // defaults
 		self::APP_TITLE => 'PortSensor - Monitor Everything',
 		self::APP_LOGO_URL => '',
-//		self::SMTP_HOST => 'localhost',
-//		self::SMTP_AUTH_ENABLED => 0,
-//		self::SMTP_AUTH_USER => '',
-//		self::SMTP_AUTH_PASS => '',
-//		self::SMTP_PORT => 25,
-//		self::SMTP_ENCRYPTION_TYPE => 'None',
-//		self::SMTP_MAX_SENDS => 20,
-//		self::SMTP_TIMEOUT => 30,
+		self::DEFAULT_REPLY_FROM => '',
+		self::DEFAULT_REPLY_PERSONAL => '',
+		self::SMTP_HOST => 'localhost',
+		self::SMTP_AUTH_ENABLED => 0,
+		self::SMTP_AUTH_USER => '',
+		self::SMTP_AUTH_PASS => '',
+		self::SMTP_PORT => 25,
+		self::SMTP_ENCRYPTION_TYPE => 'None',
+		self::SMTP_MAX_SENDS => 20,
+		self::SMTP_TIMEOUT => 30,
 		self::AUTHORIZED_IPS => '127.0.0.1', 
 		self::LICENSE => '',
 //		self::ACL_ENABLED => 0,
