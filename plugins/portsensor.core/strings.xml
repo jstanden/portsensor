@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tmx SYSTEM "tmx14.dtd">
+<tmx version="1.4">
+	<header datatype="winres" segtype="sentence" adminlang="en-us" srclang="en-us" o-tmf="abc" />
+	<body>
+
+		<!-- Manifest -->
+
+		<tu tuid='core.menu.home'>
+			<tuv xml:lang="en_US"><seg>Home</seg></tuv>
+		</tu>
+		<tu tuid='core.menu.preferences'>
+			<tuv xml:lang="en_US"><seg>Preferences</seg></tuv>
+		</tu>
+		<tu tuid='core.menu.setup'>
+			<tuv xml:lang="en_US"><seg>Setup</seg></tuv>
+		</tu>
+		
+		<!-- Common Strings -->
+
+		<tu tuid='common.access_denied'>
+			<tuv xml:lang="en_US"><seg>Access denied.</seg></tuv>
+		</tu>
+		<tu tuid='common.bulk_update'>
+			<tuv xml:lang="en_US"><seg>Bulk Update</seg></tuv>
+		</tu>
+		<tu tuid='common.bulk_update.do'>
+			<tuv xml:lang="en_US"><seg>Do</seg></tuv>
+		</tu>
+		<tu tuid='common.bulk_update.filter.all'>
+			<tuv xml:lang="en_US"><seg>Whole list</seg></tuv>
+		</tu>
+		<tu tuid='common.bulk_update.filter.checked'>
+			<tuv xml:lang="en_US"><seg>Only checked</seg></tuv>
+		</tu>
+		<tu tuid='common.bulk_update.with'>
+			<tuv xml:lang="en_US"><seg>With</seg></tuv>
+		</tu>
+		<tu tuid='common.cancel'>
+			<tuv xml:lang="en_US"><seg>Cancel</seg></tuv>
+		</tu>
+		<tu tuid='common.choose'>
+			<tuv xml:lang="en_US"><seg>choose</seg></tuv>
+		</tu>
+		<tu tuid='common.clear'>
+			<tuv xml:lang="en_US"><seg>clear</seg></tuv>
+		</tu>
+		<tu tuid='common.custom_fields'>
+			<tuv xml:lang="en_US"><seg>custom fields</seg></tuv>
+		</tu>
+		<tu tuid='common.customize'>
+			<tuv xml:lang="en_US"><seg>customize</seg></tuv>
+		</tu>
+		<tu tuid='common.delete'>
+			<tuv xml:lang="en_US"><seg>delete</seg></tuv>
+		</tu>
+		<tu tuid='common.disabled'>
+			<tuv xml:lang="en_US"><seg>disabled</seg></tuv>
+		</tu>
+		<tu tuid='common.email'>
+			<tuv xml:lang="en_US"><seg>E-mail</seg></tuv>
+		</tu>
+		<tu tuid='common.export'>
+			<tuv xml:lang="en_US"><seg>export</seg></tuv>
+		</tu>
+		<tu tuid='common.filter'>
+			<tuv xml:lang="en_US"><seg>filter</seg></tuv>
+		</tu>
+		<tu tuid='common.filter.add'>
+			<tuv xml:lang="en_US"><seg>Add Filter</seg></tuv>
+		</tu>
+		<tu tuid='common.filters'>
+			<tuv xml:lang="en_US"><seg>filters</seg></tuv>
+		</tu>
+		<tu tuid='common.id'>
+			<tuv xml:lang="en_US"><seg>ID</seg></tuv>
+		</tu>
+		<tu tuid='common.import'>
+			<tuv xml:lang="en_US"><seg>import</seg></tuv>
+		</tu>
+		<tu tuid='common.next'>
+			<tuv xml:lang="en_US"><seg>next</seg></tuv>
+		</tu>
+		<tu tuid='common.no'>
+			<tuv xml:lang="en_US"><seg>no</seg></tuv>
+		</tu>
+		<tu tuid='common.password'>
+			<tuv xml:lang="en_US"><seg>Password</seg></tuv>
+		</tu>
+		<tu tuid='common.previous_short'>
+			<tuv xml:lang="en_US"><seg>prev</seg></tuv>
+		</tu>
+		<tu tuid='common.previous'>
+			<tuv xml:lang="en_US"><seg>previous</seg></tuv>
+		</tu>
+		<tu tuid='common.refresh'>
+			<tuv xml:lang="en_US"><seg>refresh</seg></tuv>
+		</tu>
+		<tu tuid='common.reset'>
+			<tuv xml:lang="en_US"><seg>reset</seg></tuv>
+		</tu>
+		<tu tuid='common.save_changes'>
+			<tuv xml:lang="en_US"><seg>Save Changes</seg></tuv>
+		</tu>
+		<tu tuid='common.synchronize'>
+			<tuv xml:lang="en_US"><seg>Synchronize</seg></tuv>
+		</tu>
+		<tu tuid='common.yes'>
+			<tuv xml:lang="en_US"><seg>yes</seg></tuv>
+		</tu>
+
+		<!-- Activities -->
+		
+		<tu tuid='activity.default'>
+			<tuv xml:lang="en_US"><seg>%s is browsing</seg></tuv>
+		</tu>
+		<tu tuid='activity.home'>
+			<tuv xml:lang="en_US"><seg>%s is displaying their workspaces</seg></tuv>
+		</tu>
+		<tu tuid='activity.setup'>
+			<tuv xml:lang="en_US"><seg>%s is configuring the application</seg></tuv>
+		</tu>
+
+		<!-- Cron -->
+
+		<tu tuid='cron.ip_unauthorized'>
+			<tuv xml:lang="en_US"><seg>Your IP address (%s) is not authorized to run scheduler jobs. Your administrator needs to authorize your IP in Helpdesk Setup or in the framework.config.php file under AUTHORIZED_IPS_DEFAULTS.</seg></tuv>
+		</tu>
+		<tu tuid='cron.nothing_to_do'>
+			<tuv xml:lang="en_US"><seg>Nothing to do yet!  (Waiting %s seconds)</seg></tuv>
+		</tu>
+
+		<!-- Header -->
+
+		<tu tuid='header.not_signed_on'>
+			<tuv xml:lang="en_US"><seg>Not signed on</seg></tuv>
+		</tu>
+		<tu tuid='header.signed_on'>
+			<tuv xml:lang="en_US"><seg>Signed on as %s</seg></tuv>
+		</tu>
+		<tu tuid='header.signoff'>
+			<tuv xml:lang="en_US"><seg>Sign off</seg></tuv>
+		</tu>
+		<tu tuid='header.signon'>
+			<tuv xml:lang="en_US"><seg>Sign on</seg></tuv>
+		</tu>
+		
+		<!-- Search -->
+		
+		<tu tuid='search.date.between'>
+			<tuv xml:lang="en_US"><seg>between</seg></tuv>
+		</tu>
+		<tu tuid='search.date.between.and'>
+			<tuv xml:lang="en_US"><seg>and</seg></tuv>
+		</tu>
+		<tu tuid='search.date.examples'>
+			<tuv xml:lang="en_US"><seg>examples:
+now
+today
+-2 days
+-1 month, 2 days
+last Friday
+next Monday
+Jan 9 2002</seg></tuv>
+		</tu>
+		<tu tuid='search.fulltext.examples'>
+			<tuv xml:lang="en_US"><seg>&lt;b&gt;Any words:&lt;/b&gt;
+payment receipt order sale
+
+&lt;b&gt;Booleans:&lt;/b&gt;
++payment -receipt
++payment credit
+
+&lt;b&gt;Wildcards:&lt;/b&gt;
+web*
+
+&lt;b&gt;Exact phrases:&lt;/b&gt;
+"credit card"
+
+&lt;b&gt;Boosting:&lt;/b&gt;
+cerberus &gt;helpdesk
+login &lt;ftp
+</seg></tuv>
+		</tu>
+		<tu tuid='search.no_saved'>
+			<tuv xml:lang="en_US"><seg>No saved searches.</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.equals'>
+			<tuv xml:lang="en_US"><seg>equals</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.equals.not'>
+			<tuv xml:lang="en_US"><seg>doesn't equal</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.equals.or_null'>
+			<tuv xml:lang="en_US"><seg>equals or null</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.in_list'>
+			<tuv xml:lang="en_US"><seg>in list</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.in_list.not'>
+			<tuv xml:lang="en_US"><seg>not in list</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.matches'>
+			<tuv xml:lang="en_US"><seg>matches</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.matches.not'>
+			<tuv xml:lang="en_US"><seg>doesn't match</seg></tuv>
+		</tu>
+		<tu tuid='search.oper.null'>
+			<tuv xml:lang="en_US"><seg>is null (not set)</seg></tuv>
+		</tu>
+		<tu tuid='search.operator'>
+			<tuv xml:lang="en_US"><seg>operator</seg></tuv>
+		</tu>
+		<tu tuid='search.string.examples'>
+			<tuv xml:lang="en_US"><seg>Use an asterisk (*) for wildcards.
+For example: *receipt*</seg></tuv>
+		</tu>		
+		<tu tuid='search.value'>
+			<tuv xml:lang="en_US"><seg>value</seg></tuv>
+		</tu>		
+		<tu tuid='search.values'>
+			<tuv xml:lang="en_US"><seg>values</seg></tuv>
+		</tu>		
+		
+		<!-- Setup -->
+		
+		<tu tuid='setup.tab.acl'>
+			<tuv xml:lang="en_US"><seg>Permissions</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.fields'>
+			<tuv xml:lang="en_US"><seg>Custom Fields</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.plugins'>
+			<tuv xml:lang="en_US"><seg>Plugins &amp; Features</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.scheduler'>
+			<tuv xml:lang="en_US"><seg>Scheduler</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.settings'>
+			<tuv xml:lang="en_US"><seg>System</seg></tuv>
+		</tu>
+		<tu tuid='setup.tab.workers'>
+			<tuv xml:lang="en_US"><seg>Workers</seg></tuv>
+		</tu>
+		
+		<!-- Update -->
+
+		<tu tuid='update.correct_errors'>
+			<tuv xml:lang="en_US"><seg>Please correct the following errors before upgrading:</seg></tuv>
+		</tu>
+		<tu tuid='update.ip_unauthorized'>
+			<tuv xml:lang="en_US"><seg>Your IP address (%s) is not authorized to update this application. Your administrator needs to authorize your IP in Setup or in the framework.config.php file under AUTHORIZED_IPS_DEFAULTS.</seg></tuv>
+		</tu>
+		<tu tuid='update.locked_another'>
+			<tuv xml:lang="en_US"><seg>Another administrator is currently running an update.  Please wait...</seg></tuv>
+		</tu>
+
+		<!-- Views -->
+
+		<tu tuid='views.peek'>
+			<tuv xml:lang="en_US"><seg>(peek)</seg></tuv>
+		</tu>
+		<tu tuid='views.showing_from_to'>
+			<tuv xml:lang="en_US"><seg>Showing %s-%s of %s</seg></tuv>
+		</tu>
+
+		<!-- Worker -->
+		
+		<tu tuid='worker.first_name'>
+			<tuv xml:lang="en_US"><seg>First Name</seg></tuv>
+		</tu>
+		<tu tuid='worker.is_superuser'>
+			<tuv xml:lang="en_US"><seg>Administrator</seg></tuv>
+		</tu>
+		<tu tuid='worker.last_activity'>
+			<tuv xml:lang="en_US"><seg>Last Activity</seg></tuv>
+		</tu>
+		<tu tuid='worker.last_activity_date'>
+			<tuv xml:lang="en_US"><seg>Last Activity Date</seg></tuv>
+		</tu>
+		<tu tuid='worker.last_name'>
+			<tuv xml:lang="en_US"><seg>Last Name</seg></tuv>
+		</tu>
+		<tu tuid='worker.title'>
+			<tuv xml:lang="en_US"><seg>Title</seg></tuv>
+		</tu>
+
+	</body>
+</tmx>
+<!-- 
+	
+-->

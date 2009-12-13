@@ -1,0 +1,359 @@
+<!DOCTYPE plugin SYSTEM "../../libs/devblocks/plugin.dtd">
+<plugin>
+	<id>portsensor.core</id>
+	<name>[PortSensor] Core</name>
+	<description>The core functionality of PortSensor.</description>
+	<author>WebGroup Media, LLC.</author>
+	<revision>0</revision>
+	<link>http://wiki.portsensor.com/wiki/</link>
+	
+	<!-- Plugin Dependencies -->
+	
+	<!-- 
+	<requires>
+		<plugin id="plugin.core.id" version=">= 1.0" />
+	</requires>
+	 -->
+
+	<!-- Declared Extension Points -->
+
+	<!-- 
+	<extension_points>
+		<point id=""></point>
+	</extension_points>
+	-->
+
+	<!-- Controller Routing -->
+
+	<uri_routing>
+		<!--
+		<uri name="tickets" controller="core.controller.page" />
+		-->
+	</uri_routing>
+	
+	<!-- Exported Classes -->
+	
+	<class_loader>
+		<file path="api/plugin.classes.php">
+			<class name="PsCustomFieldSource_Sensor" />
+			<class name="PsCustomFieldSource_Worker" />
+			<!--
+			<class name="PsCorePlugin" />
+			<class name="ChPageController" />
+			<class name="ChTaskSource_Ticket" />
+			<class name="ChWorkspaceSource_Worker" />
+			-->
+		</file>
+	</class_loader>
+	
+	<!-- Event Points -->
+
+	<event_points>
+		<event id="cron.heartbeat">
+			<name>Heartbeat</name>
+		</event>
+		<event id="cron.maint">
+			<name>Maintenance</name>
+		</event>
+		<!--
+		<event id="worker.delete">
+			<name>Worker Delete</name>
+			<param key="worker_ids" />
+		</event>
+		-->
+	</event_points>
+
+	<!-- Permissions -->
+
+	<acl>
+		<!-- Tasks -->
+		<!--
+		<priv id="core.tasks.actions.create" label="acl.core.tasks.actions.create" />
+		<priv id="core.tasks.actions.update_nobody" label="acl.core.tasks.actions.update_nobody" />
+		<priv id="core.tasks.actions.update_all" label="acl.core.tasks.actions.update_all" />
+		<priv id="core.tasks.view.actions.export" label="acl.core.tasks.view.actions.export" />
+		-->
+		
+		<!-- Workspaces -->
+		<!--
+		<priv id="core.home.auto_refresh" label="acl.core.home.auto_refresh" />
+		<priv id="core.home.workspaces" label="acl.core.home.workspaces" />
+		-->
+		
+	</acl>
+
+	<!-- Extensions -->
+
+	<extensions>
+
+		<!-- Event Listeners -->
+		<!--
+		<extension point="devblocks.listener.event">
+			<id>portsensor.listeners.event</id>
+			<name>Global Event Listener</name>
+			<class>
+				<file>api/listeners.classes.php</file>
+				<name>ChCoreEventListener</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		-->
+ 
+		<!-- Controllers -->
+		
+		<extension point="devblocks.controller">
+			<id>core.controller.internal</id>
+			<name>Internal Controller</name>
+			<class>
+				<file>api/uri/internal.php</file>
+				<name>PsInternalController</name>
+			</class>
+			<params>
+				<param key="uri" value="internal" />
+			</params>
+		</extension>
+
+		<!--
+		<extension point="devblocks.controller">
+			<id>core.controller.debug</id>
+			<name>Debug Controller</name>
+			<class>
+				<file>api/uri/debug.php</file>
+				<name>ChDebugController</name>
+			</class>
+			<params>
+				<param key="uri" value="debug" />
+			</params>
+		</extension>
+		-->
+
+		<extension point="devblocks.controller">
+			<id>core.controller.cron</id>
+			<name>Scheduled Tasks (Cron) Controller</name>
+			<class>
+				<file>api/uri/cron.php</file>
+				<name>PsCronController</name>
+			</class>
+			<params>
+				<param key="uri" value="cron" />
+			</params>
+		</extension>
+
+		<extension point="devblocks.controller">
+			<id>core.controller.page</id>
+			<name>PortSensor Front Controller</name>
+			<class>
+				<file>api/plugin.classes.php</file>
+				<name>PsPageController</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+
+		<!-- Translations -->
+		
+		<extension point="devblocks.i18n.strings">
+			<id>core.translations</id>
+			<name>PortSensor Strings</name>
+			<class>
+				<file>api/plugin.classes.php</file>
+				<name>PsTranslations</name>
+			</class>
+			<params/>
+		</extension>
+
+		<!-- Patch Containers -->
+		
+		<extension point="devblocks.patch.container">
+			<id>core.patches</id>
+			<name>PortSensor Patches</name>
+			<class>
+				<file>api/patch.classes.php</file>
+				<name>PsCorePatchContainer</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+	
+		<!-- Http Listeners -->
+		
+		<!--
+		<extension point="devblocks.listener.http">
+			<id>core.listeners.tour</id>
+			<name>Core Helpdesk Tour</name>
+			<class>
+				<file>api/listeners.classes.php</file>
+				<name>ChCoreTour</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		-->
+	
+		<!-- Pages -->
+
+		<!--
+		<extension point="cerberusweb.page">
+			<id>core.page.welcome</id>
+			<name>Welcome Page</name>
+			<class>
+				<file>api/uri/welcome.php</file>
+				<name>ChWelcomePage</name>
+			</class>
+			<params>
+				<param key="uri" value="welcome" />
+				<param key="menutitle" value="" />
+			</params>
+		</extension>
+		-->
+
+		<extension point="portsensor.page">
+			<id>core.page.home</id>
+			<name>Home Page</name>
+			<class>
+				<file>api/uri/home.php</file>
+				<name>PsHomePage</name>
+			</class>
+			<params>
+				<param key="uri" value="home" />
+				<param key="menutitle" value="core.menu.home" />
+			</params>
+		</extension>
+
+		<!--
+		<extension point="cerberusweb.page">
+			<id>core.page.tickets</id>
+			<name>Mail Page</name>
+			<class>
+				<file>api/uri/tickets.php</file>
+				<name>ChTicketsPage</name>
+			</class>
+			<params>
+				<param key="uri" value="tickets" />
+				<param key="menutitle" value="core.menu.mail" />
+			</params>
+		</extension>
+		-->
+
+		<extension point="portsensor.page">
+			<id>core.page.signin</id>
+			<name>Signin Page</name>
+			<class>
+				<file>api/uri/login.php</file>
+				<name>PsSignInPage</name>
+			</class>
+			<params>
+				<param key="uri" value="login" />
+				<param key="menutitle" value="" />
+			</params>
+		</extension>
+
+		<extension point="portsensor.page">
+			<id>core.page.setup</id>
+			<name>Setup Page</name>
+			<class>
+				<file>api/uri/setup.php</file>
+				<name>PsSetupPage</name>
+			</class>
+			<params>
+				<param key="uri" value="setup" />
+				<param key="menutitle" value="" />
+			</params>
+		</extension>
+
+		<extension point="portsensor.page">
+			<id>core.page.preferences</id>
+			<name>Preferences Page</name>
+			<class>
+				<file>api/uri/preferences.php</file>
+				<name>PsPreferencesPage</name>
+			</class>
+			<params>
+				<param key="uri" value="preferences" />
+			</params>
+		</extension>
+		
+		<!-- Cron Extensions -->
+		
+		<!--
+		<extension point="portsensor.cron">
+			<id>cron.maint</id>
+			<name>Maintenance</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>MaintCron</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		-->		
+		
+		<!--
+		<extension point="portsensor.cron">
+			<id>cron.heartbeat</id>
+			<name>Heartbeat</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>HeartbeatCron</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		-->
+		
+		<!--
+		<extension point="portsensor.cron">
+			<id>cron.import</id>
+			<name>Background Importing and Synchronization</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>ImportCron</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		-->
+		
+		<!-- Custom Field Sources -->
+
+		<extension point="portsensor.fields.source">
+			<id>portsensor.fields.source.sensor</id>
+			<name>Sensor</name>
+			<class>
+				<file>api/plugin.classes.php</file>
+				<name>PsCustomFieldSource_Sensor</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		
+		<extension point="portsensor.fields.source">
+			<id>portsensor.fields.source.worker</id>
+			<name>Worker</name>
+			<class>
+				<file>api/plugin.classes.php</file>
+				<name>PsCustomFieldSource_Worker</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+				
+		<!-- Workspace Sources -->
+		
+		<!--
+		<extension point="cerberusweb.workspace.source">
+			<id>core.workspace.source.address</id>
+			<name>Addresses</name>
+			<class>
+				<file>api/plugin.classes.php</file>
+				<name>ChWorkspaceSource_Address</name>
+			</class>
+			<params>
+				<param key="view_class" value="C4_AddressView" />
+			</params>
+		</extension>
+		-->
+
+	</extensions>
+</plugin>

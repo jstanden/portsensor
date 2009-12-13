@@ -1,0 +1,233 @@
+@CHARSET "ISO-8859-1";
+
+a {
+	color: rgb(102, 102, 102);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+body,td {
+	color: rgb(80, 80, 80);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+h1 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: rgb(102, 102, 255);
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+h2 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: rgb(80, 80, 80);
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+button {
+	background-image: url(bg_ltgray.jpg);
+	background-repeat: repeat-x; 
+	color: rgb(30, 30, 30);
+	border: 1px solid rgb(150, 150, 150);
+	background-color: rgb(209,209,209);
+	margin-right:1px;
+}
+
+button:hover {
+	background-image: url(bg_blue.jpg);
+	background-repeat: repeat-x;
+	background-color: rgb(160,198,254);
+	border: 1px solid rgb(36,111,223);
+	cursor: hand;
+}
+
+form {
+	margin: 0px;
+}
+
+.headerMenu {
+	background-color: rgb(240,240,240);
+	color: rgb(50,50,50);
+}
+
+.headerMenu a {
+	color: rgb(50,50,50);
+}
+
+#headerMenuSelected,#headerMenuSelected a,.headerUnderline {
+	background-color: rgb(102, 102, 255);
+	color: rgb(255, 255, 255);
+}
+
+#headerMenuLinkActive {
+	color: rgb(255, 255, 255);
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#headerSubMenu {
+	width: 100%;
+	background-color: rgb(102, 102, 255);
+	color: rgb(255, 255, 255);
+	font-size: 11px;
+	margin-bottom: 5px;
+}
+
+#headerSubMenu a {
+	color: rgb(255, 255, 255);
+}
+
+.tableBlue {
+	border: 1px solid rgb(0, 102, 204);
+	background-color: rgb(240, 240, 255);
+}
+
+.tableThBlue {
+	padding: 3px;
+	background-image: url(bg_ltblue.jpg);
+	background-repeat: repeat-x;
+	color: rgb(255, 255, 255);
+	font-size: 18px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: rgb(140, 175, 229);
+}
+
+.tableTh th {
+	border-right: 1px solid rgb(150, 150, 150);
+	border-bottom: 1px solid rgb(50, 50, 50);
+	background-color: rgb(200, 200, 200);
+	padding-bottom: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: left;
+}
+
+.tableTh a {
+	font-size: 12px;
+	font-weight: bold;
+	color: rgb(68, 68, 68);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.tableBg {
+	background-color: rgb(255, 255, 255);
+}
+
+.tableRowBg {
+	background-color: rgb(254, 254, 254);
+}
+
+.tableRowAltBg {
+	background-color: rgb(244, 244, 244);
+}
+
+.tableRowHover {
+	background-color: rgb(255, 255, 206);
+}
+
+.tableRowBg TD,.tableRowAltBg TD {
+	font-size: 11px;
+}
+
+.tableThLink {
+	color: rgb(255, 255, 255);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+
+DIV.block {
+	padding:5px;
+	background-image:url(bg_block.jpg);
+	background-repeat: repeat-x;
+	background-color: rgb(255,255,255);
+	border:1px solid rgb(120,120,120);
+}
+
+DIV.block H2 {
+  	font-weight: bold;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+	margin:0px;
+	color: rgb(0,150,0);
+}
+
+DIV.block H3 {
+  	font-weight: bold;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+	margin:0px;
+	color: rgb(85, 85, 85);
+}
+
+DIV.error {
+	border:1px solid rgb(180,0,0);
+	background-color:rgb(255,235,235);
+	color:rgb(180,0,0);
+	font-weight:bold;
+	margin:10px;
+	padding:5px;
+}
+
+DIV.success {
+	border:1px solid rgb(0,180,0);
+	background-color:rgb(235,255,235);
+	color:rgb(0,180,0);
+	font-weight:bold;
+	margin:10px;
+	padding:5px;
+}
+
+DIV.subtle {
+	background-color:rgb(235,255,211);	
+	margin:5px;
+	padding:5px;
+}
+
+DIV.subtle2 {
+	background-color:rgb(239,245,255);
+	margin:5px;
+	padding:5px;
+}
+
+.status_ok {
+	color:rgb(0,200,0);
+}
+
+.status_warning {
+	color:rgb(244,184,0);	
+}
+
+.status_critical {
+	color:rgb(200,0,0);
+}
+
+/* YUI Tabs */
+.yui-skin-sam .yui-navset .yui-content {
+	padding: 5px;
+	background-image: url(bg_block.jpg);
+	background-repeat: repeat-x;
+	background-color: rgb(255, 255, 255);
+	border: 1px solid rgb(120, 120, 120);
+}
+
+.yui-skin-sam .yui-navset .yui-content H2 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	margin: 0px;
+	color: rgb(0, 150, 0);
+}
+
+.yui-skin-sam .yui-navset .yui-content,.yui-skin-sam .yui-navset .yui-navset-top .yui-content {
+	border: 0px; /* content border */
+	border-top-color: #243356; /* different border color */
+	padding: 0.25em 0.5em; /* content padding */
+}
+
