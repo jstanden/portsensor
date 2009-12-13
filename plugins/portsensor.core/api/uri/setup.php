@@ -130,16 +130,46 @@ class PsSetupPage extends PortSensorPageExtension  {
 			$rs->MoveNext();
 		}
 		
-		$sql = "SELECT SUM(file_size) FROM attachment";
-		$total_file_size = intval($db->GetOne($sql));
+//		$sql = "SELECT SUM(file_size) FROM attachment";
+//		$total_file_size = intval($db->GetOne($sql));
 
 		$tpl->assign('total_db_size', number_format($total_db_size/1048576,2));
 		$tpl->assign('total_db_data', number_format($total_db_data/1048576,2));
 		$tpl->assign('total_db_indexes', number_format($total_db_indexes/1048576,2));
 		$tpl->assign('total_db_slack', number_format($total_db_slack/1048576,2));
-		$tpl->assign('total_file_size', number_format($total_file_size/1048576,2));
+//		$tpl->assign('total_file_size', number_format($total_file_size/1048576,2));
 		
 		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/settings/index.tpl');
+	}
+	
+	// Post
+	function saveTabSettingsAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		if(!$worker || !$worker->is_superuser) {
+			echo $translate->_('common.access_denied');
+			return;
+		}
+		
+		if(DEMO_MODE) {
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
+			return;
+		}
+		
+	    @$title = DevblocksPlatform::importGPC($_POST['title'],'string','');
+	    @$logo = DevblocksPlatform::importGPC($_POST['logo'],'string');
+	    @$authorized_ips_str = DevblocksPlatform::importGPC($_POST['authorized_ips'],'string','');
+
+	    if(empty($title))
+	    	$title = 'PortSensor - Monitor Everything';
+	    
+	    $settings = PortSensorSettings::getInstance();
+	    $settings->set(PortSensorSettings::APP_TITLE, $title);
+	    $settings->set(PortSensorSettings::APP_LOGO_URL, $logo); // [TODO] Enforce some kind of max resolution?
+	    $settings->set(PortSensorSettings::AUTHORIZED_IPS, $authorized_ips_str);
+	    
+	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 	}
 	
 	// Ajax
@@ -409,7 +439,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 			$view->render();
 		}
 		
-		//DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','workers')));		
+		//DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','workers')));		
 	}
 	
 	function showWorkersBulkPanelAction() {
@@ -540,7 +570,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //			return;
 //		}
 //		
@@ -598,7 +628,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //            }
 //		}
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //		
 //		return;
 //	}
@@ -735,7 +765,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    @$sticky_order = DevblocksPlatform::importGPC($_REQUEST['sticky_order'],'array',array());
 //
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','preparser')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','preparser')));
 //			return;
 //		}
 //		
@@ -750,7 +780,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    	));
 //	    }
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','preparser')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','preparser')));
 //	}
 //	
 //	// Ajax
@@ -796,7 +826,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		@$do = DevblocksPlatform::importGPC($_POST['do'],'array',array());
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','preparser')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','preparser')));
 //			return;
 //		}
 //		
@@ -1005,7 +1035,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //			}
 //		}
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','preparser')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','preparser')));
 //	}	
 //	
 //	// Ajax
@@ -1142,7 +1172,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		// Delete
 //		if(!empty($do_delete) && !empty($id)) {
 //			DAO_WorkerRole::delete($id);
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','acl')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
 //		}
 //
 //		$fields = array(
@@ -1162,7 +1192,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		// Update role privs
 //		DAO_WorkerRole::setRolePrivileges($id, $acl_privs, true);
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','acl')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
 //	}
 //	
 //	// Ajax
@@ -1237,7 +1267,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		}
 		
 		if(DEMO_MODE) {
-			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','fields')));
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','fields')));
 			return;
 		}
 		
@@ -1301,7 +1331,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','scheduler')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
 //			return;
 //		}
 //		
@@ -1334,7 +1364,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    
 //	    $job->saveConfigurationAction();
 //	    	    
-//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','scheduler')));
+//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
 //	}
 //	
 //	// Post
@@ -1353,23 +1383,23 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		@$do_delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
 //
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 //			return;
 //		}
 //
 //		if(!empty($do_delete)) {
 //			$settings->set(PortSensorSettings::LICENSE, '');
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 //			return;
 //		}
 //		
 //		if(empty($key) || empty($email)) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings','empty')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','empty')));
 //			return;
 //		}
 //		
 //		if(null==($valid = PortSensorLicense::validate($key,$email)) || 5!=count($valid)) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings','invalid')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','invalid')));
 //			return;
 //		}
 //		
@@ -1383,7 +1413,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		
 //		$settings->set(PortSensorSettings::LICENSE, serialize($license));
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 //	}
 //	
 //	// Ajax
@@ -1432,7 +1462,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','workflow')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','workflow')));
 //			return;
 //		}
 //		
@@ -1485,38 +1515,9 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    	}
 //	    }
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','groups')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','groups')));
 //	}
 //	
-//	// Post
-//	function saveSettingsAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		$worker = PortSensorApplication::getActiveWorker();
-//		
-//		if(!$worker || !$worker->is_superuser) {
-//			echo $translate->_('common.access_denied');
-//			return;
-//		}
-//		
-//		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings')));
-//			return;
-//		}
-//		
-//	    @$title = DevblocksPlatform::importGPC($_POST['title'],'string','');
-//	    @$logo = DevblocksPlatform::importGPC($_POST['logo'],'string');
-//	    @$authorized_ips_str = DevblocksPlatform::importGPC($_POST['authorized_ips'],'string','');
-//
-//	    if(empty($title))
-//	    	$title = 'Cerberus Helpdesk :: Team-based E-mail Management';
-//	    
-//	    $settings = PortSensorSettings::getInstance();
-//	    $settings->set(PortSensorSettings::HELPDESK_TITLE, $title);
-//	    $settings->set(PortSensorSettings::HELPDESK_LOGO_URL, $logo); // [TODO] Enforce some kind of max resolution?
-//	    $settings->set(PortSensorSettings::AUTHORIZED_IPS, $authorized_ips_str);
-//	    
-//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','settings')));
-//	}
 //	
 //	function saveIncomingMailSettingsAction() {
 //		$translate = DevblocksPlatform::getTranslationService();
@@ -1528,7 +1529,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //			return;
 //		}
 //		
@@ -1543,7 +1544,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    $settings->set(PortSensorSettings::PARSER_AUTO_REQ, $parser_autoreq);
 //	    $settings->set(PortSensorSettings::PARSER_AUTO_REQ_EXCLUDE, $parser_autoreq_exclude);
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //	}
 //	
 //	// Form Submit
@@ -1557,7 +1558,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //			return;
 //		}
 //		
@@ -1595,7 +1596,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    $settings->set(PortSensorSettings::SMTP_TIMEOUT, !empty($smtp_timeout) ? $smtp_timeout : 30);
 //	    $settings->set(PortSensorSettings::SMTP_MAX_SENDS, !empty($smtp_max_sends) ? $smtp_max_sends : 20);
 //	    
-//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail','outgoing','test')));
+//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail','outgoing','test')));
 //	}
 //	
 //	// Form Submit
@@ -1609,7 +1610,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		}
 //		
 //		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','mail')));
+//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail')));
 //			return;
 //		}
 //		
@@ -1639,7 +1640,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //	    @$default_group_id = DevblocksPlatform::importGPC($_REQUEST['default_group_id'],'integer','0');
 //		DAO_Group::setDefaultGroup($default_group_id);
 //		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('config','parser')));
+//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','parser')));
 //	}
 //	
 //   	function showMailRoutingRulePanelAction() {
@@ -1911,7 +1912,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 //   			DAO_MailToGroupRule::update($id, $fields);
 //   		}
 //   		
-//   		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('config','parser')));
+//   		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('setup','parser')));
 //   	}	
 //	
 };
