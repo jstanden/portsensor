@@ -1194,18 +1194,65 @@ class PsSetupPage extends PortSensorPageExtension  {
 //		
 //		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
 //	}
-//	
-//	// Ajax
-//	function showTabSchedulerAction() {
-//		$tpl = DevblocksPlatform::getTemplateService();
-//		$tpl->cache_lifetime = "0";
-//		$tpl->assign('path', $this->_TPL_PATH);
-//		
-//	    $jobs = DevblocksPlatform::getExtensions('cerberusweb.cron', true);
-//		$tpl->assign('jobs', $jobs);
-//		
-//		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/scheduler/index.tpl');
-//	}
+	
+	// Ajax
+	function showTabSchedulerAction() {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->cache_lifetime = "0";
+		$tpl->assign('path', $this->_TPL_PATH);
+		
+	    $jobs = DevblocksPlatform::getExtensions('portsensor.cron', true);
+		$tpl->assign('jobs', $jobs);
+		
+		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/scheduler/index.tpl');
+	}
+	
+	// Post
+	function saveTabSchedulerAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		$worker = PortSensorApplication::getActiveWorker();
+		if(!$worker || !$worker->is_superuser) {
+			echo $translate->_('common.access_denied');
+			return;
+		}
+		
+		if(DEMO_MODE) {
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
+			return;
+		}
+		
+	    // [TODO] Save the job changes
+	    @$id = DevblocksPlatform::importGPC($_REQUEST['id'],'string','');
+	    @$enabled = DevblocksPlatform::importGPC($_REQUEST['enabled'],'integer',0);
+	    @$locked = DevblocksPlatform::importGPC($_REQUEST['locked'],'integer',0);
+	    @$duration = DevblocksPlatform::importGPC($_REQUEST['duration'],'integer',5);
+	    @$term = DevblocksPlatform::importGPC($_REQUEST['term'],'string','m');
+	    @$starting = DevblocksPlatform::importGPC($_REQUEST['starting'],'string','');
+	    	    
+	    $manifest = DevblocksPlatform::getExtension($id);
+	    $job = $manifest->createInstance(); /* @var $job PortSensorCronExtension */
+
+	    if(!empty($starting)) {
+		    $starting_time = strtotime($starting);
+		    if(false === $starting_time) $starting_time = time();
+		    $starting_time -= PortSensorCronExtension::getIntervalAsSeconds($duration, $term);
+    	    $job->setParam(PortSensorCronExtension::PARAM_LASTRUN, $starting_time);
+	    }
+	    
+	    if(!$job instanceof PortSensorCronExtension)
+	        die($translate->_('common.access_denied'));
+	    
+	    // [TODO] This is really kludgey
+	    $job->setParam(PortSensorCronExtension::PARAM_ENABLED, $enabled);
+	    $job->setParam(PortSensorCronExtension::PARAM_LOCKED, $locked);
+	    $job->setParam(PortSensorCronExtension::PARAM_DURATION, $duration);
+	    $job->setParam(PortSensorCronExtension::PARAM_TERM, $term);
+	    
+	    $job->saveConfigurationAction();
+	    	    
+	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
+	}	
 	
 	// Ajax
 	function showTabFieldsAction() {
@@ -1319,54 +1366,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		// Redraw the form
 		$this->_getFieldSource($ext_id);
 	}
-//	
-//	// Post
-//	function saveJobAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		
-//		$worker = PortSensorApplication::getActiveWorker();
-//		if(!$worker || !$worker->is_superuser) {
-//			echo $translate->_('common.access_denied');
-//			return;
-//		}
-//		
-//		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
-//			return;
-//		}
-//		
-//	    // [TODO] Save the job changes
-//	    @$id = DevblocksPlatform::importGPC($_REQUEST['id'],'string','');
-//	    @$enabled = DevblocksPlatform::importGPC($_REQUEST['enabled'],'integer',0);
-//	    @$locked = DevblocksPlatform::importGPC($_REQUEST['locked'],'integer',0);
-//	    @$duration = DevblocksPlatform::importGPC($_REQUEST['duration'],'integer',5);
-//	    @$term = DevblocksPlatform::importGPC($_REQUEST['term'],'string','m');
-//	    @$starting = DevblocksPlatform::importGPC($_REQUEST['starting'],'string','');
-//	    	    
-//	    $manifest = DevblocksPlatform::getExtension($id);
-//	    $job = $manifest->createInstance(); /* @var $job CerberusCronPageExtension */
-//
-//	    if(!empty($starting)) {
-//		    $starting_time = strtotime($starting);
-//		    if(false === $starting_time) $starting_time = time();
-//		    $starting_time -= CerberusCronPageExtension::getIntervalAsSeconds($duration, $term);
-//    	    $job->setParam(CerberusCronPageExtension::PARAM_LASTRUN, $starting_time);
-//	    }
-//	    
-//	    if(!$job instanceof CerberusCronPageExtension)
-//	        die($translate->_('common.access_denied'));
-//	    
-//	    // [TODO] This is really kludgey
-//	    $job->setParam(CerberusCronPageExtension::PARAM_ENABLED, $enabled);
-//	    $job->setParam(CerberusCronPageExtension::PARAM_LOCKED, $locked);
-//	    $job->setParam(CerberusCronPageExtension::PARAM_DURATION, $duration);
-//	    $job->setParam(CerberusCronPageExtension::PARAM_TERM, $term);
-//	    
-//	    $job->saveConfigurationAction();
-//	    	    
-//	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','scheduler')));
-//	}
-//	
+	
 //	// Post
 //	function saveLicensesAction() {
 //		$translate = DevblocksPlatform::getTranslationService();

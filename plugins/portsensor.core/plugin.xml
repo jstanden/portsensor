@@ -35,11 +35,10 @@
 	
 	<class_loader>
 		<file path="api/plugin.classes.php">
+			<class name="PsPageController" />
 			<class name="PsCustomFieldSource_Sensor" />
 			<class name="PsCustomFieldSource_Worker" />
 			<!--
-			<class name="PsCorePlugin" />
-			<class name="ChPageController" />
 			<class name="ChTaskSource_Ticket" />
 			<class name="ChWorkspaceSource_Worker" />
 			-->
@@ -221,21 +220,6 @@
 			</params>
 		</extension>
 
-		<!--
-		<extension point="cerberusweb.page">
-			<id>core.page.tickets</id>
-			<name>Mail Page</name>
-			<class>
-				<file>api/uri/tickets.php</file>
-				<name>ChTicketsPage</name>
-			</class>
-			<params>
-				<param key="uri" value="tickets" />
-				<param key="menutitle" value="core.menu.mail" />
-			</params>
-		</extension>
-		-->
-
 		<extension point="portsensor.page">
 			<id>core.page.signin</id>
 			<name>Signin Page</name>
@@ -276,7 +260,6 @@
 		
 		<!-- Cron Extensions -->
 		
-		<!--
 		<extension point="portsensor.cron">
 			<id>cron.maint</id>
 			<name>Maintenance</name>
@@ -287,9 +270,7 @@
 			<params>
 			</params>
 		</extension>
-		-->		
 		
-		<!--
 		<extension point="portsensor.cron">
 			<id>cron.heartbeat</id>
 			<name>Heartbeat</name>
@@ -300,7 +281,6 @@
 			<params>
 			</params>
 		</extension>
-		-->
 		
 		<!--
 		<extension point="portsensor.cron">

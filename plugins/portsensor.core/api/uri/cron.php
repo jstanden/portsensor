@@ -68,48 +68,48 @@ class PsCronController extends DevblocksControllerExtension {
 	    $cron_manifests = DevblocksPlatform::getExtensions('portsensor.cron', true, true);
         $jobs = array();
 	    
-//	    if(empty($job_id)) { // do everything 
-//			
-//		    // Determine who wants to go first by next time and longest waiting
-//            $nexttime = time() + 86400;
-//		    
-//			if(is_array($cron_manifests))
-//			foreach($cron_manifests as $idx => $instance) { /* @var $instance CerberusCronPageExtension */
-//			    $lastrun = $instance->getParam(PortSensorCronPageExtension::PARAM_LASTRUN, 0);
-//			    
-//			    if($instance->isReadyToRun($is_ignoring_wait)) {
-//			        if($timelimit) {
-//			            if($lastrun < $nexttime) {
-//			                $jobs[0] = $cron_manifests[$idx];
-//	    		            $nexttime = $lastrun;
-//			            }
-//			        } else {
-//    			        $jobs[] =& $cron_manifests[$idx];
-//			        }
-//			    }
-//			}
-//			
-//	    } else { // single job
-//	        $manifest = DevblocksPlatform::getExtension($job_id, false, true);
-//	        if(empty($manifest)) exit;
-//	        	        
-//	        $instance = $manifest->createInstance();
-//	        
-//			if($instance) {
-//			    if($instance->isReadyToRun($is_ignoring_wait)) {
-//			        $jobs[0] =& $instance;
-//			    }
-//			}
-//	    }
-//	    
-//		if(!empty($jobs)) {
-//		    foreach($jobs as $nextjob) {
-//		        $nextjob->setParam(CerberusCronPageExtension::PARAM_LOCKED, time());
-//	    	    $nextjob->_run();
-//	        }
-//		} elseif($reload) {
-//		    $logger->info(vsprintf($translate->_('cron.nothing_to_do'), intval($reload)));
-//		}
+	    if(empty($job_id)) { // do everything 
+			
+		    // Determine who wants to go first by next time and longest waiting
+            $nexttime = time() + 86400;
+		    
+			if(is_array($cron_manifests))
+			foreach($cron_manifests as $idx => $instance) { /* @var $instance PortSensorCronExtension */
+			    $lastrun = $instance->getParam(PortSensorCronExtension::PARAM_LASTRUN, 0);
+			    
+			    if($instance->isReadyToRun($is_ignoring_wait)) {
+			        if($timelimit) {
+			            if($lastrun < $nexttime) {
+			                $jobs[0] = $cron_manifests[$idx];
+	    		            $nexttime = $lastrun;
+			            }
+			        } else {
+    			        $jobs[] =& $cron_manifests[$idx];
+			        }
+			    }
+			}
+			
+	    } else { // single job
+	        $manifest = DevblocksPlatform::getExtension($job_id, false, true);
+	        if(empty($manifest)) exit;
+	        	        
+	        $instance = $manifest->createInstance();
+	        
+			if($instance) {
+			    if($instance->isReadyToRun($is_ignoring_wait)) {
+			        $jobs[0] =& $instance;
+			    }
+			}
+	    }
+	    
+		if(!empty($jobs)) {
+		    foreach($jobs as $nextjob) {
+		        $nextjob->setParam(PortSensorCronExtension::PARAM_LOCKED, time());
+	    	    $nextjob->_run();
+	        }
+		} elseif($reload) {
+		    $logger->info(vsprintf($translate->_('cron.nothing_to_do'), intval($reload)));
+		}
 		
 		if($reload) {
 	    	echo "</BODY>".
