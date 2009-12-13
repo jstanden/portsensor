@@ -647,16 +647,6 @@ switch($step) {
 					
 					$worker_id = DAO_Worker::create($fields);
 					
-//					// Add the worker e-mail to the addresses table
-//					if(!empty($worker_email))
-//						DAO_Address::lookupAddress($worker_email, true);
-//					
-//					// Authorize this e-mail address (watchers, etc.)
-//					DAO_AddressToWorker::assign($worker_email, $worker_id);
-//					DAO_AddressToWorker::update($worker_email, array(
-//						DAO_AddressToWorker::IS_CONFIRMED => 1
-//					));					
-//					
 //					// Default group memberships
 //					if(!empty($dispatch_gid))
 //						DAO_Group::setTeamMember($dispatch_gid,$worker_id,true);			
@@ -665,42 +655,6 @@ switch($step) {
 //					if(!empty($sales_gid))
 //						DAO_Group::setTeamMember($sales_gid,$worker_id,true);			
 				}
-				
-				// Send a first ticket which allows people to reply for support
-//				if(null !== ($default_from = $settings->get(CerberusSettings::DEFAULT_REPLY_FROM,''))) {
-//					$message = new CerberusParserMessage();
-//						$message->headers['from'] = '"WebGroup Media, LLC." <support@webgroupmedia.com>';
-//						$message->headers['to'] = $default_from;
-//						$message->headers['subject'] = "Welcome to PortSensor!";
-//						$message->headers['date'] = date('r');
-//						$message->headers['message-id'] = CerberusApplication::generateMessageId();
-//						$message->body = <<< EOF
-//Welcome to PortSensor (Cerb4)!
-//
-//We automatically set up a few things for you during the installation process.
-//
-//You'll notice you have three groups:
-//* Dispatch: All your mail will be delivered to this group by default.
-//* Support: This is a group for holding tickets related to customer service.
-//* Sales: This is a group for holding tickets relates to sales.
-//
-//If these default groups don't meet your needs, feel free to change them by clicking 'Helpdesk Setup' in the top-right and selecting the 'Groups' tab.
-//
-//We also set up a 'Spam' bucket inside each group to start quarantining junk mail.  Your helpdesk's spam training functionality is adaptive and will become increasingly accurate as you use your helpdesk.
-//
-//If you have any questions about your new helpdesk, simply reply to this message.  Our response will show up on this page as a new message.
-//
-//Subscribe to the Cerb4 blog for project news, sneak peeks of development progress, tips & tricks, and more:
-//http://www.cerb4.com/blog/
-//
-//Thanks for your interest!
-//---
-//The Cerb4 Team
-//WebGroup Media, LLC.
-//http://www.cerberusweb.com/
-//EOF;
-//					CerberusParser::parseMessage($message);
-//				}
 				
 				$tpl->assign('step', STEP_REGISTER);
 				$tpl->display('steps/redirect.tpl');
