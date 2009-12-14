@@ -656,9 +656,9 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
 		$tpl->assign('acl_enabled', $acl_enabled);
 		
-//		if(empty($license) || (!empty($license)&&isset($license['a'])))
-//			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/trial.tpl');
-//		else
+		if(empty($license) || (!empty($license)&&isset($license['a'])))
+			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/trial.tpl');
+		else
 			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
 	}
 	
@@ -931,55 +931,50 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$this->_getFieldSource($ext_id);
 	}
 	
-//	// Post
-//	function saveLicensesAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		$settings = PortSensorSettings::getInstance();
-//		$worker = PortSensorApplication::getActiveWorker();
-//		
-//		if(!$worker || !$worker->is_superuser) {
-//			echo $translate->_('common.access_denied');
-//			return;
-//		}
-//		
-//		@$key = DevblocksPlatform::importGPC($_POST['key'],'string','');
-//		@$email = DevblocksPlatform::importGPC($_POST['email'],'string','');
-//		@$do_delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
-//
-//		if(DEMO_MODE) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
-//			return;
-//		}
-//
-//		if(!empty($do_delete)) {
-//			$settings->set(PortSensorSettings::LICENSE, '');
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
-//			return;
-//		}
-//		
-//		if(empty($key) || empty($email)) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','empty')));
-//			return;
-//		}
-//		
-//		if(null==($valid = PortSensorLicense::validate($key,$email)) || 5!=count($valid)) {
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','invalid')));
-//			return;
-//		}
-//		
-//		/*
-//		 * [IMPORTANT -- Yes, this is simply a line in the sand.]
-//		 * You're welcome to modify the code to meet your needs, but please respect 
-//		 * our licensing.  Buy a legitimate copy to help support the project!
-//		 * http://www.cerberusweb.com/
-//		 */
-//		$license = $valid;
-//		
-//		$settings->set(PortSensorSettings::LICENSE, serialize($license));
-//		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
-//	}
-//	
+	// Post
+	function saveLicensesAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		$settings = PortSensorSettings::getInstance();
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		if(!$worker || !$worker->is_superuser) {
+			echo $translate->_('common.access_denied');
+			return;
+		}
+		
+		@$key = DevblocksPlatform::importGPC($_POST['key'],'string','');
+		@$email = DevblocksPlatform::importGPC($_POST['email'],'string','');
+		@$do_delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
+
+		if(!empty($do_delete)) {
+			$settings->set(PortSensorSettings::LICENSE, '');
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
+			return;
+		}
+		
+		if(empty($key) || empty($email)) {
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','empty')));
+			return;
+		}
+		
+		if(null==($valid = PortSensorLicense::validate($key,$email)) || 5 != count($valid)) {
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings','invalid')));
+			return;
+		}
+		
+		/*
+		 * [IMPORTANT -- Yes, this is simply a line in the sand.]
+		 * You're welcome to modify the code to meet your needs, but please respect 
+		 * our licensing.  Buy a legitimate copy to help support the project!
+		 * http://www.portsensor.com/
+		 */
+		$license = $valid;
+		
+		$settings->set(PortSensorSettings::LICENSE, serialize($license));
+		
+		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
+	}
+	
 //	// Ajax
 //	function getTeamAction() {
 //		$translate = DevblocksPlatform::getTranslationService();

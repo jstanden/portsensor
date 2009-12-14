@@ -56,7 +56,6 @@ Total Disk Space: <b>{$total_file_size} MB</b><br>
 </div>
 <br>
 
-{*
 <div class="block">
 <h2>License Info</h2>
 <br>
@@ -113,4 +112,3 @@ Total Disk Space: <b>{$total_file_size} MB</b><br>
 
 </form>
 </div>
-*}
