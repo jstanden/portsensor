@@ -148,6 +148,15 @@
 			<tuv xml:lang="en_US"><seg>Sign on</seg></tuv>
 		</tu>
 
+		<!-- Login -->
+		
+		<tu tuid='login.forgot.mail.subject'>
+			<tuv xml:lang="en_US"><seg>Confirm service monitoring password recovery.</seg></tuv>
+		</tu>
+		<tu tuid='login.forgot.mail.body'>
+			<tuv xml:lang="en_US"><seg>This confirmation code will allow you to reset your service monitoring login: %s</seg></tuv>
+		</tu>
+
 	    <!-- Preferences (My Account) -->
 		
 	    <tu tuid='preferences.general.account_settings'>

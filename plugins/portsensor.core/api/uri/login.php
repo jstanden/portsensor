@@ -1,8 +1,8 @@
 <?php
 class PsSignInPage extends PortSensorPageExtension {
-//    const KEY_FORGOT_EMAIL = 'login.recover.email';
-//    const KEY_FORGOT_SENTCODE = 'login.recover.sentcode';
-//    const KEY_FORGOT_CODE = 'login.recover.code';
+    const KEY_FORGOT_EMAIL = 'login.recover.email';
+    const KEY_FORGOT_SENTCODE = 'login.recover.sentcode';
+    const KEY_FORGOT_CODE = 'login.recover.code';
     
 	private $_TPL_PATH = '';
 	
@@ -22,28 +22,28 @@ class PsSignInPage extends PortSensorPageExtension {
         $section = array_shift($stack);
         
         switch($section) {
-//            case "forgot":
-//                $step = array_shift($stack);
-//                $tpl = DevblocksPlatform::getTemplateService();
-//                
-//                switch($step) {
-//                    default:
-//                    case "step1":
-//                    	if ((@$failed = array_shift($stack)) == "failed") {
-//                    		$tpl->assign('failed',true);
-//                    	}
-//                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot1.tpl');
-//                        break;
-//                    
-//                    case "step2":
-//                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot2.tpl');
-//                        break;
-//                        
-//                    case "step3":
-//                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot3.tpl');
-//                        break;
-//                }
-//                break;
+            case "forgot":
+                $step = array_shift($stack);
+                $tpl = DevblocksPlatform::getTemplateService();
+                
+                switch($step) {
+                    default:
+                    case "step1":
+                    	if ((@$failed = array_shift($stack)) == "failed") {
+                    		$tpl->assign('failed',true);
+                    	}
+                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot1.tpl');
+                        break;
+                    
+                    case "step2":
+                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot2.tpl');
+                        break;
+                        
+                    case "step3":
+                        $tpl->display('file:' . $this->_TPL_PATH . 'login/forgot3.tpl');
+                        break;
+                }
+                break;
                 
             default:
 				$tpl = DevblocksPlatform::getTemplateService();
@@ -52,10 +52,6 @@ class PsSignInPage extends PortSensorPageExtension {
         }
 	}
 	
-//	function showAction() {
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('login')));
-//	}
-
 	// POST
 	function authenticateAction() {
 		// Pull from $_POST
@@ -63,9 +59,6 @@ class PsSignInPage extends PortSensorPageExtension {
 		@$email = DevblocksPlatform::importGPC($_POST['email']);
 		@$password = DevblocksPlatform::importGPC($_POST['password']);
 		
-//		$manifest = DevblocksPlatform::getExtension('login.default');
-//		$inst = $manifest->createInstance(); /* @var $inst Extension_LoginAuthenticator */
-
 		$url_service = DevblocksPlatform::getUrlService();
 
 		$worker = DAO_Worker::login($email, $password);
@@ -117,108 +110,100 @@ class PsSignInPage extends PortSensorPageExtension {
 		$session = DevblocksPlatform::getSessionService();
 		$visit = $session->getVisit();
 		
-//		if(null != ($worker = CerberusApplication::getActiveWorker())) {
-//			DAO_Worker::logActivity($worker->id, new Model_Activity(null));
-//		}
-//		
+		if(null != ($worker = PortSensorApplication::getActiveWorker())) {
+			DAO_Worker::logActivity($worker->id, new Model_Activity(null));
+		}
+		
 		$session->clear();
 		
 		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login')));
 	}
 	
 	// Post
-//	function doRecoverStep1Action() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		
-//	    @$email = DevblocksPlatform::importGPC($_REQUEST['email'],'string');
-//	    
-//	    $worker = DAO_Worker::lookupAgentEmail($email);
-//	    
-//	    if(empty($email) || empty($worker))
-//	        return;
-//	    
-//	    $_SESSION[self::KEY_FORGOT_EMAIL] = $email;
-//	    
-//	    try {
-//		    $mail_service = DevblocksPlatform::getMailService();
-//		    $mailer = $mail_service->getMailer(CerberusMail::getMailerDefaults());
-//			$mail = $mail_service->createMessage();
-//		    
-//		    $code = CerberusApplication::generatePassword(10);
-//		    
-//		    $_SESSION[self::KEY_FORGOT_SENTCODE] = $code;
-//		    $settings = CerberusSettings::getInstance();
-//			$from = $settings->get(CerberusSettings::DEFAULT_REPLY_FROM);
-//		    $personal = $settings->get(CerberusSettings::DEFAULT_REPLY_PERSONAL);
-//			
-//			// Headers
-//			$mail->setTo(array($email));
-//			$mail->setFrom(array($from => $personal));
-//			$mail->setSubject($translate->_('signin.forgot.mail.subject'));
-//			$mail->generateId();
-//			
-//			$headers = $mail->getHeaders();
-//			
-//			$headers->addTextHeader('X-Mailer','Cerberus Helpdesk (Build '.APP_BUILD.')');
-//	
-//			$mail->setBody(vsprintf($translate->_('signin.forgot.mail.body'), $code));
-//			
-//			if(!$mailer->send($mail)) {
-//				throw new Exception('Password Forgot confirmation email failed to send.');
-//			}
-//	    } catch (Exception $e) {
-//	    	DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step1','failed')));
-//	    }
-//	    
-//	    DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
-//	}
-//	
-//	// Post
-//	function doRecoverStep2Action() {
-//        @$code = DevblocksPlatform::importGPC($_REQUEST['code'],'string');
-//
-//        $email = $_SESSION[self::KEY_FORGOT_EMAIL];
-//        $sentcode = $_SESSION[self::KEY_FORGOT_SENTCODE];
-//        $_SESSION[self::KEY_FORGOT_CODE] = $code;
-//        
-//	    $worker_id = DAO_Worker::lookupAgentEmail($email);
-//	    
-//	    if(empty($email) || empty($worker_id) || empty($code))
-//	        return;
-//        
-//	    if(0 == strcmp($sentcode,$code)) { // passed
-//            DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('login','forgot','step3')));	        
-//	    } else {
-//            DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
-//	    }
-//	}
-//	
-//	// Post
-//	function doRecoverStep3Action() {
-//        @$password = DevblocksPlatform::importGPC($_REQUEST['password'],'string');
-//
-//        $email = $_SESSION[self::KEY_FORGOT_EMAIL];
-//        $sentcode = $_SESSION[self::KEY_FORGOT_SENTCODE];
-//        $code = $_SESSION[self::KEY_FORGOT_CODE];
-//        
-//	    $worker_id = DAO_Worker::lookupAgentEmail($email);
-//	    
-//	    if(empty($email) || empty($code) || empty($worker_id))
-//	        return;
-//        
-//	    if(0 == strcmp($sentcode,$code)) { // passed
-//	        DAO_Worker::updateAgent($worker_id, array(
-//	            DAO_Worker::PASSWORD => md5($password)
-//	        ));
-//	        
-//            unset($_SESSION[self::KEY_FORGOT_EMAIL]);
-//            unset($_SESSION[self::KEY_FORGOT_CODE]);
-//            unset($_SESSION[self::KEY_FORGOT_SENTCODE]);
-//            
-//            DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login')));
-//	    } else {
-//	        DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
-//	    }
-//        
-//	}
+	function doRecoverStep1Action() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+	    @$email = DevblocksPlatform::importGPC($_REQUEST['email'],'string');
+	    
+	    $worker = null;
+	    $results = DAO_Worker::getWhere(sprintf("%s = %s",DAO_Worker::EMAIL, Ps_ORMHelper::qstr($email)));
+	    if(!empty($results))
+	    	$worker = array_shift($results);
+	    
+	    if(empty($email) || empty($worker))
+	        return;
+	    
+	    $_SESSION[self::KEY_FORGOT_EMAIL] = $email;
+	    
+	    try {
+		    $code = PortSensorApplication::generatePassword(10);
+		    $_SESSION[self::KEY_FORGOT_SENTCODE] = $code;
+		    
+	    	$to = $email;
+	    	$subject = $translate->_('login.forgot.mail.subject');
+	    	$body = vsprintf($translate->_('login.forgot.mail.body'), $code);
+	    	
+	    	PortSensorMail::quickSend($to, $subject, $body);
+	    	
+	    } catch (Exception $e) {
+	    	DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step1','failed')));
+	    }
+	    
+	    DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
+	}
+	
+	// Post
+	function doRecoverStep2Action() {
+        @$code = DevblocksPlatform::importGPC($_REQUEST['code'],'string');
+
+        $email = $_SESSION[self::KEY_FORGOT_EMAIL];
+        $sentcode = $_SESSION[self::KEY_FORGOT_SENTCODE];
+        $_SESSION[self::KEY_FORGOT_CODE] = $code;
+        
+	    $worker = null;
+	    $results = DAO_Worker::getWhere(sprintf("%s = %s",DAO_Worker::EMAIL,Ps_ORMHelper::qstr($email)));
+	    if(!empty($results))
+	    	$worker = array_shift($results);
+	    
+	    if(empty($email) || empty($worker) || empty($code))
+	        return;
+        
+	    if(0 == strcmp($sentcode,$code)) { // passed
+            DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('login','forgot','step3')));	        
+	    } else {
+            DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
+	    }
+	}
+	
+	// Post
+	function doRecoverStep3Action() {
+        @$password = DevblocksPlatform::importGPC($_REQUEST['password'],'string');
+
+        $email = $_SESSION[self::KEY_FORGOT_EMAIL];
+        $sentcode = $_SESSION[self::KEY_FORGOT_SENTCODE];
+        $code = $_SESSION[self::KEY_FORGOT_CODE];
+
+	    $worker = null;
+	    $results = DAO_Worker::getWhere(sprintf("%s = %s",DAO_Worker::EMAIL,Ps_ORMHelper::qstr($email)));
+	    if(!empty($results))
+	    	$worker = array_shift($results);
+        
+	    if(empty($email) || empty($code) || empty($worker))
+	        return;
+        
+	    if(0 == strcmp($sentcode,$code)) { // passed
+	        DAO_Worker::update($worker->id, array(
+	            DAO_Worker::PASS => md5($password)
+	        ));
+	        
+            unset($_SESSION[self::KEY_FORGOT_EMAIL]);
+            unset($_SESSION[self::KEY_FORGOT_CODE]);
+            unset($_SESSION[self::KEY_FORGOT_SENTCODE]);
+            
+            DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login')));
+	    } else {
+	        DevblocksPlatform::redirect(new DevblocksHttpResponse(array('login','forgot','step2')));
+	    }
+        
+	}
 };

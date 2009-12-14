@@ -20,7 +20,8 @@
 		</td>
 		<td>
 			<input type="password" name="password" value="" size="16">
-			{* [TODO] Forgot link *}
+			 &nbsp; 
+			<a href="{devblocks_url}c=login&a=forgot{/devblocks_url}">forgot your password?</a> 
 		</td>
 	</tr>
 	<tr>
