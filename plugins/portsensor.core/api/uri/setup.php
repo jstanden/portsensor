@@ -630,134 +630,134 @@ class PsSetupPage extends PortSensorPageExtension  {
 	}
 
 	// Ajax
-//	function showTabPermissionsAction() {
-//		$settings = PortSensorSettings::getInstance();
-//		
-//		$tpl = DevblocksPlatform::getTemplateService();
-//		$tpl->cache_lifetime = "0";
-//		$tpl->assign('path', $this->_TPL_PATH);
-//		
-//		$license = PortSensorLicense::getInstance();
-//		$tpl->assign('license', $license);	
-//		
-//		$plugins = DevblocksPlatform::getPluginRegistry();
-//		$tpl->assign('plugins', $plugins);
-//		
-//		$acl = DevblocksPlatform::getAclRegistry();
-//		$tpl->assign('acl', $acl);
-//		
-//		$roles = DAO_WorkerRole::getWhere();
-//		$tpl->assign('roles', $roles);
-//		
-//		$workers = DAO_Worker::getAllActive();
-//		$tpl->assign('workers', $workers);
-//		
-//		// Permissions enabled
-//		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
-//		$tpl->assign('acl_enabled', $acl_enabled);
-//		
+	function showTabACLAction() {
+		$settings = PortSensorSettings::getInstance();
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->cache_lifetime = "0";
+		$tpl->assign('path', $this->_TPL_PATH);
+		
+		$license = PortSensorLicense::getInstance();
+		$tpl->assign('license', $license);	
+		
+		$plugins = DevblocksPlatform::getPluginRegistry();
+		$tpl->assign('plugins', $plugins);
+		
+		$acl = DevblocksPlatform::getAclRegistry();
+		$tpl->assign('acl', $acl);
+		
+		$roles = DAO_WorkerRole::getWhere();
+		$tpl->assign('roles', $roles);
+		
+		$workers = DAO_Worker::getAllActive();
+		$tpl->assign('workers', $workers);
+		
+		// Permissions enabled
+		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
+		$tpl->assign('acl_enabled', $acl_enabled);
+		
 //		if(empty($license) || (!empty($license)&&isset($license['a'])))
 //			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/trial.tpl');
 //		else
-//			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
-//	}
-//	
-//	function toggleACLAction() {
-//		$worker = PortSensorApplication::getActiveWorker();
-//		$settings = PortSensorSettings::getInstance();
-//		
-//		if(!$worker || !$worker->is_superuser) {
-//			return;
-//		}
-//		
-//		@$enabled = DevblocksPlatform::importGPC($_REQUEST['enabled'],'integer',0);
-//		
-//		$settings->set(PortSensorSettings::ACL_ENABLED, $enabled);
-//	}
-//	
-//	function getRoleAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		$worker = PortSensorApplication::getActiveWorker();
-//		
-//		if(!$worker || !$worker->is_superuser) {
-//			echo $translate->_('common.access_denied');
-//			return;
-//		}
-//		
-//		@$id = DevblocksPlatform::importGPC($_REQUEST['id']);
-//
-//		$tpl = DevblocksPlatform::getTemplateService();
-//		$tpl->cache_lifetime = "0";
-//		$tpl->assign('path', $this->_TPL_PATH);
-//
-//		$plugins = DevblocksPlatform::getPluginRegistry();
-//		$tpl->assign('plugins', $plugins);
-//		
-//		$acl = DevblocksPlatform::getAclRegistry();
-//		$tpl->assign('acl', $acl);
-//
-//		$workers = DAO_Worker::getAllActive();
-//		$tpl->assign('workers', $workers);
-//		
-//		$role = DAO_WorkerRole::get($id);
-//		$tpl->assign('role', $role);
-//		
-//		$role_privs = DAO_WorkerRole::getRolePrivileges($id);
-//		$tpl->assign('role_privs', $role_privs);
-//		
-//		$role_roster = DAO_WorkerRole::getRoleWorkers($id);
-//		$tpl->assign('role_workers', $role_roster);
-//		
-//		$tpl->assign('license', PortSensorLicense::getInstance());
-//		
-//		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/edit_role.tpl');
-//	}
-//	
-//	// Post
-//	function saveRoleAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		$worker = PortSensorApplication::getActiveWorker();
-//		
-//		if(!$worker || !$worker->is_superuser) {
-//			echo $translate->_('common.access_denied');
-//			return;
-//		}
-//		
-//		@$id = DevblocksPlatform::importGPC($_REQUEST['id'],'integer',0);
-//		@$name = DevblocksPlatform::importGPC($_REQUEST['name'],'string','');
-//		@$worker_ids = DevblocksPlatform::importGPC($_REQUEST['worker_ids'],'array',array());
-//		@$acl_privs = DevblocksPlatform::importGPC($_REQUEST['acl_privs'],'array',array());
-//		@$do_delete = DevblocksPlatform::importGPC($_REQUEST['do_delete'],'integer',0);
-//		
-//		// Sanity checks
-//		if(empty($name))
-//			$name = 'New Role';
-//		
-//		// Delete
-//		if(!empty($do_delete) && !empty($id)) {
-//			DAO_WorkerRole::delete($id);
-//			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
-//		}
-//
-//		$fields = array(
-//			DAO_WorkerRole::NAME => $name,
-//		);
-//			
-//		if(empty($id)) { // create
-//			$id = DAO_WorkerRole::create($fields);
-//					
-//		} else { // edit
-//			DAO_WorkerRole::update($id, $fields);
-//		}
-//
-//		// Update role roster
-//		DAO_WorkerRole::setRoleWorkers($id, $worker_ids);
-//		
-//		// Update role privs
-//		DAO_WorkerRole::setRolePrivileges($id, $acl_privs, true);
-//		
-//		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
-//	}
+			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
+	}
+	
+	function toggleACLAction() {
+		$worker = PortSensorApplication::getActiveWorker();
+		$settings = PortSensorSettings::getInstance();
+		
+		if(!$worker || !$worker->is_superuser) {
+			return;
+		}
+		
+		@$enabled = DevblocksPlatform::importGPC($_REQUEST['enabled'],'integer',0);
+		
+		$settings->set(PortSensorSettings::ACL_ENABLED, $enabled);
+	}
+	
+	function getRoleAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		if(!$worker || !$worker->is_superuser) {
+			echo $translate->_('common.access_denied');
+			return;
+		}
+		
+		@$id = DevblocksPlatform::importGPC($_REQUEST['id']);
+
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->cache_lifetime = "0";
+		$tpl->assign('path', $this->_TPL_PATH);
+
+		$plugins = DevblocksPlatform::getPluginRegistry();
+		$tpl->assign('plugins', $plugins);
+		
+		$acl = DevblocksPlatform::getAclRegistry();
+		$tpl->assign('acl', $acl);
+
+		$workers = DAO_Worker::getAllActive();
+		$tpl->assign('workers', $workers);
+		
+		$role = DAO_WorkerRole::get($id);
+		$tpl->assign('role', $role);
+		
+		$role_privs = DAO_WorkerRole::getRolePrivileges($id);
+		$tpl->assign('role_privs', $role_privs);
+		
+		$role_roster = DAO_WorkerRole::getRoleWorkers($id);
+		$tpl->assign('role_workers', $role_roster);
+		
+		$tpl->assign('license', PortSensorLicense::getInstance());
+		
+		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/edit_role.tpl');
+	}
+	
+	// Post
+	function saveRoleAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		if(!$worker || !$worker->is_superuser) {
+			echo $translate->_('common.access_denied');
+			return;
+		}
+		
+		@$id = DevblocksPlatform::importGPC($_REQUEST['id'],'integer',0);
+		@$name = DevblocksPlatform::importGPC($_REQUEST['name'],'string','');
+		@$worker_ids = DevblocksPlatform::importGPC($_REQUEST['worker_ids'],'array',array());
+		@$acl_privs = DevblocksPlatform::importGPC($_REQUEST['acl_privs'],'array',array());
+		@$do_delete = DevblocksPlatform::importGPC($_REQUEST['do_delete'],'integer',0);
+		
+		// Sanity checks
+		if(empty($name))
+			$name = 'New Role';
+		
+		// Delete
+		if(!empty($do_delete) && !empty($id)) {
+			DAO_WorkerRole::delete($id);
+			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
+		}
+
+		$fields = array(
+			DAO_WorkerRole::NAME => $name,
+		);
+			
+		if(empty($id)) { // create
+			$id = DAO_WorkerRole::create($fields);
+					
+		} else { // edit
+			DAO_WorkerRole::update($id, $fields);
+		}
+
+		// Update role roster
+		DAO_WorkerRole::setRoleWorkers($id, $worker_ids);
+		
+		// Update role privs
+		DAO_WorkerRole::setRolePrivileges($id, $acl_privs, true);
+		
+		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','acl')));
+	}
 	
 	// Ajax
 	function showTabSchedulerAction() {

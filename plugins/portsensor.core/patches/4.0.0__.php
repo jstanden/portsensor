@@ -169,4 +169,61 @@ if(!isset($indexes['source_id'])) {
 	$datadict->ExecuteSQLArray($sql);
 }
 
+// `worker_role` =============================
+if(!isset($tables['worker_role'])) {
+    $flds = "
+		id I4 DEFAULT 0 NOTNULL PRIMARY,
+		name C(255) DEFAULT '' NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('worker_role', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+// `worker_role_acl` =============================
+if(!isset($tables['worker_role_acl'])) {
+    $flds = "
+		role_id I4 DEFAULT 0 NOTNULL,
+		priv_id C(255) DEFAULT '' NOTNULL,
+		has_priv I1 DEFAULT 0 NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('worker_role_acl', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+$columns = $datadict->MetaColumns('worker_role_acl');
+$indexes = $datadict->MetaIndexes('worker_role_acl',false);
+
+if(!isset($indexes['role_id'])) {
+	$sql = $datadict->CreateIndexSQL('role_id','worker_role_acl','role_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['priv_id'])) {
+	$sql = $datadict->CreateIndexSQL('priv_id','worker_role_acl','priv_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+// `worker_to_role` =============================
+if(!isset($tables['worker_to_role'])) {
+    $flds = "
+		worker_id I4 DEFAULT 0 NOTNULL,
+		role_id I4 DEFAULT 0 NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('worker_to_role', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+$columns = $datadict->MetaColumns('worker_to_role');
+$indexes = $datadict->MetaIndexes('worker_to_role',false);
+
+if(!isset($indexes['role_id'])) {
+	$sql = $datadict->CreateIndexSQL('role_id','worker_to_role','role_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['worker_id'])) {
+	$sql = $datadict->CreateIndexSQL('worker_id','worker_to_role','worker_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
 return TRUE;

@@ -426,7 +426,7 @@ class PortSensorSettings {
 	const SMTP_TIMEOUT = 'smtp_timeout';
 	const AUTHORIZED_IPS = 'authorized_ips';
 	const LICENSE = 'license';
-//	const ACL_ENABLED = 'acl_enabled';
+	const ACL_ENABLED = 'acl_enabled';
 	
 	private static $instance = null;
 	
@@ -445,7 +445,7 @@ class PortSensorSettings {
 		self::SMTP_TIMEOUT => 30,
 		self::AUTHORIZED_IPS => '127.0.0.1', 
 		self::LICENSE => '',
-//		self::ACL_ENABLED => 0,
+		self::ACL_ENABLED => 0,
 	);
 
 	/**

@@ -601,6 +601,11 @@ class Model_Worker {
 	}
 };
 
+class Model_WorkerRole {
+	public $id;
+	public $name;
+};
+
 class Ps_WorkerView extends Ps_AbstractView {
 	const DEFAULT_ID = 'workers';
 
