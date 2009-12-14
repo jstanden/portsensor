@@ -2,6 +2,8 @@
 class PsHomePage extends PortSensorPageExtension {
 	private $_TPL_PATH = '';
 	
+	const VIEW_MY_NOTIFICATIONS = 'home_my_notifications';
+	
 	function __construct($manifest) {
 		$this->_TPL_PATH = dirname(dirname(dirname(__FILE__))) . '/templates/';
 		parent::__construct($manifest);
@@ -34,13 +36,13 @@ class PsHomePage extends PortSensorPageExtension {
 		$tpl->assign('request_path', implode('/',$response->path));
 		
 		// Remember the last tab/URL
-//		if(null == ($selected_tab = @$response->path[1])) {
-//			$selected_tab = $visit->get(CerberusVisit::KEY_HOME_SELECTED_TAB, 'events');
-//		}
-//		$tpl->assign('selected_tab', $selected_tab);
+		if(null == ($selected_tab = @$response->path[1])) {
+			$selected_tab = $visit->get(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'notifications');
+		}
+		$tpl->assign('selected_tab', $selected_tab);
 		
-//		$tab_manifests = DevblocksPlatform::getExtensions('cerberusweb.home.tab', false);
-//		$tpl->assign('tab_manifests', $tab_manifests);
+		$tab_manifests = DevblocksPlatform::getExtensions('portsensor.home.tab', false);
+		$tpl->assign('tab_manifests', $tab_manifests);
 		
 		// Custom workspaces
 //		$workspaces = DAO_WorkerWorkspaceList::getWorkspaces($active_worker->id);
@@ -94,6 +96,104 @@ class PsHomePage extends PortSensorPageExtension {
 					call_user_func(array(&$inst, $action.'Action'));
 				}
 		}
+	}
+	
+	function showTabNotificationsAction() {
+		$visit = PortSensorApplication::getVisit();
+		$translate = DevblocksPlatform::getTranslationService();
+		$active_worker = PortSensorApplication::getActiveWorker();
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('path', $this->_TPL_PATH);
+		
+		// Select tab
+		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'notifications');
+		
+		// My Notifications
+		$myNotificationsView = Ps_AbstractViewLoader::getView(self::VIEW_MY_NOTIFICATIONS);
+		
+		$title = vsprintf($translate->_('home.my_notifications.view.title'), $active_worker->getName());
+		
+		if(null == $myNotificationsView) {
+			$myNotificationsView = new Ps_WorkerEventView();
+			$myNotificationsView->id = self::VIEW_MY_NOTIFICATIONS;
+			$myNotificationsView->name = $title;
+			$myNotificationsView->renderLimit = 25;
+			$myNotificationsView->renderPage = 0;
+			$myNotificationsView->renderSortBy = SearchFields_WorkerEvent::CREATED_DATE;
+			$myNotificationsView->renderSortAsc = 0;
+		}
+
+		// Overload criteria
+		$myNotificationsView->name = $title;
+		$myNotificationsView->params = array(
+			SearchFields_WorkerEvent::WORKER_ID => new DevblocksSearchCriteria(SearchFields_WorkerEvent::WORKER_ID,'=',$active_worker->id),
+			SearchFields_WorkerEvent::IS_READ => new DevblocksSearchCriteria(SearchFields_WorkerEvent::IS_READ,'=',0),
+		);
+		/*
+		 * [TODO] This doesn't need to save every display, but it was possible to 
+		 * lose the params in the saved version of the view in the DB w/o recovery.
+		 * This should be moved back into the if(null==...) check in a later build.
+		 */
+		Ps_AbstractViewLoader::setView($myNotificationsView->id,$myNotificationsView);
+		
+		$tpl->assign('view', $myNotificationsView);
+		$tpl->display('file:' . $this->_TPL_PATH . 'home/tabs/my_notifications/index.tpl');
 	}	
 	
+	/**
+	 * Open an event, mark it read, and redirect to its URL.
+	 * Used by Home->Notifications view.
+	 *
+	 */
+	function redirectReadAction() {
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		$request = DevblocksPlatform::getHttpRequest();
+		$stack = $request->path;
+		
+		array_shift($stack); // home
+		array_shift($stack); // redirectReadAction
+		@$id = array_shift($stack); // id
+		
+		if(null != ($event = DAO_WorkerEvent::get($id))) {
+			// Mark as read before we redirect
+			DAO_WorkerEvent::update($id, array(
+				DAO_WorkerEvent::IS_READ => 1
+			));
+			
+			DAO_WorkerEvent::clearCountCache($worker->id);
+
+			session_write_close();
+			header("Location: " . $event->url);
+		}
+		exit;
+	} 
+	
+	function doNotificationsMarkReadAction() {
+		$worker = PortSensorApplication::getActiveWorker();
+		
+		@$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'], 'string', '');
+		@$row_ids = DevblocksPlatform::importGPC($_REQUEST['row_id'],'array',array());
+
+		if(is_array($row_ids) && !empty($row_ids)) {
+			DAO_WorkerEvent::updateWhere(
+				array(
+					DAO_WorkerEvent::IS_READ => 1,
+				), 
+				sprintf("%s = %d AND %s IN (%s)",
+					DAO_WorkerEvent::WORKER_ID,
+					$worker->id,
+					DAO_WorkerEvent::ID,
+					implode(',', $row_ids)
+				)
+			);
+			
+			DAO_WorkerEvent::clearCountCache($worker->id);
+		}
+		
+		$myEventsView = Ps_AbstractViewLoader::getView($view_id);
+		$myEventsView->render();
+	}
+		
 };

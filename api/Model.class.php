@@ -4,6 +4,7 @@ class PortSensorVisit extends DevblocksVisit {
 	private $worker;
 
 //	const KEY_MY_WORKSPACE = 'view_my_workspace';
+	const KEY_HOME_SELECTED_TAB = 'home_selected_tab';
 
 	public function __construct() {
 		$this->worker = null;
@@ -834,5 +835,227 @@ class Ps_WorkerView extends Ps_AbstractView {
 
 		unset($ids);
 	}
+
+};
+
+class Model_WorkerEvent {
+	public $id;
+	public $created_date;
+	public $worker_id;
+	public $title;
+	public $content;
+	public $is_read;
+	public $url;
+};
+
+class Ps_WorkerEventView extends Ps_AbstractView {
+	const DEFAULT_ID = 'worker_events';
+
+	function __construct() {
+		$this->id = self::DEFAULT_ID;
+		$this->name = 'Worker Events';
+		$this->renderLimit = 100;
+		$this->renderSortBy = SearchFields_WorkerEvent::CREATED_DATE;
+		$this->renderSortAsc = false;
+
+		$this->view_columns = array(
+			SearchFields_WorkerEvent::CONTENT,
+			SearchFields_WorkerEvent::CREATED_DATE,
+		);
+		
+		$this->doResetCriteria();
+	}
+
+	function getData() {
+		$objects = DAO_WorkerEvent::search(
+			$this->params,
+			$this->renderLimit,
+			$this->renderPage,
+			$this->renderSortBy,
+			$this->renderSortAsc
+		);
+		return $objects;
+	}
+
+	function render() {
+		$this->_sanitize();
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('id', $this->id);
+		$tpl->assign('view', $this);
+
+		$workers = DAO_Worker::getAll();
+		$tpl->assign('workers', $workers);
+		
+		$tpl->cache_lifetime = "0";
+		$tpl->assign('view_fields', $this->getColumns());
+		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/home/tabs/my_notifications/view.tpl');
+	}
+
+	function renderCriteria($field) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('id', $this->id);
+
+		switch($field) {
+			case SearchFields_WorkerEvent::TITLE:
+			case SearchFields_WorkerEvent::CONTENT:
+			case SearchFields_WorkerEvent::URL:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				break;
+//			case SearchFields_WorkerEvent::ID:
+//			case SearchFields_WorkerEvent::MESSAGE_ID:
+//			case SearchFields_WorkerEvent::TICKET_ID:
+//			case SearchFields_WorkerEvent::FILE_SIZE:
+//				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+//				break;
+			case SearchFields_WorkerEvent::IS_READ:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				break;
+			case SearchFields_WorkerEvent::CREATED_DATE:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				break;
+			case SearchFields_WorkerEvent::WORKER_ID:
+				$workers = DAO_Worker::getAllActive();
+				$tpl->assign('workers', $workers);
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__worker.tpl');
+				break;
+			default:
+				echo '';
+				break;
+		}
+	}
+
+	function renderCriteriaParam($param) {
+		$field = $param->field;
+		$values = !is_array($param->value) ? array($param->value) : $param->value;
+
+		switch($field) {
+			case SearchFields_WorkerEvent::WORKER_ID:
+				$workers = DAO_Worker::getAll();
+				$strings = array();
+
+				foreach($values as $val) {
+					if(empty($val))
+					$strings[] = "Nobody";
+					elseif(!isset($workers[$val]))
+					continue;
+					else
+					$strings[] = $workers[$val]->getName();
+				}
+				echo implode(", ", $strings);
+				break;
+			default:
+				parent::renderCriteriaParam($param);
+				break;
+		}
+	}
+
+	static function getFields() {
+		return SearchFields_WorkerEvent::getFields();
+	}
+
+	static function getSearchFields() {
+		$fields = self::getFields();
+		unset($fields[SearchFields_WorkerEvent::ID]);
+		return $fields;
+	}
+
+	static function getColumns() {
+		$fields = self::getFields();
+		return $fields;
+	}
+
+	function doResetCriteria() {
+		parent::doResetCriteria();
+		
+//		$this->params = array(
+//			SearchFields_WorkerEvent::NUM_NONSPAM => new DevblocksSearchCriteria(SearchFields_WorkerEvent::NUM_NONSPAM,'>',0),
+//		);
+	}
+	
+	function doSetCriteria($field, $oper, $value) {
+		$criteria = null;
+
+		switch($field) {
+			case SearchFields_WorkerEvent::TITLE:
+			case SearchFields_WorkerEvent::CONTENT:
+			case SearchFields_WorkerEvent::URL:
+				// force wildcards if none used on a LIKE
+				if(($oper == DevblocksSearchCriteria::OPER_LIKE || $oper == DevblocksSearchCriteria::OPER_NOT_LIKE)
+				&& false === (strpos($value,'*'))) {
+					$value = '*'.$value.'*';
+				}
+				$criteria = new DevblocksSearchCriteria($field, $oper, $value);
+				break;
+			case SearchFields_WorkerEvent::WORKER_ID:
+				@$worker_ids = DevblocksPlatform::importGPC($_REQUEST['worker_id'],'array',array());
+				$criteria = new DevblocksSearchCriteria($field,$oper,$worker_ids);
+				break;
+				
+			case SearchFields_WorkerEvent::CREATED_DATE:
+				@$from = DevblocksPlatform::importGPC($_REQUEST['from'],'string','');
+				@$to = DevblocksPlatform::importGPC($_REQUEST['to'],'string','');
+
+				if(empty($from)) $from = 0;
+				if(empty($to)) $to = 'today';
+
+				$criteria = new DevblocksSearchCriteria($field,$oper,array($from,$to));
+				break;
+				
+			case SearchFields_WorkerEvent::IS_READ:
+				@$bool = DevblocksPlatform::importGPC($_REQUEST['bool'],'integer',1);
+				$criteria = new DevblocksSearchCriteria($field,$oper,$bool);
+				break;
+		}
+
+		if(!empty($criteria)) {
+			$this->params[$field] = $criteria;
+			$this->renderPage = 0;
+		}
+	}
+
+//	function doBulkUpdate($filter, $do, $ids=array()) {
+//		@set_time_limit(600); // [TODO] Temp!
+//	  
+//		$change_fields = array();
+//
+//		if(empty($do))
+//		return;
+//
+//		if(is_array($do))
+//		foreach($do as $k => $v) {
+//			switch($k) {
+//				case 'banned':
+//					$change_fields[DAO_Address::IS_BANNED] = intval($v);
+//					break;
+//			}
+//		}
+//
+//		$pg = 0;
+//
+//		if(empty($ids))
+//		do {
+//			list($objects,$null) = DAO_Address::search(
+//			$this->params,
+//			100,
+//			$pg++,
+//			SearchFields_Address::ID,
+//			true,
+//			false
+//			);
+//			 
+//			$ids = array_merge($ids, array_keys($objects));
+//			 
+//		} while(!empty($objects));
+//
+//		$batch_total = count($ids);
+//		for($x=0;$x<=$batch_total;$x+=100) {
+//			$batch_ids = array_slice($ids,$x,100);
+//			DAO_Address::update($batch_ids, $change_fields);
+//			unset($batch_ids);
+//		}
+//
+//		unset($ids);
+//	}
 
 };

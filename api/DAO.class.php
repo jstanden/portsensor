@@ -1055,6 +1055,252 @@ class SearchFields_Worker implements IDevblocksSearchFields {
 	}
 };
 
+class DAO_WorkerEvent extends DevblocksORMHelper {
+	const CACHE_COUNT_PREFIX = 'workerevent_count_';
+	
+	const ID = 'id';
+	const CREATED_DATE = 'created_date';
+	const WORKER_ID = 'worker_id';
+	const TITLE = 'title';
+	const CONTENT = 'content';
+	const IS_READ = 'is_read';
+	const URL = 'url';
+
+	static function create($fields) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$id = $db->GenID('worker_event_seq');
+		
+		$sql = sprintf("INSERT INTO worker_event (id) ".
+			"VALUES (%d)",
+			$id
+		);
+		$db->Execute($sql);
+		
+		self::update($id, $fields);
+		
+		// Invalidate the worker notification count cache
+		if(isset($fields[self::WORKER_ID])) {
+			$cache = DevblocksPlatform::getCacheService();
+			self::clearCountCache($fields[self::WORKER_ID]);
+		}
+		
+		return $id;
+	}
+	
+	static function update($ids, $fields) {
+		parent::_update($ids, 'worker_event', $fields);
+	}
+	
+	static function updateWhere($fields, $where) {
+		parent::_updateWhere('worker_event', $fields, $where);
+	}
+	
+	/**
+	 * @param string $where
+	 * @return Model_WorkerEvent[]
+	 */
+	static function getWhere($where=null) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$sql = "SELECT id, created_date, worker_id, title, content, is_read, url ".
+			"FROM worker_event ".
+			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
+			"ORDER BY id asc";
+		$rs = $db->Execute($sql);
+		
+		return self::_getObjectsFromResult($rs);
+	}
+
+	/**
+	 * @param integer $id
+	 * @return Model_WorkerEvent	 */
+	static function get($id) {
+		$objects = self::getWhere(sprintf("%s = %d",
+			self::ID,
+			$id
+		));
+		
+		if(isset($objects[$id]))
+			return $objects[$id];
+		
+		return null;
+	}
+	
+	static function getUnreadCountByWorker($worker_id) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$cache = DevblocksPlatform::getCacheService();
+		
+	    if(null === ($count = $cache->load(self::CACHE_COUNT_PREFIX.$worker_id))) {
+			$sql = sprintf("SELECT count(*) ".
+				"FROM worker_event ".
+				"WHERE worker_id = %d ".
+				"AND is_read = 0",
+				$worker_id
+			);
+			
+			$count = $db->GetOne($sql);
+			$cache->save($count, self::CACHE_COUNT_PREFIX.$worker_id);
+	    }
+		
+		return intval($count);
+	}
+	
+	/**
+	 * @param ADORecordSet $rs
+	 * @return Model_WorkerEvent[]
+	 */
+	static private function _getObjectsFromResult($rs) {
+		$objects = array();
+		
+		while(!$rs->EOF) {
+			$object = new Model_WorkerEvent();
+			$object->id = $rs->fields['id'];
+			$object->created_date = $rs->fields['created_date'];
+			$object->worker_id = $rs->fields['worker_id'];
+			$object->title = $rs->fields['title'];
+			$object->url = $rs->fields['url'];
+			$object->content = $rs->fields['content'];
+			$object->is_read = $rs->fields['is_read'];
+			$objects[$object->id] = $object;
+			$rs->MoveNext();
+		}
+		
+		return $objects;
+	}
+	
+	static function delete($ids) {
+		if(!is_array($ids)) $ids = array($ids);
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		if(empty($ids))
+			return;
+		
+		$ids_list = implode(',', $ids);
+		
+		$db->Execute(sprintf("DELETE FROM worker_event WHERE id IN (%s)", $ids_list));
+		
+		return true;
+	}
+
+	static function clearCountCache($worker_id) {
+		$cache = DevblocksPlatform::getCacheService();
+		$cache->remove(self::CACHE_COUNT_PREFIX.$worker_id);
+	}
+
+    /**
+     * Enter description here...
+     *
+     * @param DevblocksSearchCriteria[] $params
+     * @param integer $limit
+     * @param integer $page
+     * @param string $sortBy
+     * @param boolean $sortAsc
+     * @param boolean $withCounts
+     * @return array
+     */
+    static function search($params, $limit=10, $page=0, $sortBy=null, $sortAsc=null, $withCounts=true) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$fields = SearchFields_WorkerEvent::getFields();
+		
+		// Sanitize
+		if(!isset($fields[$sortBy]))
+			$sortBy=null;
+
+        list($tables,$wheres) = parent::_parseSearchParams($params, array(),$fields,$sortBy);
+		$start = ($page * $limit); // [JAS]: 1-based [TODO] clean up + document
+		$total = -1;
+		
+		$sql = sprintf("SELECT ".
+			"we.id as %s, ".
+			"we.created_date as %s, ".
+			"we.worker_id as %s, ".
+			"we.title as %s, ".
+			"we.content as %s, ".
+			"we.is_read as %s, ".
+			"we.url as %s ".
+			"FROM worker_event we ",
+//			"INNER JOIN team tm ON (tm.id = t.team_id) ".
+			    SearchFields_WorkerEvent::ID,
+			    SearchFields_WorkerEvent::CREATED_DATE,
+			    SearchFields_WorkerEvent::WORKER_ID,
+			    SearchFields_WorkerEvent::TITLE,
+			    SearchFields_WorkerEvent::CONTENT,
+			    SearchFields_WorkerEvent::IS_READ,
+			    SearchFields_WorkerEvent::URL
+			).
+			
+			// [JAS]: Dynamic table joins
+//			(isset($tables['ra']) ? "INNER JOIN requester r ON (r.ticket_id=t.id)" : " ").
+			
+			(!empty($wheres) ? sprintf("WHERE %s ",implode(' AND ',$wheres)) : "").
+			(!empty($sortBy) ? sprintf("ORDER BY %s %s",$sortBy,($sortAsc || is_null($sortAsc))?"ASC":"DESC") : "")
+		;
+		// [TODO] Could push the select logic down a level too
+		if($limit > 0) {
+    		$rs = $db->SelectLimit($sql,$limit,$start) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+		} else {
+		    $rs = $db->Execute($sql) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+            $total = $rs->RecordCount();
+		}
+		
+		$results = array();
+		
+		if(is_a($rs,'ADORecordSet'))
+		while(!$rs->EOF) {
+			$result = array();
+			foreach($rs->fields as $f => $v) {
+				$result[$f] = $v;
+			}
+			$ticket_id = intval($rs->fields[SearchFields_WorkerEvent::ID]);
+			$results[$ticket_id] = $result;
+			$rs->MoveNext();
+		}
+
+		// [JAS]: Count all
+		if($withCounts) {
+		    $rs = $db->Execute($sql);
+		    $total = $rs->RecordCount();
+		}
+		
+		return array($results,$total);
+    }
+	
+};
+
+class SearchFields_WorkerEvent implements IDevblocksSearchFields {
+	// Worker Event
+	const ID = 'we_id';
+	const CREATED_DATE = 'we_created_date';
+	const WORKER_ID = 'we_worker_id';
+	const TITLE = 'we_title';
+	const CONTENT = 'we_content';
+	const IS_READ = 'we_is_read';
+	const URL = 'we_url';
+	
+	/**
+	 * @return DevblocksSearchField[]
+	 */
+	static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		$columns = array(
+			self::ID => new DevblocksSearchField(self::ID, 'we', 'id', null, $translate->_('worker_event.id')),
+			self::CREATED_DATE => new DevblocksSearchField(self::CREATED_DATE, 'we', 'created_date', null, $translate->_('worker_event.created_date')),
+			self::WORKER_ID => new DevblocksSearchField(self::WORKER_ID, 'we', 'worker_id', null, $translate->_('worker_event.worker_id')),
+			self::TITLE => new DevblocksSearchField(self::TITLE, 'we', 'title', null, $translate->_('worker_event.title')),
+			self::CONTENT => new DevblocksSearchField(self::CONTENT, 'we', 'content', null, $translate->_('worker_event.content')),
+			self::IS_READ => new DevblocksSearchField(self::IS_READ, 'we', 'is_read', null, $translate->_('worker_event.is_read')),
+			self::URL => new DevblocksSearchField(self::URL, 'we', 'url', null, $translate->_('common.url')),
+		);
+		
+		// Sort by label (translation-conscious)
+		uasort($columns, create_function('$a, $b', "return strcasecmp(\$a->db_label,\$b->db_label);\n"));
+
+		return $columns;		
+	}
+};
+
 class DAO_WorkerPref extends DevblocksORMHelper {
     const CACHE_PREFIX = 'ps_workerpref_';
     

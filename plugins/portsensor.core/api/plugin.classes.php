@@ -170,14 +170,14 @@ class PsPageController extends DevblocksControllerExtension {
 //			$tour_enabled = intval(DAO_WorkerPref::get($active_worker->id, 'assist_mode', 1));
 //			if(DEMO_MODE) $tour_enabled = 1; // override for DEMO
 
-//			$keyboard_shortcuts = intval(DAO_WorkerPref::get($active_worker->id,'keyboard_shortcuts',1));
-//			$tpl->assign('pref_keyboard_shortcuts', $keyboard_shortcuts);			
+			$keyboard_shortcuts = intval(DAO_WorkerPref::get($active_worker->id,'keyboard_shortcuts',1));
+			$tpl->assign('pref_keyboard_shortcuts', $keyboard_shortcuts);			
 			
 //	    	$active_worker_memberships = $active_worker->getMemberships();
 //	    	$tpl->assign('active_worker_memberships', $active_worker_memberships);
 			
-//			$unread_notifications = DAO_WorkerEvent::getUnreadCountByWorker($active_worker->id);
-//			$tpl->assign('active_worker_notify_count', $unread_notifications);
+			$unread_notifications = DAO_WorkerEvent::getUnreadCountByWorker($active_worker->id);
+			$tpl->assign('active_worker_notify_count', $unread_notifications);
 			
 			DAO_Worker::logActivity($active_worker->id, $page->getActivity());
 		}

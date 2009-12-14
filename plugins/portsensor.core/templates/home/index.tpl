@@ -15,7 +15,7 @@ var tabView = new YAHOO.widget.TabView();
 {literal}
 tabView.addTab( new YAHOO.widget.Tab({
     label: '{/literal}{$translate->_('home.tab.notifications')|escape:'quotes'}{literal}',
-    dataSrc: '{/literal}{devblocks_url}ajax.php?c=home&a=showNotificationsTab&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
+    dataSrc: '{/literal}{devblocks_url}ajax.php?c=home&a=showTabNotifications&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
     cacheData: false,
     {/literal}active: {if empty($selected_tab) || 'notifications'==$selected_tab}true{else}false{/if}{literal}
 }));

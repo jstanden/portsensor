@@ -108,6 +108,9 @@
 		<tu tuid='common.synchronize'>
 			<tuv xml:lang="en_US"><seg>Synchronize</seg></tuv>
 		</tu>
+		<tu tuid='common.url'>
+			<tuv xml:lang="en_US"><seg>URL</seg></tuv>
+		</tu>
 		<tu tuid='common.yes'>
 			<tuv xml:lang="en_US"><seg>yes</seg></tuv>
 		</tu>
@@ -135,6 +138,9 @@
 
 		<!-- Header -->
 
+		<tu tuid='header.notifications.unread'>
+			<tuv xml:lang="en_US"><seg>%s unread notification(s)</seg></tuv>
+		</tu>
 		<tu tuid='header.not_signed_on'>
 			<tuv xml:lang="en_US"><seg>Not signed on</seg></tuv>
 		</tu>
@@ -146,6 +152,19 @@
 		</tu>
 		<tu tuid='header.signon'>
 			<tuv xml:lang="en_US"><seg>Sign on</seg></tuv>
+		</tu>
+
+		<!-- Home -->
+		
+		<tu tuid='home.my_notifications.view.title'>
+			<tuv xml:lang="en_US"><seg>Notifications for %s</seg></tuv>
+		</tu>
+		<tu tuid='home.my_notifications.button.mark_read'>
+			<tuv xml:lang="en_US"><seg>Mark Read</seg></tuv>
+		</tu>
+
+		<tu tuid='home.tab.notifications'>
+			<tuv xml:lang="en_US"><seg>Notifications</seg></tuv>
 		</tu>
 
 		<!-- Login -->
@@ -346,6 +365,27 @@ For example: *receipt*</seg></tuv>
 		</tu>
 		<tu tuid='worker.title'>
 			<tuv xml:lang="en_US"><seg>Title</seg></tuv>
+		</tu>
+
+		<!-- Worker Event -->
+
+		<tu tuid='worker_event.id'>
+			<tuv xml:lang="en_US"><seg>ID</seg></tuv>
+		</tu>
+		<tu tuid='worker_event.content'>
+			<tuv xml:lang="en_US"><seg>Content</seg></tuv>
+		</tu>
+		<tu tuid='worker_event.created_date'>
+			<tuv xml:lang="en_US"><seg>Created</seg></tuv>
+		</tu>
+		<tu tuid='worker_event.is_read'>
+			<tuv xml:lang="en_US"><seg>Read</seg></tuv>
+		</tu>
+		<tu tuid='worker_event.title'>
+			<tuv xml:lang="en_US"><seg>Title</seg></tuv>
+		</tu>
+		<tu tuid='worker_event.worker_id'>
+			<tuv xml:lang="en_US"><seg>Worker</seg></tuv>
 		</tu>
 
 	</body>
