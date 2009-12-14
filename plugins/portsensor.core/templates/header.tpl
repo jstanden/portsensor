@@ -14,7 +14,7 @@
   <link type="image/x-icon" rel="shortcut icon" href="{devblocks_url}favicon.ico{/devblocks_url}">
   <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=scripts/yui/container/assets/skins/sam/container.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">
   <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=scripts/yui/tabview/assets/skins/sam/tabview.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">
-  <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=css/portsensor.css?v={$smarty.const.APP_BUILD}{/devblocks_url}">
+  <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=css/portsensor.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">
 
   {*
   <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=scripts/yui/calendar/assets/skins/sam/calendar.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">
