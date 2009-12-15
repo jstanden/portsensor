@@ -32,8 +32,8 @@
 	
 		<!-- Config Tabs -->
 		
-		<extension point="portsensor.config.tab">
-			<id>translators.config.tab</id>
+		<extension point="portsensor.setup.tab">
+			<id>translators.setup.tab</id>
 			<name>Translators Tab</name>
 			<class>
 				<file>api/App.php</file>

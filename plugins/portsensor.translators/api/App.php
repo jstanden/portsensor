@@ -1,6 +1,6 @@
 <?php
 class PsTranslatorsConfigTab extends Extension_SetupTab {
-	const ID = 'translators.config.tab';
+	const ID = 'translators.setup.tab';
 	
 	function showTab() {
 		$settings = PortSensorSettings::getInstance();

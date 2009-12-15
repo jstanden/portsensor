@@ -39,7 +39,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 			$tpl->assign('install_dir_warning', true);
 		}
 		
-		$tab_manifests = DevblocksPlatform::getExtensions('portsensor.config.tab', false);
+		$tab_manifests = DevblocksPlatform::getExtensions('portsensor.setup.tab', false);
 		uasort($tab_manifests, create_function('$a, $b', "return strcasecmp(\$a->name,\$b->name);\n"));
 		$tpl->assign('tab_manifests', $tab_manifests);
 		
