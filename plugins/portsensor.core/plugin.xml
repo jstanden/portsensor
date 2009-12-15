@@ -86,18 +86,16 @@
 	<extensions>
 
 		<!-- Event Listeners -->
-		<!--
 		<extension point="devblocks.listener.event">
 			<id>portsensor.listeners.event</id>
 			<name>Global Event Listener</name>
 			<class>
 				<file>api/listeners.classes.php</file>
-				<name>ChCoreEventListener</name>
+				<name>PsCoreEventListener</name>
 			</class>
 			<params>
 			</params>
 		</extension>
-		-->
  
 		<!-- Controllers -->
 		
@@ -177,18 +175,16 @@
 	
 		<!-- Http Listeners -->
 		
-		<!--
 		<extension point="devblocks.listener.http">
 			<id>core.listeners.tour</id>
-			<name>Core Helpdesk Tour</name>
+			<name>Core App Tour</name>
 			<class>
 				<file>api/listeners.classes.php</file>
-				<name>ChCoreTour</name>
+				<name>PsCoreTour</name>
 			</class>
 			<params>
 			</params>
 		</extension>
-		-->
 	
 		<!-- Pages -->
 

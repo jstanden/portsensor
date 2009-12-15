@@ -10,7 +10,7 @@
 | ______________________________________________________________________
 |	http://www.cerberusweb.com	  http://www.webgroupmedia.com/
 ***********************************************************************/
-define("APP_BUILD", 43);
+define("APP_BUILD", 44);
 
 require_once(APP_PATH . "/api/DAO.class.php");
 require_once(APP_PATH . "/api/Model.class.php");
@@ -238,24 +238,24 @@ class PortSensorApplication extends DevblocksApplication {
 	/**
 	 * @return DevblocksTourCallout[]
 	 */
-//	static function getTourCallouts() {
-//	    static $callouts = null;
-//	    
-//	    if(!is_null($callouts))
-//	        return $callouts;
-//	    
-//	    $callouts = array();
-//	        
-//	    $listenerManifests = DevblocksPlatform::getExtensions('devblocks.listener.http');
-//	    foreach($listenerManifests as $listenerManifest) { /* @var $listenerManifest DevblocksExtensionManifest */
-//	         $inst = $listenerManifest->createInstance(); /* @var $inst IDevblocksTourListener */
-//	         
-//	         if($inst instanceof IDevblocksTourListener)
-//	             $callouts += $inst->registerCallouts();
-//	    }
-//	    
-//	    return $callouts;
-//	}
+	static function getTourCallouts() {
+	    static $callouts = null;
+	    
+	    if(!is_null($callouts))
+	        return $callouts;
+	    
+	    $callouts = array();
+	        
+	    $listenerManifests = DevblocksPlatform::getExtensions('devblocks.listener.http');
+	    foreach($listenerManifests as $listenerManifest) { /* @var $listenerManifest DevblocksExtensionManifest */
+	         $inst = $listenerManifest->createInstance(); /* @var $inst IDevblocksTourListener */
+	         
+	         if($inst instanceof IDevblocksTourListener)
+	             $callouts += $inst->registerCallouts();
+	    }
+	    
+	    return $callouts;
+	}
 	
 	static function stripHTML($str) {
 		// Strip all CRLF and tabs, spacify </TD>
