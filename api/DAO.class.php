@@ -1066,6 +1066,19 @@ class DAO_WorkerEvent extends DevblocksORMHelper {
 	const IS_READ = 'is_read';
 	const URL = 'url';
 
+	public static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		return array(
+			'id' => $translate->_('worker_event.id'),
+			'created_date' => $translate->_('worker_event.created_date'),
+			'worker_id' => $translate->_('worker_event.worker_id'),
+			'title' => $translate->_('worker_event.title'),
+			'content' => $translate->_('worker_event.content'),
+			'is_read' => $translate->_('worker_event.is_read'),
+			'url' => $translate->_('worker_event.url'),
+		);
+	}
+	
 	static function create($fields) {
 		$db = DevblocksPlatform::getDatabaseService();
 		

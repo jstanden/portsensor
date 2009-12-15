@@ -583,6 +583,29 @@ class Model_Worker {
 	public $last_activity;
 	public $is_disabled;
 	
+	function hasPriv($priv_id) {
+		// We don't need to do much work if we're a superuser
+		if($this->is_superuser)
+			return true;
+		
+		$settings = PortSensorSettings::getInstance();
+		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
+			
+		// ACL is a paid feature (please respect the licensing and support the project!)
+		$license = PortSensorLicense::getInstance();
+		if(!$acl_enabled || !isset($license['serial']) || isset($license['a']))
+			return ("core.setup"==substr($priv_id,0,11)) ? false : true;
+			
+		// Check the aggregated worker privs from roles
+		$acl = DAO_WorkerRole::getACL();
+		$privs_by_worker = $acl[DAO_WorkerRole::CACHE_KEY_PRIVS_BY_WORKER];
+		
+		if(!empty($priv_id) && isset($privs_by_worker[$this->id][$priv_id]))
+			return true;
+			
+		return false;
+	}
+	
 	function getName($reverse=false) {
 		if(!$reverse) {
 			$name = sprintf("%s%s%s",

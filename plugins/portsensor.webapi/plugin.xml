@@ -1,0 +1,51 @@
+<!DOCTYPE plugin SYSTEM "../../libs/devblocks/plugin.dtd">
+<plugin>
+	<id>portsensor.webapi</id>
+	<name>[PortSensor] Web Services API</name>
+	<description>A RESTful XML/JSON interface for integrating PortSensor with other applications and tools.</description>
+	<author>WebGroup Media, LLC.</author>
+	<revision>0</revision>
+	<link>http://wiki.portsensor.com/wiki/Web-API</link>
+
+	<!-- Exported Classes -->
+	
+	<class_loader>
+		<!--
+		<file path="api/Plugin.php">
+			<class name="ChRestPlugin" />
+		</file>
+		-->
+	</class_loader>
+
+	<!-- Extensions -->
+	
+	<extensions>
+		<!-- Translations -->
+		
+		<extension point="devblocks.i18n.strings">
+			<id>webapi.translations</id>
+			<name>Web API Strings</name>
+			<class>
+				<file>api/Plugin.php</file>
+				<name>PsWebApiTranslations</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+
+		<!-- Controllers -->
+	
+		<extension point="devblocks.controller">
+			<id>portsensor.controller.rest</id>
+			<name>REST Controller</name>
+			<class>
+				<file>api/App.php</file>
+				<name>PsRestFrontController</name>
+			</class>
+			<params>
+				<param key="uri" value="webapi" />
+			</params>
+		</extension>
+		
+	</extensions>
+</plugin>
