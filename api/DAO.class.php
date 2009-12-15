@@ -875,6 +875,8 @@ class DAO_Worker extends Ps_ORMHelper {
 		
 		$db->Execute(sprintf("DELETE FROM worker WHERE id IN (%s)", $ids_list));
 		
+		self::clearCache();
+		
 		return true;
 	}
 	
