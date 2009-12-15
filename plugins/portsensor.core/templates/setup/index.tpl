@@ -70,7 +70,7 @@ tabView.addTab( new YAHOO.widget.Tab({
 {foreach from=$tab_manifests item=tab_manifest name=setup_tabs}
 {if !isset($tab_manifest->params.acl) || $worker->hasPriv($tab_manifest->params.acl)}
 {literal}tabView.addTab(new YAHOO.widget.Tab({{/literal}
-    label: '{$tab_manifest->params.title|devblocks_translate|escape:'quotes'}',
+    label: '<i>{$tab_manifest->params.title|devblocks_translate|escape:'quotes'}</i>',
     dataSrc: '{devblocks_url}ajax.php?c=setup&a=showTab&ext_id={$tab_manifest->id}&request={$request_path|escape:'url'}{/devblocks_url}',
     {if $tab_selected==$tab_manifest->params.uri}active: true,{/if}
     cacheData: false
