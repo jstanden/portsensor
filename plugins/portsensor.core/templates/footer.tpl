@@ -3,7 +3,7 @@
 <table align="center" border="0" cellpadding="2" cellspacing="0" width="100%">
     <tr>
       <td nowrap="nowrap" valign="top">
-      	<b>PortSensor</b>&trade; &copy; 2006-2010, WebGroup Media&trade; LLC - Version 4.0 Dev (Build {$smarty.const.APP_BUILD}) 
+      	<b>PortSensor</b>&trade; &copy; 2006-2010, WebGroup Media&trade; LLC - Version 4.0 Beta Dev (Build {$smarty.const.APP_BUILD}) 
       	<br>
       	{if (1 || $debug) && !empty($render_time)}
 		<span style="color:rgb(180,180,180);font-size:90%;">
