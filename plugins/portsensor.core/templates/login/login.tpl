@@ -4,6 +4,7 @@
 <form action="{devblocks_url}{/devblocks_url}" method="post">
 <input type="hidden" name="c" value="login">
 <input type="hidden" name="a" value="authenticate">
+<input type="hidden" name="original_path" value="{$original_path}">
 
 <table cellpadding="0" cellspacing="2" border="0">
 	<tr>

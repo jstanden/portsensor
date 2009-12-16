@@ -47,6 +47,8 @@ class PsSignInPage extends PortSensorPageExtension {
                 
             default:
 				$tpl = DevblocksPlatform::getTemplateService();
+				@$redir_path = explode('/',urldecode(DevblocksPlatform::importGPC($_REQUEST["url"],"string","")));
+				$tpl->assign('original_path', (count($redir_path)==0) ? 'login' : implode(',',$redir_path));
 				$tpl->display('file:' . $this->_TPL_PATH . 'login/login.tpl');
                 break;
         }
@@ -90,11 +92,10 @@ class PsSignInPage extends PortSensorPageExtension {
 				$_SESSION['locale'] = $lang_code;
 				DevblocksPlatform::setLocale($lang_code);
 			}
-			
-			if(!empty($devblocks_response->path) && $devblocks_response->path[0]=='login') {
-//				$tour_enabled = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));
-//				$next_page = ($tour_enabled) ?  'welcome' : 'home';
-				$next_page = 'home';				
+
+			if(empty($devblocks_response->path)) {
+				$tour_enabled = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));
+				$next_page = ($tour_enabled) ?  'welcome' : 'home';
 				$devblocks_response = new DevblocksHttpResponse(array($next_page));
 			}
 			
