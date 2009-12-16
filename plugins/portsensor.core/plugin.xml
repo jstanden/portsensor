@@ -188,20 +188,18 @@
 	
 		<!-- Pages -->
 
-		<!--
-		<extension point="cerberusweb.page">
+		<extension point="portsensor.page">
 			<id>core.page.welcome</id>
 			<name>Welcome Page</name>
 			<class>
 				<file>api/uri/welcome.php</file>
-				<name>ChWelcomePage</name>
+				<name>PsWelcomePage</name>
 			</class>
 			<params>
 				<param key="uri" value="welcome" />
 				<param key="menutitle" value="" />
 			</params>
 		</extension>
-		-->
 
 		<extension point="portsensor.page">
 			<id>core.page.home</id>
