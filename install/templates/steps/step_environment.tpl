@@ -73,6 +73,15 @@
 <br>
 <br>
 
+<b>PHP Extension (cURL)... </b> 
+{if !$results.ext_curl}
+	<span class="bad">Error! PHP must have the 'cURL' extension enabled.</span>
+{else}
+	<span class="good">Passed!</span>
+{/if}
+<br>
+<br>
+
 <b>PHP Extension (XML)... </b> 
 {if !$results.ext_xml}
 	<span class="bad">Error! PHP must have the 'XML' extension enabled.</span>

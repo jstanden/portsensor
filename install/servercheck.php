@@ -112,6 +112,14 @@ if(extension_loaded("mbstring")) {
 	$fails++;
 }
 
+// Extension: cURL
+if(extension_loaded("curl")) {
+	$results['ext_curl'] = true;
+} else {
+	$results['ext_curl'] = false;
+	$fails++;
+}
+
 // Extension: XML
 if(extension_loaded("xml")) {
 	$results['ext_xml'] = true;
@@ -191,6 +199,9 @@ if($fails) {
 	if(!$results['ext_mbstring'])
 		echo "<li>The 'MbString' PHP extension is required.  Please enable it.</li>";
 		
+	if(!$results['ext_curl'])
+		echo "<li>The 'cURL' PHP extension is required.  Please enable it.</li>";
+
 	if(!$results['ext_xml'])
 		echo "<li>The 'XML' PHP extension is required.  Please enable it.</li>";
 		

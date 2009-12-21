@@ -222,6 +222,14 @@ switch($step) {
 			$fails++;
 		}
 		
+		// Extension: cURL
+		if(extension_loaded("curl")) {
+			$results['ext_curl'] = true;
+		} else {
+			$results['ext_curl'] = false;
+			$fails++;
+		}
+		
 		// Extension: XML
 		if(extension_loaded("xml")) {
 			$results['ext_xml'] = true;

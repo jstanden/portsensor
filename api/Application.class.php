@@ -194,6 +194,12 @@ class PortSensorApplication extends DevblocksApplication {
 			$errors[] = "The 'XML' PHP extension is required.  Please enable it.";
 		}
 		
+		// Extension: cURL
+		if(extension_loaded("curl")) {
+		} else {
+			$errors[] = "The 'cURL' PHP extension is required.  Please enable it.";
+		}
+		
 		// Extension: SimpleXML
 		if(extension_loaded("simplexml")) {
 		} else {
