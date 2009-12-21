@@ -667,6 +667,262 @@ class DAO_CustomFieldValue extends DevblocksORMHelper {
 	}
 };
 
+class DAO_Sensor extends Ps_ORMHelper {
+	const ID = 'id';
+	const NAME = 'name';
+	const EXTENSION_ID = 'extension_id';
+	const STATUS = 'status';
+	const UPDATED_DATE = 'updated_date';
+	const METRIC_TYPE = 'metric_type';
+	const METRIC = 'metric';
+	const OUTPUT = 'output';
+	const IS_DISABLED = 'is_disabled';
+	const FAIL_COUNT = 'fail_count';
+
+	static function create($fields) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$id = $db->GenID('sensor_seq');
+		
+		$sql = sprintf("INSERT INTO sensor (id) ".
+			"VALUES (%d)",
+			$id
+		);
+		$db->Execute($sql);
+		
+		self::update($id, $fields);
+		
+		return $id;
+	}
+	
+	static function update($ids, $fields) {
+		parent::_update($ids, 'sensor', $fields);
+	}
+	
+	/**
+	 * @param string $where
+	 * @return Model_Sensor[]
+	 */
+	static function getWhere($where=null) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$sql = "SELECT id, name, extension_id, updated_date, status, metric_type, metric, output, is_disabled, fail_count ".
+			"FROM sensor ".
+			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
+			"ORDER BY id asc";
+		$rs = $db->Execute($sql);
+		
+		return self::_getObjectsFromResult($rs);
+	}
+
+	/**
+	 * @param integer $id
+	 * @return Model_Sensor	 */
+	static function get($id) {
+		$objects = self::getWhere(sprintf("%s = %d",
+			self::ID,
+			$id
+		));
+		
+		if(isset($objects[$id]))
+			return $objects[$id];
+		
+		return null;
+	}
+	
+	/**
+	 * @param ADORecordSet $rs
+	 * @return Model_Sensor[]
+	 */
+	static private function _getObjectsFromResult($rs) {
+		$objects = array();
+		
+		while(!$rs->EOF) {
+			$object = new Model_Sensor();
+			$object->id = $rs->fields['id'];
+			$object->name = $rs->fields['name'];
+			$object->extension_id = $rs->fields['extension_id'];
+			$object->updated_date = $rs->fields['updated_date'];
+			$object->status = $rs->fields['status'];
+			$object->metric_type = $rs->fields['metric_type'];
+			$object->metric = $rs->fields['metric'];
+			$object->output = $rs->fields['output'];
+			$object->is_disabled = $rs->fields['is_disabled'];
+			$object->fail_count = $rs->fields['fail_count'];
+			$objects[$object->id] = $object;
+			$rs->MoveNext();
+		}
+		
+		return $objects;
+	}
+	
+	static function delete($ids) {
+		if(!is_array($ids)) $ids = array($ids);
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		if(empty($ids))
+			return;
+		
+		$ids_list = implode(',', $ids);
+		
+		$db->Execute(sprintf("DELETE FROM sensor WHERE id IN (%s)", $ids_list));
+		
+		return true;
+	}
+
+    /**
+     * Enter description here...
+     *
+     * @param DevblocksSearchCriteria[] $params
+     * @param integer $limit
+     * @param integer $page
+     * @param string $sortBy
+     * @param boolean $sortAsc
+     * @param boolean $withCounts
+     * @return array
+     */
+    static function search($columns, $params, $limit=10, $page=0, $sortBy=null, $sortAsc=null, $withCounts=true) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$fields = SearchFields_Sensor::getFields();
+		
+		// Sanitize
+		if(!isset($fields[$sortBy]))
+			$sortBy=null;
+
+        list($tables,$wheres) = parent::_parseSearchParams($params, $columns, $fields, $sortBy);
+		$start = ($page * $limit); // [JAS]: 1-based [TODO] clean up + document
+		$total = -1;
+		
+		$select_sql = sprintf("SELECT ".
+			"s.id as %s, ".
+			"s.name as %s, ".
+			"s.extension_id as %s, ".
+			"s.updated_date as %s, ".
+			"s.status as %s, ".
+			"s.metric_type as %s, ".
+			"s.metric as %s, ".
+			"s.output as %s, ".
+			"s.is_disabled as %s, ".
+			"s.fail_count as %s ",
+			    SearchFields_Sensor::ID,
+			    SearchFields_Sensor::NAME,
+			    SearchFields_Sensor::EXTENSION_ID,
+			    SearchFields_Sensor::UPDATED_DATE,
+			    SearchFields_Sensor::STATUS,
+			    SearchFields_Sensor::METRIC_TYPE,
+			    SearchFields_Sensor::METRIC,
+			    SearchFields_Sensor::OUTPUT,
+			    SearchFields_Sensor::IS_DISABLED,
+			    SearchFields_Sensor::FAIL_COUNT
+			);
+			
+		$join_sql = "FROM sensor s ";
+		
+		// Custom field joins
+		list($select_sql, $join_sql, $has_multiple_values) = self::_appendSelectJoinSqlForCustomFieldTables(
+			$tables,
+			$params,
+			's.id',
+			$select_sql,
+			$join_sql
+		);
+				
+		$where_sql = "".
+			(!empty($wheres) ? sprintf("WHERE %s ",implode(' AND ',$wheres)) : "");
+			
+		$sort_sql = (!empty($sortBy)) ? sprintf("ORDER BY %s %s ",$sortBy,($sortAsc || is_null($sortAsc))?"ASC":"DESC") : " ";
+			
+		$sql = 
+			$select_sql.
+			$join_sql.
+			$where_sql.
+			($has_multiple_values ? 'GROUP BY s.id ' : '').
+			$sort_sql;
+			
+		// [TODO] Could push the select logic down a level too
+		if($limit > 0) {
+    		$rs = $db->SelectLimit($sql,$limit,$start) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+		} else {
+		    $rs = $db->Execute($sql) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+            $total = $rs->RecordCount();
+		}
+		
+		$results = array();
+		
+		if(is_a($rs,'ADORecordSet'))
+		while(!$rs->EOF) {
+			$result = array();
+			foreach($rs->fields as $f => $v) {
+				$result[$f] = $v;
+			}
+			$object_id = intval($rs->fields[SearchFields_Sensor::ID]);
+			$results[$object_id] = $result;
+			$rs->MoveNext();
+		}
+
+		// [JAS]: Count all
+		if($withCounts) {
+			$count_sql = 
+				($has_multiple_values ? "SELECT COUNT(DISTINCT s.id) " : "SELECT COUNT(s.id) ").
+				$join_sql.
+				$where_sql;
+			$total = $db->GetOne($count_sql);
+		}
+		
+		return array($results,$total);
+    }	
+	
+};
+
+class SearchFields_Sensor implements IDevblocksSearchFields {
+	// Sensor
+	const ID = 's_id';
+	const NAME = 's_name';
+	const EXTENSION_ID = 's_extension_id';
+	const UPDATED_DATE = 's_updated_date';
+	const STATUS = 's_status';
+	const METRIC_TYPE = 's_metric_type';
+	const METRIC = 's_metric';
+	const OUTPUT = 's_output';
+	const IS_DISABLED = 's_is_disabled';
+	const FAIL_COUNT = 's_fail_count';
+	
+	/**
+	 * @return DevblocksSearchField[]
+	 */
+	static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		$columns = array(
+			self::ID => new DevblocksSearchField(self::ID, 's', 'id', null, $translate->_('common.id')),
+			self::NAME => new DevblocksSearchField(self::NAME, 's', 'name', null, $translate->_('sensor.name')),
+			self::EXTENSION_ID => new DevblocksSearchField(self::EXTENSION_ID, 's', 'extension_id', null, $translate->_('sensor.extension_id')),
+			self::UPDATED_DATE => new DevblocksSearchField(self::UPDATED_DATE, 's', 'updated_date', null, $translate->_('sensor.updated_date')),
+			self::STATUS => new DevblocksSearchField(self::STATUS, 's', 'status', null, $translate->_('sensor.status')),
+			self::METRIC_TYPE => new DevblocksSearchField(self::METRIC_TYPE, 's', 'metric_type', null, $translate->_('sensor.metric_type')),
+			self::METRIC => new DevblocksSearchField(self::METRIC, 's', 'metric', null, $translate->_('sensor.metric')),
+			self::OUTPUT => new DevblocksSearchField(self::OUTPUT, 's', 'output', null, $translate->_('sensor.output')),
+			self::IS_DISABLED => new DevblocksSearchField(self::IS_DISABLED, 's', 'is_disabled', null, $translate->_('sensor.is_disabled')),
+			self::FAIL_COUNT => new DevblocksSearchField(self::FAIL_COUNT, 's', 'fail_count', null, $translate->_('sensor.fail_count')),
+		);
+		
+		// Custom Fields
+		$fields = DAO_CustomField::getBySource(PsCustomFieldSource_Sensor::ID);
+
+		if(is_array($fields))
+		foreach($fields as $field_id => $field) {
+			$key = 'cf_'.$field_id;
+			$columns[$key] = new DevblocksSearchField($key,$key,'field_value',null,$field->name);
+		}
+		
+		// Sort by label (translation-conscious)
+		uasort($columns, create_function('$a, $b', "return strcasecmp(\$a->db_label,\$b->db_label);\n"));
+
+		return $columns;		
+	}
+};
+
+
 /**
  * Global Settings DAO
  */

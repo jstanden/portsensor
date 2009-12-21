@@ -80,3 +80,64 @@ class HeartbeatCron extends PortSensorCronExtension {
 	}
 };
 
+/**
+ */
+class Cron_SensorRunner extends PortSensorCronExtension {
+	function run() {
+		$logger = DevblocksPlatform::getConsoleLog();
+		$logger->info("[Sensors] Starting...");
+
+		// Only pull enabled sensors with an extension_id
+		$sensors = DAO_Sensor::getWhere(
+			sprintf("%s=%d AND %s!=''", 
+				DAO_Sensor::IS_DISABLED,
+				0,
+				DAO_Sensor::EXTENSION_ID
+			)
+		);
+		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', true);
+		
+		if(is_array($sensors))
+		foreach($sensors as $sensor) {
+			if(!empty($sensor->extension_id) && isset($sensor_types[$sensor->extension_id])) {
+				$runner = $sensor_types[$sensor->extension_id]; 
+				$output = sprintf("%s (%s)",
+					$sensor->name,
+					$sensor->extension_id
+				);
+				if(method_exists($runner,'run')) {
+					$fields = array();
+					$success = $runner->run($sensor, $fields);
+					
+					$fields[DAO_Sensor::UPDATED_DATE] = time();
+					$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
+					
+					DAO_Sensor::update($sensor->id, $fields);
+				}
+				$logger->info("[Sensors] Running $output... $result");
+			}	
+		}
+		
+		// Sensor Runner Event
+		$eventMgr = DevblocksPlatform::getEventService();
+		$eventMgr->trigger(
+			new Model_DevblocksEvent(
+	            'cron.sensors',
+				array(
+				)
+			)
+		);
+		
+		$logger->info("[Sensors] Finished!");
+	}
+
+	function configure($instance) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->cache_lifetime = "0";
+		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
+		$tpl->assign('path', $tpl_path);
+
+		$tpl->display($tpl_path . 'cron/sensors/config.tpl');
+	}
+};
+

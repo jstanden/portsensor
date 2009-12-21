@@ -3,6 +3,7 @@ class PsHomePage extends PortSensorPageExtension {
 	private $_TPL_PATH = '';
 	
 	const VIEW_MY_NOTIFICATIONS = 'home_my_notifications';
+	const VIEW_ACTIVE_SENSORS = 'home_sensors';
 	
 	function __construct($manifest) {
 		$this->_TPL_PATH = dirname(dirname(dirname(__FILE__))) . '/templates/';
@@ -195,5 +196,48 @@ class PsHomePage extends PortSensorPageExtension {
 		$myEventsView = Ps_AbstractViewLoader::getView($view_id);
 		$myEventsView->render();
 	}
+
+	function showTabSensorsAction() {
+		$visit = PortSensorApplication::getVisit();
+		$translate = DevblocksPlatform::getTranslationService();
+		$active_worker = PortSensorApplication::getActiveWorker();
 		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('path', $this->_TPL_PATH);
+		
+		// Select tab
+//		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'sensors');
+		
+		// My Notifications
+		$sensorsView = Ps_AbstractViewLoader::getView(self::VIEW_ACTIVE_SENSORS);
+		
+//		$title = vsprintf($translate->_('home.my_notifications.view.title'), $active_worker->getName());
+		
+		if(null == $sensorsView) {
+			$sensorsView = new Ps_SensorView();
+			$sensorsView->id = self::VIEW_ACTIVE_SENSORS;
+//			$sensorsView->name = $title;
+			$sensorsView->renderLimit = 25;
+			$sensorsView->renderPage = 0;
+			$sensorsView->renderSortBy = SearchFields_Sensor::NAME;
+			$sensorsView->renderSortAsc = 1;
+		}
+
+		// Overload criteria
+		$sensorsView->name = 'Active Sensors';
+		$sensorsView->params = array(
+			SearchFields_Sensor::IS_DISABLED => new DevblocksSearchCriteria(SearchFields_Sensor::IS_DISABLED,'=',0),
+		);
+		
+		/*
+		 * [TODO] This doesn't need to save every display, but it was possible to 
+		 * lose the params in the saved version of the view in the DB w/o recovery.
+		 * This should be moved back into the if(null==...) check in a later build.
+		 */
+		Ps_AbstractViewLoader::setView($sensorsView->id, $sensorsView);
+		
+		$tpl->assign('view', $sensorsView);
+		$tpl->display('file:' . $this->_TPL_PATH . 'home/tabs/sensors/index.tpl');
+	}
+	
 };

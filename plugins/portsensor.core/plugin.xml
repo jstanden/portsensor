@@ -215,6 +215,19 @@
 		</extension>
 
 		<extension point="portsensor.page">
+			<id>core.page.sensors</id>
+			<name>Sensors Page</name>
+			<class>
+				<file>api/uri/sensors.php</file>
+				<name>PsSensorsPage</name>
+			</class>
+			<params>
+				<param key="uri" value="sensors" />
+				<param key="menutitle" value="core.menu.sensors" />
+			</params>
+		</extension>
+
+		<extension point="portsensor.page">
 			<id>core.page.signin</id>
 			<name>Signin Page</name>
 			<class>
@@ -252,6 +265,32 @@
 			</params>
 		</extension>
 		
+		<!-- Sensor Extensions -->
+		
+		<extension point="portsensor.sensor">
+			<id>sensor.http</id>
+			<name>HTTP</name>
+			<class>
+				<file>api/sensors.classes.php</file>
+				<name>PsHttpSensor</name>
+			</class>
+			<params>
+				<param key="metric_type" value="U" />
+			</params>
+		</extension>
+
+		<extension point="portsensor.sensor">
+			<id>sensor.port</id>
+			<name>Port</name>
+			<class>
+				<file>api/sensors.classes.php</file>
+				<name>PsPortSensor</name>
+			</class>
+			<params>
+				<param key="metric_type" value="U" />
+			</params>
+		</extension>
+
 		<!-- Cron Extensions -->
 		
 		<extension point="portsensor.cron">
@@ -271,6 +310,17 @@
 			<class>
 				<file>api/cron.classes.php</file>
 				<name>HeartbeatCron</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+		
+		<extension point="portsensor.cron">
+			<id>cron.sensors</id>
+			<name>Sensor Runner</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>Cron_SensorRunner</name>
 			</class>
 			<params>
 			</params>

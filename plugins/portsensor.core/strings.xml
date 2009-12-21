@@ -12,6 +12,9 @@
 		<tu tuid='core.menu.preferences'>
 			<tuv xml:lang="en_US"><seg>My Account</seg></tuv>
 		</tu>
+		<tu tuid='core.menu.sensors'>
+			<tuv xml:lang="en_US"><seg>Sensors</seg></tuv>
+		</tu>
 		<tu tuid='core.menu.setup'>
 			<tuv xml:lang="en_US"><seg>Setup</seg></tuv>
 		</tu>
@@ -291,6 +294,46 @@ For example: *receipt*</seg></tuv>
 			<tuv xml:lang="en_US"><seg>values</seg></tuv>
 		</tu>		
 		
+		<!-- Sensor -->
+		
+		<tu tuid='sensor.is_disabled'>
+			<tuv xml:lang="en_US"><seg>Is Disabled</seg></tuv>
+		</tu>
+		<tu tuid='sensor.extension_id'>
+			<tuv xml:lang="en_US"><seg>Type</seg></tuv>
+		</tu>
+		<tu tuid='sensor.name'>
+			<tuv xml:lang="en_US"><seg>Name</seg></tuv>
+		</tu>
+		<tu tuid='sensor.fail_count'>
+			<tuv xml:lang="en_US"><seg># Fails</seg></tuv>
+		</tu>
+		<tu tuid='sensor.metric_type'>
+			<tuv xml:lang="en_US"><seg>Metric Type</seg></tuv>
+		</tu>
+		<tu tuid='sensor.metric'>
+			<tuv xml:lang="en_US"><seg>Metric</seg></tuv>
+		</tu>
+		<tu tuid='sensor.output'>
+			<tuv xml:lang="en_US"><seg>Output</seg></tuv>
+		</tu>
+		<tu tuid='sensor.status'>
+			<tuv xml:lang="en_US"><seg>Status</seg></tuv>
+		</tu>
+		<tu tuid='sensor.updated_date'>
+			<tuv xml:lang="en_US"><seg>Last Updated</seg></tuv>
+		</tu>
+
+		<!-- Sensors -->
+		
+		<tu tuid='sensors.add'>
+			<tuv xml:lang="en_US"><seg>Add Sensor</seg></tuv>
+		</tu>
+
+		<tu tuid='sensors.tab.all_sensors'>
+			<tuv xml:lang="en_US"><seg>All Sensors</seg></tuv>
+		</tu>
+
 		<!-- Setup -->
 		
 		<tu tuid='setup.mail.smtp.failed'>

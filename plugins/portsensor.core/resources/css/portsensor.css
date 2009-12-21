@@ -215,6 +215,10 @@ DIV.subtle2 {
 	color:rgb(200,0,0);
 }
 
+.status_disabled {
+	color:rgb(200,200,200);
+}
+
 /* YUI Tabs */
 .yui-skin-sam .yui-navset .yui-content {
 	padding: 5px;

@@ -1,5 +1,4 @@
 <?php
-
 abstract class PortSensorPageExtension extends DevblocksExtension {
 	function __construct($manifest) {
 		$this->DevblocksExtension($manifest,1);
@@ -14,6 +13,18 @@ abstract class PortSensorPageExtension extends DevblocksExtension {
 	public function getActivity() {
         return new Model_Activity('activity.default');
 	}
+};
+
+abstract class Extension_Sensor extends DevblocksExtension {
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+	
+	/**
+	 * 
+	 * @return array 
+	 */
+	function run(Model_Sensor $sensor) { }
 };
 
 abstract class PortSensorCronExtension extends DevblocksExtension {

@@ -259,4 +259,40 @@ if(!isset($indexes['is_read'])) {
 	$datadict->ExecuteSQLArray($sql);
 }
 
+// `sensor` =============================
+if(!isset($tables['sensor'])) {
+    $flds = "
+		id I4 DEFAULT 0 NOTNULL PRIMARY,
+		name C(255) DEFAULT '' NOTNULL,
+		extension_id C(255) DEFAULT '' NOTNULL,
+		status I1 DEFAULT 0 NOTNULL,
+		updated_date I4 DEFAULT 0 NOTNULL,
+		is_disabled I1 DEFAULT 0 NOTNULL,
+		metric_type C(1) DEFAULT 'T' NOTNULL,
+		metric XL,
+		output XL,
+		fail_count I1 DEFAULT 0 NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('sensor', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+$columns = $datadict->MetaColumns('sensor');
+$indexes = $datadict->MetaIndexes('sensor',false);
+
+if(!isset($indexes['updated_date'])) {
+	$sql = $datadict->CreateIndexSQL('updated_date','sensor','updated_date');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['status'])) {
+	$sql = $datadict->CreateIndexSQL('status','sensor','status');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['is_disabled'])) {
+	$sql = $datadict->CreateIndexSQL('is_disabled','sensor','is_disabled');
+	$datadict->ExecuteSQLArray($sql);
+}
+
 return TRUE;
