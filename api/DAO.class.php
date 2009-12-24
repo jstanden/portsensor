@@ -671,6 +671,7 @@ class DAO_Sensor extends Ps_ORMHelper {
 	const ID = 'id';
 	const NAME = 'name';
 	const EXTENSION_ID = 'extension_id';
+	const PARAMS_JSON = 'params_json';
 	const STATUS = 'status';
 	const UPDATED_DATE = 'updated_date';
 	const METRIC_TYPE = 'metric_type';
@@ -706,7 +707,7 @@ class DAO_Sensor extends Ps_ORMHelper {
 	static function getWhere($where=null) {
 		$db = DevblocksPlatform::getDatabaseService();
 		
-		$sql = "SELECT id, name, extension_id, updated_date, status, metric_type, metric, output, is_disabled, fail_count ".
+		$sql = "SELECT id, name, extension_id, params_json, updated_date, status, metric_type, metric, output, is_disabled, fail_count ".
 			"FROM sensor ".
 			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
 			"ORDER BY id asc";
@@ -749,6 +750,16 @@ class DAO_Sensor extends Ps_ORMHelper {
 			$object->output = $rs->fields['output'];
 			$object->is_disabled = $rs->fields['is_disabled'];
 			$object->fail_count = $rs->fields['fail_count'];
+			
+			// Custom params
+			if(!empty($rs->fields['params_json'])) {
+				try {
+					$object->params = json_decode($rs->fields['params_json']);
+				} catch(Exception $e) {
+					$object->params = array();
+				}
+			}
+			
 			$objects[$object->id] = $object;
 			$rs->MoveNext();
 		}

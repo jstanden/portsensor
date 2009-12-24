@@ -27,7 +27,7 @@
 	<tr>
 		<td width="0%" nowrap="nowrap" align="right" valign="top"><b>{$translate->_('sensor.extension_id')|capitalize}:</b> </td>
 		<td width="100%">
-			<select name="extension_id"> {* onchange="toggleDiv('divExtensionManual',(selectValue(this))==''?'block':'none');" *}
+			<select name="extension_id" onchange="genericAjaxGet('divExtensionParams','c=sensors&a=showSensorExtensionConfig&ext_id='+escape(selectValue(this))+'&id='+escape(this.form.id.value));">
 				<option value="" {if empty($sensor->extension_id)}selected="selected"{/if}}>- Manual (External/API) -</option>
 				{foreach from=$sensor_types item=ext}
 				<option value="{$ext->id}" {if 0==strcasecmp($ext->id,$sensor->extension_id)}selected="selected"{/if}>
@@ -35,17 +35,11 @@
 				</option>
 				{/foreach}
 			</select>
-			{*
-			<blockquote id="divExtensionManual" style="margin:5px;background-color:rgb(255,255,255);padding:5px;border:1px dotted rgb(120,120,120);display:{if empty($sensor->id)||$sensor->extension_id==''}block{else}none{/if};">
-				<b>{$translate->_('sensor.metric_type')|capitalize}:</b><br>
-				<select name="metric_type">
-					<option value="T" {if 'T'==$sensor->metric_type}selected="selected"{/if}}>Text</option>
-					<option value="D" {if 'D'==$sensor->metric_type}selected="selected"{/if}}>Decimal</option>
-					<option value="N" {if 'N'==$sensor->metric_type}selected="selected"{/if}}>Number</option>
-					<option value="U" {if 'U'==$sensor->metric_type}selected="selected"{/if}}>Up/Down</option>
-				</select><br>
+			<blockquote id="divExtensionParams" style="margin:5px;background-color:rgb(255,255,255);padding:5px;border:1px dotted rgb(120,120,120);display:{if 1}block{else}none{/if};">
+				{if !empty($sensor_extension) && $sensor_extension instanceof Extension_Sensor}
+					{$sensor_extension->renderConfig($sensor)}
+				{/if}
 			</blockquote>
-			*}
 		</td>
 	</tr>
 	<tr>

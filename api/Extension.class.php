@@ -25,6 +25,16 @@ abstract class Extension_Sensor extends DevblocksExtension {
 	 * @return array 
 	 */
 	function run(Model_Sensor $sensor) { }
+
+	/**
+	 *
+	 */
+	function renderConfig(Model_Sensor $sensor) { }
+
+	/**
+	 *
+	 */
+	function saveConfig(Model_Sensor $sensor) { }
 };
 
 abstract class PortSensorCronExtension extends DevblocksExtension {

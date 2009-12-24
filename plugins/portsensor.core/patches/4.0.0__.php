@@ -265,6 +265,7 @@ if(!isset($tables['sensor'])) {
 		id I4 DEFAULT 0 NOTNULL PRIMARY,
 		name C(255) DEFAULT '' NOTNULL,
 		extension_id C(255) DEFAULT '' NOTNULL,
+		params XL,
 		status I1 DEFAULT 0 NOTNULL,
 		updated_date I4 DEFAULT 0 NOTNULL,
 		is_disabled I1 DEFAULT 0 NOTNULL,

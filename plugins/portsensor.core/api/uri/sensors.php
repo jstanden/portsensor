@@ -161,8 +161,12 @@ class PsSensorsPage extends PortSensorPageExtension {
 		$sensor = DAO_Sensor::get($id);
 		$tpl->assign('sensor', $sensor);
 		
-		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor',false);
+		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', false);
 		$tpl->assign('sensor_types', $sensor_types);
+		
+		// Sensor extension instance
+		if(!empty($sensor) && !empty($sensor->extension_id))
+			$tpl->assign('sensor_extension', DevblocksPlatform::getExtension($sensor->extension_id,true));
 		
 		// Custom Fields
 		$custom_fields = DAO_CustomField::getBySource(PsCustomFieldSource_Sensor::ID);
@@ -209,7 +213,7 @@ class PsSensorsPage extends PortSensorPageExtension {
 		    	$fields[DAO_Sensor::METRIC_TYPE] = $metric_type;
 		    } else {
 		    	$sensor_type = DevblocksPlatform::getExtension($extension_id,false);
-		    	// [TODO] Sensor extension provides metric type
+		    	// Sensor extension provides metric type
 		    	$fields[DAO_Sensor::METRIC_TYPE] = $sensor_type->params['metric_type'];
 		    }
 		    
@@ -218,6 +222,16 @@ class PsSensorsPage extends PortSensorPageExtension {
 			else
 				DAO_Sensor::update($id, $fields);
 			
+			// Save sensor extension config
+			if(!empty($extension_id)) {
+				if(null != ($ext = DevblocksPlatform::getExtension($extension_id, true))) {
+					if(null != ($sensor = DAO_Sensor::get($id))
+					 && $ext instanceof Extension_Sensor) {
+						$ext->saveConfig($sensor);
+					}
+				}
+			}
+				
 			// Custom field saves
 			@$field_ids = DevblocksPlatform::importGPC($_POST['field_ids'], 'array', array());
 			DAO_CustomFieldValue::handleFormPost(PsCustomFieldSource_Sensor::ID, $id, $field_ids);
@@ -227,8 +241,23 @@ class PsSensorsPage extends PortSensorPageExtension {
 			$view = Ps_AbstractViewLoader::getView($view_id);
 			$view->render();
 		}
-		
-		//DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','workers')));		
 	}	
+	
+	function showSensorExtensionConfigAction() {
+		@$ext_id = DevblocksPlatform::importGPC($_REQUEST['ext_id'],'string','');
+		@$id = DevblocksPlatform::importGPC($_REQUEST['id'],'integer',0);
+		
+		if(null == ($sensor = DAO_Sensor::get($id)))
+			$sensor = new Model_Sensor();
+		
+		if(!empty($ext_id)) {
+			if(null != ($ext = DevblocksPlatform::getExtension($ext_id, true))) {
+				if($ext instanceof Extension_Sensor) {
+					$ext->renderConfig($sensor);
+				}
+			}
+		}
+		
+	}
 	
 };

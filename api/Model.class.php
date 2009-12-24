@@ -95,13 +95,14 @@ class Model_Sensor {
 	public $id;
 	public $name;
 	public $extension_id;
+	public $params = array();
 	public $updated_date;
 	public $status;
 	public $metric_type;
-	public $metric;
-	public $output;
-	public $is_disabled;
-	public $fail_count;
+	public $metric = '';
+	public $output = '';
+	public $is_disabled = 0;
+	public $fail_count = 0;
 };
 
 abstract class Ps_AbstractView {
@@ -655,7 +656,7 @@ class Ps_SensorView extends Ps_AbstractView {
 
 		$this->view_columns = array(
 			SearchFields_Sensor::NAME,
-			SearchFields_Sensor::EXTENSION_ID,
+//			SearchFields_Sensor::EXTENSION_ID,
 			SearchFields_Sensor::STATUS,
 			SearchFields_Sensor::UPDATED_DATE,
 //			SearchFields_Sensor::FAIL_COUNT,
@@ -759,11 +760,13 @@ class Ps_SensorView extends Ps_AbstractView {
 	static function getSearchFields() {
 		$fields = self::getFields();
 		unset($fields[SearchFields_Sensor::ID]);
+//		unset($fields[SearchFields_Sensor::PARAMS_JSON]);
 		return $fields;
 	}
 
 	static function getColumns() {
 		$fields = self::getFields();
+//		unset($fields[SearchFields_Sensor::PARAMS_JSON]);
 		return $fields;
 	}
 
