@@ -680,6 +680,23 @@ class DAO_Sensor extends Ps_ORMHelper {
 	const IS_DISABLED = 'is_disabled';
 	const FAIL_COUNT = 'fail_count';
 
+	public static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		return array(
+			self::ID => $translate->_('common.id'),
+			self::NAME => $translate->_('sensor.name'),
+			self::EXTENSION_ID => $translate->_('sensor.extension_id'),
+//			self::PARAMS_JSON => $translate->_('sensor.params_json'),
+			self::STATUS => $translate->_('sensor.status'),
+			self::UPDATED_DATE => $translate->_('sensor.updated_date'),
+			self::METRIC_TYPE => $translate->_('sensor.metric_type'),
+			self::METRIC => $translate->_('sensor.metric'),
+			self::OUTPUT => $translate->_('sensor.output'),
+			self::IS_DISABLED => $translate->_('sensor.is_disabled'),
+			self::FAIL_COUNT => $translate->_('sensor.fail_count'),
+		);
+	}
+	
 	static function create($fields) {
 		$db = DevblocksPlatform::getDatabaseService();
 		

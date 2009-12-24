@@ -7,6 +7,7 @@ class PsRestFrontController extends DevblocksControllerExtension {
 	function handleRequest(DevblocksHttpRequest $request) {
 		$controllers = array(
 			'notifications' => 'Rest_NotificationsController',
+			'sensors' => 'Rest_SensorsController',
 		);
 
 		$stack = $request->path;
@@ -437,6 +438,265 @@ class Rest_NotificationsController extends Ps_RestController {
 			$this->_error("ID is not valid.");
 			
 		DAO_WorkerEvent::delete($event->id);
+		
+		$out_xml = new SimpleXMLElement('<success></success>');
+		$this->_render($out_xml->asXML());
+	}
+	
+};
+
+class Rest_SensorsController extends Ps_RestController {
+	protected function translate($idx, $dir) {
+		$translations = array(
+			's_id' => 'id',
+			's_name' => 'name',
+			's_extension_id' => 'extension_id',
+			's_params_json' => 'params_json',
+			's_status' => 'status',
+			's_updated_date' => 'updated_date',
+			's_is_disabled' => 'is_disabled',
+			's_metric_type' => 'metric_type',
+			's_metric' => 'metric',
+			's_output' => 'output',
+			's_fail_count' => 'fail_count',
+		);
+		
+		if ($dir === true && array_key_exists($idx, $translations))
+			return $translations[$idx];
+		if ($dir === false)
+			return ($key = array_search($idx, $translations)) === false ? null : $key;
+		return $idx;
+	}
+	
+	protected function isValid($idx_name, $value) {
+		switch($idx_name) {
+			case 'updated_date':
+			case 'status':
+			case 'fail_count':
+				return is_numeric($value) ? true : false;
+			case 'is_disabled':
+				return ('1' == $value || '0' == $value) ? true : false;
+			case 'name':
+			case 'extension_id':
+			case 'params_json':
+			case 'metric_type':
+			case 'metric':
+			case 'output':
+				return !empty($value) ? true : false;
+			default:
+				return false;
+		}
+	}
+		
+	protected function getAction($path) {
+//		if(Model_WebapiKey::ACL_NONE == intval(@$keychain->rights['acl_addresses']))
+//			$this->_error("Action not permitted.");
+		
+		// [TODO] ACL
+		
+		// Single GET
+		if(1==count($path) && is_numeric($path[0]))
+			$this->_getIdAction($path);
+		
+		// Actions
+		switch(array_shift($path)) {
+			case 'list':
+				$this->_getListAction($path);
+				break;
+		}
+	}
+
+	protected function putAction($path) {
+//		if(Model_WebapiKey::ACL_FULL!=intval(@$keychain->rights['acl_addresses']))
+//			$this->_error("Action not permitted.");
+
+		// [TODO] ACL
+		
+		// Single PUT
+		if(1==count($path) && is_numeric($path[0]))
+			$this->_putIdAction($path);
+	}
+	
+	protected function postAction($path) {
+		// Actions
+		switch(array_shift($path)) {
+			case 'create':
+//				if(Model_WebapiKey::ACL_FULL!=intval(@$keychain->rights['acl_addresses']))
+//					$this->_error("Action not permitted.");
+				$this->_postCreateAction($path);
+				break;
+			case 'search':
+//				if(Model_WebapiKey::ACL_NONE==intval(@$keychain->rights['acl_addresses']))
+//					$this->_error("Action not permitted.");
+				$this->_postSearchAction($path);
+				break;
+		}
+	}
+	
+	protected function deleteAction($path) {
+//		if(Model_WebapiKey::ACL_FULL!=intval(@$keychain->rights['acl_addresses']))
+//			$this->_error("Action not permitted.");
+
+		if(1==count($path) && is_numeric($path[0]))
+			$this->_deleteIdAction($path);
+	}
+	
+	//****
+	
+	private function _postCreateAction($path) {
+		$xmlstr = $this->getPayload();
+		$xml_in = simplexml_load_string($xmlstr);
+		
+		$fields = array();
+		
+		$flds = DAO_Sensor::getFields();
+		unset($flds[DAO_Sensor::ID]);
+		
+		foreach($flds as $idx => $f) {
+			$idx_name = $this->translate($idx, true);
+			if ($idx_name == null) continue;
+			@$value = DevblocksPlatform::importGPC($xml_in->$idx_name,'string');
+			if($this->isValid($idx_name,$value))
+				$fields[$idx] = $value;
+		}
+		
+		if(
+			empty($fields[DAO_Sensor::NAME])
+		)
+			$this->_error("All required fields were not provided.");
+		
+		$id = DAO_Sensor::create($fields);
+		
+		// Render
+		$this->_getIdAction(array($id));
+	}
+	
+	private function _postSearchAction($path) {
+		@$p_page = DevblocksPlatform::importGPC($_REQUEST['p'],'integer',0);		
+		
+		$xml_in = simplexml_load_string($this->getPayload());
+		$search_params = SearchFields_Sensor::getFields();
+		$params = array();
+		
+		// Check for params in request
+		foreach($search_params as $sp_element => $fld) {
+			$sp_element_name = $this->translate($sp_element, true);
+			if ($sp_element_name == null) continue;
+			@$field_ptr = $xml_in->params->$sp_element_name;
+			if(!empty($field_ptr)) {
+				@$value = (string) $field_ptr['value'];
+				@$oper = (string) $field_ptr['oper'];
+				if(empty($oper)) $oper = 'eq';
+				$params[$sp_element] =	new DevblocksSearchCriteria($sp_element,$oper,$value);
+			}
+		}
+
+		list($results, $total) = DAO_Sensor::search(
+			array(),
+			$params,
+			50,
+			$p_page,
+			SearchFields_Sensor::NAME,
+			true,
+			true
+		);
+		
+		$attribs = array(
+			'page_results' => count($results),
+			'total_results' => intval($total)
+		);
+		
+		$this->_renderResults($results, $search_params, 'sensor', 'sensors', $attribs);
+	}
+	
+	private function _getIdAction($path) {
+		$in_id = array_shift($path);
+
+		if(empty($in_id))
+			$this->_error("ID was not provided.");
+
+		list($results, $null) = DAO_Sensor::search(
+			array(),
+			array(
+				SearchFields_Sensor::ID => new DevblocksSearchCriteria(SearchFields_Sensor::ID,'=',$in_id)
+			),
+			1,
+			0,
+			null,
+			null,
+			false
+		);
+		
+		if(empty($results))
+			$this->_error("ID not valid.");
+		
+		$this->_renderOneResult($results, SearchFields_Sensor::getFields(), 'sensor');
+	}
+	
+	private function _getListAction($path) {
+		$xml = new SimpleXMLElement("<sensors></sensors>"); 
+		@$p_page = DevblocksPlatform::importGPC($_REQUEST['p'],'integer',0);		
+		
+		list($sensors,$null) = DAO_Sensor::search(
+			array(),
+			array(),
+			50,
+			$p_page,
+			SearchFields_Sensor::NAME,
+			true,
+			false
+		);
+
+		$this->_renderResults($sensors, SearchFields_Sensor::getFields(), 'sensor', 'sensors');
+	}
+	
+	private function _putIdAction($path) {
+		$xmlstr = $this->getPayload();
+		$xml_in = new SimpleXMLElement($xmlstr);
+
+		$in_id = array_shift($path);
+		
+		if(empty($in_id))
+			$this->_error("ID was not provided.");
+			
+		if(null == ($sensor = DAO_Sensor::get($in_id)))
+			$this->_error("ID not valid.");
+
+		$fields = array();
+			
+		$flds = DAO_Sensor::getFields();
+		unset($flds[DAO_Sensor::ID]);
+		
+		foreach($flds as $idx => $f) {
+			$idx_name = $this->translate($idx, true);
+			if ($idx_name == null) continue;
+			@$value = DevblocksPlatform::importGPC($xml_in->$idx_name,'string');
+			if($this->isValid($idx_name,$value))
+				$fields[$idx] = $value;
+		}
+		
+		// Set the updated date to now by default
+		if(!isset($fields[DAO_Sensor::UPDATED_DATE]))
+			$fields[DAO_Sensor::UPDATED_DATE] = time();
+		
+		// [TODO] Handle the fail_count increment + reset
+			
+		if(!empty($fields))
+			DAO_Sensor::update($sensor->id,$fields);
+		
+		$this->_getIdAction(array($sensor->id));
+	}
+	
+	private function _deleteIdAction($path) {
+		$in_id = array_shift($path);
+
+		if(empty($in_id))
+			$this->_error("ID was not provided.");
+
+		if(null == ($sensor = DAO_Sensor::get($in_id)))
+			$this->_error("ID is not valid.");
+			
+		DAO_Sensor::delete($sensor->id);
 		
 		$out_xml = new SimpleXMLElement('<success></success>');
 		$this->_render($out_xml->asXML());
