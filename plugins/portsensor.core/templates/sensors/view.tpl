@@ -16,7 +16,7 @@
 <form id="customize{$view->id}" name="customize{$view->id}" action="#" onsubmit="return false;" style="display:none;"></form>
 <form id="viewForm{$view->id}" name="viewForm{$view->id}" action="#">
 <input type="hidden" name="view_id" value="{$view->id}">
-<input type="hidden" name="c" value="home">
+<input type="hidden" name="c" value="sensors">
 <input type="hidden" name="a" value="">
 <table cellpadding="1" cellspacing="0" border="0" width="100%" class="tableRowBg">
 
@@ -140,7 +140,7 @@
 	{if $total}
 	<tr>
 		<td colspan="2">
-			{*{if 1}<button type="button" id="btn{$view->id}MarkRead" onclick="this.form.a.value='doNotificationsMarkRead';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=config');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('home.my_notifications.button.mark_read')}</button>{/if}*}
+			<button type="button" id="btn{$view->id}RunNow" onclick="this.form.a.value='viewRunNow';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=sensors');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/media_play_green.gif{/devblocks_url}" align="top"> {$translate->_('sensors.button.run_now')}</button>
 		</td>
 	</tr>
 	{/if}

@@ -1,10 +1,16 @@
 <table cellpadding="0" cellspacing="0" border="0" width="98%">
 	<tr>
-		<td width="100%">
+		<td width="99%" valign="top">
 			{if empty($sensor->id)}
 			<h1>Add Sensor</h1>
 			{else}
 			<h1>Sensor: {$sensor->name|escape}</h1>
+			{/if}
+		</td>
+		<td width="1%" align="right" valign="top" nowrap="nowrap">
+			{if !empty($sensor->id)}
+				<b>{$translate->_('common.id')|upper}:</b>			
+				{$sensor->id|escape}
 			{/if}
 		</td>
 	</tr>

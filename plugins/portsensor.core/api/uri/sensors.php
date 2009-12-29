@@ -260,4 +260,44 @@ class PsSensorsPage extends PortSensorPageExtension {
 		
 	}
 	
+	function viewRunNowAction() {
+	    @$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string');
+	    @$ids = DevblocksPlatform::importGPC($_REQUEST['row_id'],'array');
+	    
+	    $sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', true);
+
+	    try {
+	    	$sensors = DAO_Sensor::getWhere(sprintf("%s IN (%s)", DAO_Sensor::ID, implode(',', $ids)));
+	    	
+	    	if(is_array($sensors))
+	    	foreach($sensors as $sensor) {
+	    		if(!empty($sensor->extension_id)) {
+	    			if(isset($sensor_types[$sensor->extension_id])) {
+	    				$runner = $sensor_types[$sensor->extension_id];
+	    				
+	    				// [TODO] This duplicates cron
+						if(method_exists($runner,'run')) {
+							$fields = array();
+							$success = $runner->run($sensor, $fields);
+							
+							$fields[DAO_Sensor::UPDATED_DATE] = time();
+							$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
+							
+							DAO_Sensor::update($sensor->id, $fields);
+						}
+	    			}
+	    		}
+	    	}
+	    	
+	    } catch(Exception $e) {
+	    	// ...
+	    }
+	    
+//	    Model_Sensor::run();
+	    
+	    $view = Ps_AbstractViewLoader::getView($view_id);
+	    $view->render();
+	    return;
+	}	
+	
 };

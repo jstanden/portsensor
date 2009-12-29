@@ -329,6 +329,10 @@ For example: *receipt*</seg></tuv>
 		<tu tuid='sensors.add'>
 			<tuv xml:lang="en_US"><seg>Add Sensor</seg></tuv>
 		</tu>
+		
+		<tu tuid='sensors.button.run_now'>
+			<tuv xml:lang="en_US"><seg>Run Now</seg></tuv>
+		</tu>
 
 		<tu tuid='sensors.tab.all_sensors'>
 			<tuv xml:lang="en_US"><seg>All Sensors</seg></tuv>
