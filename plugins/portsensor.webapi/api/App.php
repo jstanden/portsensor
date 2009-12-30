@@ -530,6 +530,11 @@ class Rest_SensorsController extends Ps_RestController {
 //					$this->_error("Action not permitted.");
 				$this->_postSearchAction($path);
 				break;
+			case 'update':
+//				if(Model_WebapiKey::ACL_NONE==intval(@$keychain->rights['acl_addresses']))
+//					$this->_error("Action not permitted.");
+				$this->_postUpdateAction($path);
+				break;
 		}
 	}
 	
@@ -609,6 +614,35 @@ class Rest_SensorsController extends Ps_RestController {
 		$this->_renderResults($results, $search_params, 'sensor', 'sensors', $attribs);
 	}
 	
+	private function _postUpdateAction($path) {
+		$xmlstr = $this->getPayload();
+		$xml_in = new SimpleXMLElement($xmlstr);
+
+		foreach($xml_in->sensor as $sensor_xml) {
+			$sensor_id = (string)$sensor_xml['id'];
+			
+			$fields = array();
+			$flds = DAO_Sensor::getFields();
+			unset($flds[DAO_Sensor::ID]);
+
+			if(is_array($flds))
+			foreach($flds as $idx => $f) {
+				$idx_name = $this->translate($idx, true);
+				if ($idx_name == null) continue;
+				@$value = DevblocksPlatform::importGPC($sensor_xml->$idx_name,'string');
+				if($this->isValid($idx_name,$value))
+					$fields[$idx] = $value;
+			}
+			
+			$this->_putId($sensor_id, $fields);
+		}
+		
+//		$this->_getIdAction(array($sensor->id));
+
+		$out_xml = new SimpleXMLElement('<success></success>');
+		$this->_render($out_xml->asXML());
+	}
+	
 	private function _getIdAction($path) {
 		$in_id = array_shift($path);
 
@@ -655,18 +689,16 @@ class Rest_SensorsController extends Ps_RestController {
 		$xml_in = new SimpleXMLElement($xmlstr);
 
 		$in_id = array_shift($path);
-		
+
 		if(empty($in_id))
 			$this->_error("ID was not provided.");
-			
-		if(null == ($sensor = DAO_Sensor::get($in_id)))
-			$this->_error("ID not valid.");
 
 		$fields = array();
-			
+
 		$flds = DAO_Sensor::getFields();
 		unset($flds[DAO_Sensor::ID]);
 		
+		if(is_array($flds))
 		foreach($flds as $idx => $f) {
 			$idx_name = $this->translate($idx, true);
 			if ($idx_name == null) continue;
@@ -675,6 +707,16 @@ class Rest_SensorsController extends Ps_RestController {
 				$fields[$idx] = $value;
 		}
 		
+		if(!$this->_putId($in_id, $fields))
+			$this->_error("Input not valid.");			
+			
+		$this->_getIdAction(array($in_id));
+	}
+
+	private function _putId($id, $fields) {
+		if(null == ($sensor = DAO_Sensor::get($id)))
+			return false;
+			
 		// Set the updated date to now by default
 		if(!isset($fields[DAO_Sensor::UPDATED_DATE]))
 			$fields[DAO_Sensor::UPDATED_DATE] = time();
@@ -683,8 +725,8 @@ class Rest_SensorsController extends Ps_RestController {
 			
 		if(!empty($fields))
 			DAO_Sensor::update($sensor->id,$fields);
-		
-		$this->_getIdAction(array($sensor->id));
+			
+		return true;		
 	}
 	
 	private function _deleteIdAction($path) {
