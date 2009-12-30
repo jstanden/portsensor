@@ -140,7 +140,7 @@
 	{if $total}
 	<tr>
 		<td colspan="2">
-			<button type="button" id="btn{$view->id}RunNow" onclick="this.form.a.value='viewRunNow';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=sensors');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/media_play_green.gif{/devblocks_url}" align="top"> {$translate->_('sensors.button.run_now')}</button>
+			<button type="button" id="btn{$view->id}RunNow" onclick="this.form.a.value='viewRunNow';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=sensors');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/media_play_green.png{/devblocks_url}" align="top"> {$translate->_('sensors.button.run_now')}</button>
 		</td>
 	</tr>
 	{/if}
