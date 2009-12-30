@@ -26,6 +26,7 @@ class PsSensorsPage extends PortSensorPageExtension {
 	
 	function render() {
 		$active_worker = PortSensorApplication::getActiveWorker();
+		$translate = DevblocksPlatform::getTranslationService();
 		$visit = PortSensorApplication::getVisit();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
@@ -34,80 +35,14 @@ class PsSensorsPage extends PortSensorPageExtension {
 
 		$response = DevblocksPlatform::getHttpResponse();
 		$tpl->assign('request_path', implode('/',$response->path));
-		
-		// Remember the last tab/URL
-//		if(null == ($selected_tab = @$response->path[1])) {
-//			$selected_tab = $visit->get(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'notifications');
-//		}
-//		$tpl->assign('selected_tab', $selected_tab);
-		
-		$tab_manifests = DevblocksPlatform::getExtensions('portsensor.sensors.tab', false);
-		$tpl->assign('tab_manifests', $tab_manifests);
-		
-		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/index.tpl');
-	}
-	
-	// Ajax
-	function showTabAction() {
-		@$ext_id = DevblocksPlatform::importGPC($_REQUEST['ext_id'],'string','');
-		
-		if(null != ($tab_mft = DevblocksPlatform::getExtension($ext_id)) 
-			&& null != ($inst = $tab_mft->createInstance()) 
-			&& $inst instanceof Extension_SensorsTab) {
-			$inst->showTab();
-		}
-	}
-	
-	// Post
-	function saveTabAction() {
-		@$ext_id = DevblocksPlatform::importGPC($_REQUEST['ext_id'],'string','');
-		
-		if(null != ($tab_mft = DevblocksPlatform::getExtension($ext_id)) 
-			&& null != ($inst = $tab_mft->createInstance()) 
-			&& $inst instanceof Extension_SensorsTab) {
-			$inst->saveTab();
-		}
-	}
-	
-	/*
-	 * [TODO] Proxy any func requests to be handled by the tab directly, 
-	 * instead of forcing tabs to implement controllers.  This should check 
-	 * for the *Action() functions just as a handleRequest would
-	 */
-	function handleTabActionAction() {
-		@$tab = DevblocksPlatform::importGPC($_REQUEST['tab'],'string','');
-		@$action = DevblocksPlatform::importGPC($_REQUEST['action'],'string','');
 
-		if(null != ($tab_mft = DevblocksPlatform::getExtension($tab)) 
-			&& null != ($inst = $tab_mft->createInstance()) 
-			&& $inst instanceof Extension_SensorsTab) {
-				if(method_exists($inst,$action.'Action')) {
-					call_user_func(array(&$inst, $action.'Action'));
-				}
-		}
-	}
-	
-	function showTabAllSensorsAction() {
-		$visit = PortSensorApplication::getVisit();
-		$translate = DevblocksPlatform::getTranslationService();
-		$active_worker = PortSensorApplication::getActiveWorker();
-		
-		$tpl = DevblocksPlatform::getTemplateService();
-		$tpl->assign('path', $this->_TPL_PATH);
-		
-		// Select tab
-//		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'sensors');
-		
-		// My Notifications
+		// View
 		$sensorsView = Ps_AbstractViewLoader::getView(self::VIEW_ALL_SENSORS);
-		
-//		$title = vsprintf($translate->_('home.my_notifications.view.title'), $active_worker->getName());
 		
 		if(null == $sensorsView) {
 			$sensorsView = new Ps_SensorView();
 			$sensorsView->id = self::VIEW_ALL_SENSORS;
-//			$sensorsView->name = $title;
-			$sensorsView->name = $translate->_('sensors.tab.all_sensors');
+			$sensorsView->name = $translate->_('core.menu.sensors');
 			$sensorsView->renderLimit = 25;
 			$sensorsView->renderPage = 0;
 			$sensorsView->renderSortBy = SearchFields_Sensor::NAME;
@@ -125,19 +60,8 @@ class PsSensorsPage extends PortSensorPageExtension {
 		 * This should be moved back into the if(null==...) check in a later build.
 		 */
 		
-		$tpl->assign('response_uri', 'sensors/all');
+		$tpl->assign('response_uri', 'sensors');
 
-		// *** NEW
-//		$defaults = new Ps_AbstractViewModel();
-//		$defaults->id = self::VIEW_ALL_SENSORS;
-//		$defaults->class_name = 'Ps_SensorView';
-//		
-//		$view = Ps_AbstractViewLoader::getView($defaults->id, $defaults);
-//		$tpl->assign('view', $view);
-//		$tpl->assign('view_fields', Ps_WorkerView::getFields());
-//		$tpl->assign('view_searchable_fields', Ps_WorkerView::getSearchFields());
-		// ** NEW END
-		
 //		$quick_search_type = $visit->get('crm.opps.quick_search_type');
 //		$tpl->assign('quick_search_type', $quick_search_type);
 		
@@ -145,7 +69,7 @@ class PsSensorsPage extends PortSensorPageExtension {
 		$tpl->assign('view_fields', Ps_SensorView::getFields());
 		$tpl->assign('view_searchable_fields', Ps_SensorView::getSearchFields());
 		
-		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/tabs/all/index.tpl');
+		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/index.tpl');
 	}
 	
 	function showSensorPeekAction() {
