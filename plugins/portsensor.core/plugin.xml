@@ -294,6 +294,28 @@
 		<!-- Cron Extensions -->
 		
 		<extension point="portsensor.cron">
+			<id>cron.sensors</id>
+			<name>Sensor Runner</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>Cron_SensorRunner</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+
+		<extension point="portsensor.cron">
+			<id>cron.notifications</id>
+			<name>Notifications</name>
+			<class>
+				<file>api/cron.classes.php</file>
+				<name>Cron_Notifications</name>
+			</class>
+			<params>
+			</params>
+		</extension>
+
+		<extension point="portsensor.cron">
 			<id>cron.maint</id>
 			<name>Maintenance</name>
 			<class>
@@ -310,17 +332,6 @@
 			<class>
 				<file>api/cron.classes.php</file>
 				<name>HeartbeatCron</name>
-			</class>
-			<params>
-			</params>
-		</extension>
-		
-		<extension point="portsensor.cron">
-			<id>cron.sensors</id>
-			<name>Sensor Runner</name>
-			<class>
-				<file>api/cron.classes.php</file>
-				<name>Cron_SensorRunner</name>
 			</class>
 			<params>
 			</params>

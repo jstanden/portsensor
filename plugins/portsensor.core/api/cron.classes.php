@@ -2,7 +2,7 @@
 class MaintCron extends PortSensorCronExtension {
 	function run() {
 		$logger = DevblocksPlatform::getConsoleLog();
-		$logger->info("[Maint] Starting Maintenance Task");
+		$logger->info("[Maint] Starting...");
 		
 		@ini_set('memory_limit','64M');
 
@@ -30,6 +30,7 @@ class MaintCron extends PortSensorCronExtension {
 //		}
 //		
 //		$logger->info('[Maint] Cleaned up import directories.');
+		$logger->info("[Maint] Finished!");
 	}
 
 	function configure($instance) {
@@ -57,7 +58,7 @@ class MaintCron extends PortSensorCronExtension {
 class HeartbeatCron extends PortSensorCronExtension {
 	function run() {
 		$logger = DevblocksPlatform::getConsoleLog();
-		$logger->info("[Heartbeat] Starting Heartbeat Task");
+		$logger->info("[Heartbeat] Starting...");
 		
 		// Heartbeat Event
 		$eventMgr = DevblocksPlatform::getEventService();
@@ -68,6 +69,8 @@ class HeartbeatCron extends PortSensorCronExtension {
 				)
 			)
 		);
+		
+		$logger->info("[Heartbeat] Finished!");
 	}
 
 	function configure($instance) {
@@ -141,3 +144,30 @@ class Cron_SensorRunner extends PortSensorCronExtension {
 	}
 };
 
+class Cron_Notifications extends PortSensorCronExtension {
+	function run() {
+		$logger = DevblocksPlatform::getConsoleLog();
+		$logger->info("[Notifications] Starting...");
+		
+//		// Heartbeat Event
+//		$eventMgr = DevblocksPlatform::getEventService();
+//		$eventMgr->trigger(
+//			new Model_DevblocksEvent(
+//	            'cron.notifications',
+//				array(
+//				)
+//			)
+//		);
+
+		$logger->info("[Notifications] Finished!");
+	}
+
+	function configure($instance) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->cache_lifetime = "0";
+		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
+		$tpl->assign('path', $tpl_path);
+
+		$tpl->display($tpl_path . 'cron/notifications/config.tpl');
+	}
+};
