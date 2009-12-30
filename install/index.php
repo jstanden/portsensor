@@ -415,6 +415,7 @@ switch($step) {
 				foreach($plugins as $plugin_manifest) { /* @var $plugin_manifest DevblocksPluginManifest */
 					switch ($plugin_manifest->id) {
 						case "portsensor.core":
+						case "portsensor.webapi":
 							$plugin_manifest->setEnabled(true);
 							break;
 						
