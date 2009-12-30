@@ -400,20 +400,20 @@ class PsInternalController extends DevblocksControllerExtension {
 		$view->render();
 	}
 	
-//	function startAutoRefreshAction() {
-//		$url = DevblocksPlatform::importGPC($_REQUEST['url'],'string', '');
-//		$secs = DevblocksPlatform::importGPC($_REQUEST['secs'],'integer', 300);
-//		
-//		$_SESSION['autorefresh'] = array(
-//			'url' => $url,
-//			'started' => time(),
-//			'secs' => $secs,
-//		);
-//	}
-//	
-//	function stopAutoRefreshAction() {
-//		unset($_SESSION['autorefresh']);
-//	}
+	function startAutoRefreshAction() {
+		$url = DevblocksPlatform::importGPC($_REQUEST['url'],'string', '');
+		$secs = DevblocksPlatform::importGPC($_REQUEST['secs'],'integer', 300);
+		
+		$_SESSION['autorefresh'] = array(
+			'url' => $url,
+			'started' => time(),
+			'secs' => $secs,
+		);
+	}
+	
+	function stopAutoRefreshAction() {
+		unset($_SESSION['autorefresh']);
+	}
 
 	// Post
 	function doStopTourAction() {

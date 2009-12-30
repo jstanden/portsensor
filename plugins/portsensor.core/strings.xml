@@ -102,6 +102,9 @@
 		<tu tuid='common.refresh'>
 			<tuv xml:lang="en_US"><seg>refresh</seg></tuv>
 		</tu>
+		<tu tuid='common.refresh.auto'>
+			<tuv xml:lang="en_US"><seg>Auto-Refresh</seg></tuv>
+		</tu>
 		<tu tuid='common.reset'>
 			<tuv xml:lang="en_US"><seg>reset</seg></tuv>
 		</tu>
@@ -110,6 +113,12 @@
 		</tu>
 		<tu tuid='common.synchronize'>
 			<tuv xml:lang="en_US"><seg>Synchronize</seg></tuv>
+		</tu>
+		<tu tuid='common.time.mins.num'>
+			<tuv xml:lang="en_US"><seg>%s min</seg></tuv>
+		</tu>
+		<tu tuid='common.time.secs.num'>
+			<tuv xml:lang="en_US"><seg>%s sec</seg></tuv>
 		</tu>
 		<tu tuid='common.url'>
 			<tuv xml:lang="en_US"><seg>URL</seg></tuv>
