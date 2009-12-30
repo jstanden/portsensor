@@ -144,22 +144,15 @@ class Cron_SensorRunner extends PortSensorCronExtension {
 	}
 };
 
-class Cron_Notifications extends PortSensorCronExtension {
+class Cron_Alerts extends PortSensorCronExtension {
 	function run() {
 		$logger = DevblocksPlatform::getConsoleLog();
-		$logger->info("[Notifications] Starting...");
+		$logger->info("[Alerts] Starting...");
 		
-//		// Heartbeat Event
-//		$eventMgr = DevblocksPlatform::getEventService();
-//		$eventMgr->trigger(
-//			new Model_DevblocksEvent(
-//	            'cron.notifications',
-//				array(
-//				)
-//			)
-//		);
-
-		$logger->info("[Notifications] Finished!");
+//		$notify_sensors = DAO_Sensor::getWhere(sprintf("%s > %d", DAO_Sensor::STATUS, 0));
+//		print_r($notify_sensors);
+		
+		$logger->info("[Alerts] Finished!");
 	}
 
 	function configure($instance) {
@@ -168,6 +161,6 @@ class Cron_Notifications extends PortSensorCronExtension {
 		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
 		$tpl->assign('path', $tpl_path);
 
-		$tpl->display($tpl_path . 'cron/notifications/config.tpl');
+		$tpl->display($tpl_path . 'cron/alerts/config.tpl');
 	}
 };

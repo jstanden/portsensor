@@ -305,11 +305,11 @@
 		</extension>
 
 		<extension point="portsensor.cron">
-			<id>cron.notifications</id>
-			<name>Notifications</name>
+			<id>cron.alerts</id>
+			<name>Alerts</name>
 			<class>
 				<file>api/cron.classes.php</file>
-				<name>Cron_Notifications</name>
+				<name>Cron_Alerts</name>
 			</class>
 			<params>
 			</params>

@@ -36,6 +36,8 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$tpl->assign('tab_manifests', $tab_manifests);
 		
 		@$section = array_shift($path); // section
+		$tpl->assign('tab_selected', $section);
+		
 		switch($section) {
 		    default:
 		    	$tpl->assign('tab', $section);
@@ -153,6 +155,36 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		DAO_WorkerPref::set($worker->id, 'keyboard_shortcuts', $keyboard_shortcuts);
 
 		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('preferences')));
+	}
+	
+	// Ajax [TODO] This should probably turn into Extension_PreferenceTab
+	function showTabAlertsAction() {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl_path = $this->_TPL_PATH;
+		$tpl->assign('path', $tpl_path);
+		$tpl->cache_lifetime = "0";
+		
+		$worker = PortSensorApplication::getActiveWorker();
+		$tpl->assign('worker', $worker);
+		
+//		$assist_mode = intval(DAO_WorkerPref::get($worker->id, 'assist_mode', 1));
+//		$tpl->assign('assist_mode', $assist_mode);
+
+		$tpl->display('file:' . $tpl_path . 'preferences/tabs/alerts.tpl');
+	}
+	
+	// Post [TODO] This should probably turn into Extension_PreferenceTab
+	function saveTabAlertsAction() {
+//		@$timezone = DevblocksPlatform::importGPC($_REQUEST['timezone'],'string');
+	    
+//		$worker = PortSensorApplication::getActiveWorker();
+//		$translate = DevblocksPlatform::getTranslationService();
+//   		$tpl = DevblocksPlatform::getTemplateService();
+   		
+//		@$assist_mode = DevblocksPlatform::importGPC($_REQUEST['assist_mode'],'integer',0);
+//		DAO_WorkerPref::set($worker->id, 'assist_mode', $assist_mode);
+
+		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('preferences','alerts')));
 	}
 	
 };

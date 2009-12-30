@@ -786,7 +786,7 @@ switch($step) {
 					$cron->setParam(PortSensorCronExtension::PARAM_TERM, 'm');
 					$cron->setParam(PortSensorCronExtension::PARAM_LASTRUN, strtotime('Yesterday'));
 					break;
-				case 'cron.notifications':
+				case 'cron.alerts':
 					$cron->setParam(PortSensorCronExtension::PARAM_ENABLED, true);
 					$cron->setParam(PortSensorCronExtension::PARAM_DURATION, '1');
 					$cron->setParam(PortSensorCronExtension::PARAM_TERM, 'm');

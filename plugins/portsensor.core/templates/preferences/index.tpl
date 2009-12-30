@@ -37,7 +37,14 @@ tabView.addTab( new YAHOO.widget.Tab({
     label: '{/literal}{$translate->_('preferences.tab.general')|escape:'quotes'}{literal}',
     dataSrc: '{/literal}{devblocks_url}ajax.php?c=preferences&a=showTabGeneral&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
     cacheData: false,
-    {/literal}active: {if empty($selected_tab) || 'general'==$selected_tab}true{else}false{/if}{literal}
+    {/literal}active: {if empty($tab_selected) || 'general'==$tab_selected}true{else}false{/if}{literal}
+}));
+
+tabView.addTab( new YAHOO.widget.Tab({
+    label: '{/literal}{$translate->_('preferences.tab.alerts')|escape:'quotes'}{literal}',
+    dataSrc: '{/literal}{devblocks_url}ajax.php?c=preferences&a=showTabAlerts&request={$request_path|escape:'url'}{/devblocks_url}{literal}',
+    cacheData: false,
+    {/literal}active: {if 'alerts'==$tab_selected}true{else}false{/if}{literal}
 }));
 {/literal}
 
