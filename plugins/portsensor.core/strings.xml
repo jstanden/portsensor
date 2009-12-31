@@ -388,6 +388,12 @@ For example: *receipt*</seg></tuv>
 
 		<!-- Views -->
 
+		<tu tuid='views.columns'>
+			<tuv xml:lang="en_US"><seg>Columns</seg></tuv>
+		</tu>
+		<tu tuid='views.num_rows'>
+			<tuv xml:lang="en_US"><seg>Rows per page</seg></tuv>
+		</tu>
 		<tu tuid='views.peek'>
 			<tuv xml:lang="en_US"><seg>(peek)</seg></tuv>
 		</tu>

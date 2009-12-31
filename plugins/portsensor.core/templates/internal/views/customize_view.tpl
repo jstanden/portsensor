@@ -17,7 +17,7 @@
 <br>
 {/if}
 
-<b>{$translate->_('dashboard.columns')|capitalize}:</b> 
+<b>{$translate->_('views.columns')|capitalize}:</b> 
  &nbsp; 
 <a href="javascript:;" onclick="Devblocks.resetSelectElements('customize{$view->id}','columns[]');">{$translate->_('common.clear')|lower}</a>
 <br>
@@ -58,7 +58,7 @@
 <br>
 {/section}
 <br>
-<b>{$translate->_('dashboard.num_rows')|capitalize}:</b> <input type="text" name="num_rows" size="3" maxlength="3" value="{$view->renderLimit}"><br>
+<b>{$translate->_('views.num_rows')|capitalize}:</b> <input type="text" name="num_rows" size="3" maxlength="3" value="{$view->renderLimit}"><br>
 <br>
 
 {if $is_custom}
