@@ -720,9 +720,21 @@ class Rest_SensorsController extends Ps_RestController {
 		// Set the updated date to now by default
 		if(!isset($fields[DAO_Sensor::UPDATED_DATE]))
 			$fields[DAO_Sensor::UPDATED_DATE] = time();
+
+		// Autmatically manage the fail count
+		if(isset($fields[DAO_Sensor::STATUS])) {
+			switch($fields[DAO_Sensor::STATUS]) {
+				case 0: // OK
+				case 1: // WARNING
+					$fields[DAO_Sensor::FAIL_COUNT] = 0;
+					break;
+				case 2: // CRITICAL
+				case 3: // MIA
+					$fields[DAO_Sensor::FAIL_COUNT] = $sensor->fail_count + 1;
+					break;
+			}			
+		} 
 		
-		// [TODO] Handle the fail_count increment + reset
-			
 		if(!empty($fields))
 			DAO_Sensor::update($sensor->id,$fields);
 			
