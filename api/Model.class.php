@@ -179,6 +179,32 @@ class Model_Alert {
 						if(isset($rule[$sensor->extension_id]))
 							$passed++;
 						break;
+
+					case 'sensor_fail_count':
+						$oper = $rule['oper'];
+						
+						switch($oper) {
+							default:
+								if($sensor->fail_count == $value)
+									$passed++;
+								break;
+							case '!=':
+								if($sensor->fail_count != $value)
+									$passed++;
+								break;
+							case '>':
+								if($sensor->fail_count > $value)
+									$passed++;
+								break;
+							case '<':
+								if($sensor->fail_count < $value)
+									$passed++;
+								break;
+						}
+						
+						if(isset($rule[$sensor->extension_id]))
+							$passed++;
+						break;
 						
 					default: // ignore invalids
 						// Custom Fields

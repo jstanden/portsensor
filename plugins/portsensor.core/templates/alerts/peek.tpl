@@ -124,6 +124,21 @@
 			</div>
 		</td>
 	</tr>
+	<tr>
+		<td valign="top">
+			{assign var=crit_sensor_fail_count value=$alert->criteria.sensor_fail_count}
+			<label><input type="checkbox" id="chkRuleSensorFailCount" name="rules[]" value="sensor_fail_count" {if !is_null($crit_sensor_fail_count)}checked="checked"{/if}> Fail Count:</label>
+		</td>
+		<td valign="top">
+			<select name="oper_sensor_fail_count">
+				<option value="=" {if '='==$crit_sensor_fail_count.oper}selected="selected"{/if}>{'search.oper.equals'|devblocks_translate}</option>
+				<option value="!=" {if '!='==$crit_sensor_fail_count.oper}selected="selected"{/if}>{'search.oper.equals.not'|devblocks_translate}</option>
+				<option value="&gt;" {if '>'==$crit_sensor_fail_count.oper}selected="selected"{/if}>&gt;</option>
+				<option value="&lt;" {if '<'==$crit_sensor_fail_count.oper}selected="selected"{/if}>&lt;</option>
+			</select>
+			<input type="text" name="value_sensor_fail_count" size="8" value="{$crit_sensor_fail_count.value|escape}" onchange="document.getElementById('chkRuleSensorFailCount').checked=((0==this.value.length)?false:true);">
+		</td>
+	</tr>
 </table>
 
 {* Get Sensor Fields *}

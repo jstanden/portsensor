@@ -301,6 +301,10 @@ class PsPreferencesPage extends PortSensorPageExtension {
 					break;
 				case 'sensor_name':
 					break;
+				case 'sensor_fail_count':
+					$oper = DevblocksPlatform::importGPC($_REQUEST['oper_sensor_fail_count'],'string','=');
+					$criteria['oper'] = $oper;
+					break;
 				case 'sensor_type':
 					@$types = DevblocksPlatform::importGPC($_REQUEST['value_sensor_types'],'array',array());
 					if(is_array($types))
