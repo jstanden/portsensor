@@ -82,6 +82,8 @@
 						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_yellow.png{/devblocks_url}" align="top">
 					{elseif 2==$result.s_status}
 						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_red.png{/devblocks_url}" align="top">
+					{elseif 3==$result.s_status}
+						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_red.png{/devblocks_url}" align="top">
 					{/if}
 				{/if}
 				<a href="javascript:;" onclick="genericAjaxPanel('c=sensors&a=showSensorPeek&id={$result.s_id}&view_id={$view->id}',this,false,'500px');" style="color:rgb(75,75,75);font-size:12px;font-weight:bold;">{$result.s_name}</a>
@@ -101,6 +103,8 @@
 						<span class="status_warning">WARNING</span>
 					{elseif 2==$result.$column}
 						<span class="status_critical">CRITICAL</span>
+					{elseif 3==$result.$column}
+						<span class="status_critical">M.I.A.</span>
 					{/if}
 				{/if}
 			</td>
@@ -126,6 +130,8 @@
 					{elseif 1==$result.s_status}
 						<span class="status_warning">{$result.$column|nl2br}</span>
 					{elseif 2==$result.s_status}
+						<span class="status_critical">{$result.$column|nl2br}</span>
+					{elseif 3==$result.s_status}
 						<span class="status_critical">{$result.$column|nl2br}</span>
 					{/if}
 				{/if}

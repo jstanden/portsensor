@@ -1231,15 +1231,12 @@ class Ps_SensorView extends Ps_AbstractView {
 		$tpl->assign('id', $this->id);
 
 		switch($field) {
-			case SearchFields_Sensor::EXTENSION_ID:
-			case SearchFields_Sensor::METRIC_TYPE:
 			case SearchFields_Sensor::METRIC:
 			case SearchFields_Sensor::NAME:
 			case SearchFields_Sensor::OUTPUT:
 				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 			case SearchFields_Sensor::FAIL_COUNT:
-			case SearchFields_Sensor::STATUS:
 				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
 				break;
 			case SearchFields_Sensor::IS_DISABLED:
@@ -1247,6 +1244,15 @@ class Ps_SensorView extends Ps_AbstractView {
 				break;
 			case SearchFields_Sensor::UPDATED_DATE:
 				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				break;
+			case SearchFields_Sensor::STATUS:
+				// [TODO] Translate statuses
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/sensors/criteria/status.tpl');
+				break;
+			case SearchFields_Sensor::EXTENSION_ID:
+				$sensor_type_mfts = DevblocksPlatform::getExtensions('portsensor.sensor', false);
+				$tpl->assign('sensor_type_mfts', $sensor_type_mfts);
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/sensors/criteria/extension_id.tpl');
 				break;
 			default:
 				// Custom Fields
@@ -1264,20 +1270,45 @@ class Ps_SensorView extends Ps_AbstractView {
 		$values = !is_array($param->value) ? array($param->value) : $param->value;
 
 		switch($field) {
-//			case SearchFields_Sensor::WORKER_ID:
-//				$workers = DAO_Worker::getAll();
-//				$strings = array();
-//
-//				foreach($values as $val) {
-//					if(empty($val))
-//					$strings[] = "Nobody";
-//					elseif(!isset($workers[$val]))
-//					continue;
-//					else
-//					$strings[] = $workers[$val]->getName();
-//				}
-//				echo implode(", ", $strings);
-//				break;
+			case SearchFields_Sensor::STATUS:
+				$strings = array();
+				
+				if(is_array($values))
+				foreach($values as $val) {
+					switch($val) {
+						case 0:
+							$strings[] = 'OK';
+							break;
+						case 1:
+							$strings[] = 'WARNING';
+							break;
+						case 2:
+							$strings[] = 'CRITICAL';
+							break;
+						case 3:
+							$strings[] = 'M.I.A.';
+							break;
+					}
+				}
+				echo implode(", ", $strings);
+				break;
+				
+			case SearchFields_Sensor::EXTENSION_ID:
+				$sensor_type_mfts = DevblocksPlatform::getExtensions('portsensor.sensor', false);
+				$strings = array();
+
+				if(is_array($values))
+				foreach($values as $val) {
+					if(empty($val))
+						$strings[] = "";
+					elseif(!isset($sensor_type_mfts[$val]))
+						continue;
+					else
+						$strings[] = $sensor_type_mfts[$val]->name;
+				}
+				echo implode(", ", $strings);
+				break;
+				
 			default:
 				parent::renderCriteriaParam($param);
 				break;
@@ -1291,13 +1322,13 @@ class Ps_SensorView extends Ps_AbstractView {
 	static function getSearchFields() {
 		$fields = self::getFields();
 		unset($fields[SearchFields_Sensor::ID]);
-//		unset($fields[SearchFields_Sensor::PARAMS_JSON]);
+		unset($fields[SearchFields_Sensor::METRIC_TYPE]);
 		return $fields;
 	}
 
 	static function getColumns() {
 		$fields = self::getFields();
-//		unset($fields[SearchFields_Sensor::PARAMS_JSON]);
+		unset($fields[SearchFields_Sensor::METRIC_TYPE]);
 		return $fields;
 	}
 
@@ -1313,7 +1344,6 @@ class Ps_SensorView extends Ps_AbstractView {
 		$criteria = null;
 
 		switch($field) {
-			case SearchFields_Sensor::EXTENSION_ID:
 			case SearchFields_Sensor::METRIC_TYPE:
 			case SearchFields_Sensor::METRIC:
 			case SearchFields_Sensor::NAME:
@@ -1337,13 +1367,22 @@ class Ps_SensorView extends Ps_AbstractView {
 				break;
 
 			case SearchFields_Sensor::FAIL_COUNT:
-			case SearchFields_Sensor::STATUS:
 				$criteria = new DevblocksSearchCriteria($field,$oper,$value);
 				break;
 				
 			case SearchFields_Sensor::IS_DISABLED:
 				@$bool = DevblocksPlatform::importGPC($_REQUEST['bool'],'integer',1);
 				$criteria = new DevblocksSearchCriteria($field,$oper,$bool);
+				break;
+
+			case SearchFields_Sensor::STATUS:
+				@$statuses = DevblocksPlatform::importGPC($_REQUEST['statuses'],'array',array());
+				$criteria = new DevblocksSearchCriteria($field,$oper,$statuses);
+				break;
+			
+			case SearchFields_Sensor::EXTENSION_ID:
+				@$sensor_types = DevblocksPlatform::importGPC($_REQUEST['sensor_types'],'array',array());
+				$criteria = new DevblocksSearchCriteria($field,$oper,$sensor_types);
 				break;
 				
 			default:
