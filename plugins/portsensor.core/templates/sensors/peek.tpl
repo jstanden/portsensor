@@ -34,7 +34,6 @@
 		<td width="0%" nowrap="nowrap" align="right" valign="top"><b>{$translate->_('sensor.extension_id')|capitalize}:</b> </td>
 		<td width="100%">
 			<select name="extension_id" onchange="genericAjaxGet('divExtensionParams','c=sensors&a=showSensorExtensionConfig&ext_id='+escape(selectValue(this))+'&id='+escape(this.form.id.value));">
-				<option value="" {if empty($sensor->extension_id)}selected="selected"{/if}}>- Manual (External/API) -</option>
 				{foreach from=$sensor_types item=ext}
 				<option value="{$ext->id}" {if 0==strcasecmp($ext->id,$sensor->extension_id)}selected="selected"{/if}>
 					{$ext->name}

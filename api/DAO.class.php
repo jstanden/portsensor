@@ -86,6 +86,255 @@ class Ps_ORMHelper extends DevblocksORMHelper {
 	}
 };
 
+class DAO_Alert extends Ps_ORMHelper {
+	const ID = 'id';
+	const POS = 'pos';
+	const NAME = 'name';
+	const LAST_ALERT_DATE = 'last_alert_date';
+	const WORKER_ID = 'worker_id';
+	const CRITERIA_JSON = 'criteria_json';
+	const ACTIONS_JSON = 'actions_json';
+	const IS_DISABLED = 'is_disabled';
+
+	static function create($fields) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$id = $db->GenID('generic_seq');
+		
+		$sql = sprintf("INSERT INTO alert (id) ".
+			"VALUES (%d)",
+			$id
+		);
+		$db->Execute($sql);
+		
+		self::update($id, $fields);
+		
+		return $id;
+	}
+	
+	static function update($ids, $fields) {
+		parent::_update($ids, 'alert', $fields);
+	}
+	
+	/**
+	 * @param string $where
+	 * @return Model_Alert[]
+	 */
+	static function getWhere($where=null) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$sql = "SELECT id, pos, name, last_alert_date, worker_id, criteria_json, actions_json, is_disabled ".
+			"FROM alert ".
+			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
+			"ORDER BY id asc";
+		$rs = $db->Execute($sql);
+		
+		return self::_getObjectsFromResult($rs);
+	}
+
+	/**
+	 * @param integer $id
+	 * @return Model_Alert	 */
+	static function get($id) {
+		$objects = self::getWhere(sprintf("%s = %d",
+			self::ID,
+			$id
+		));
+		
+		if(isset($objects[$id]))
+			return $objects[$id];
+		
+		return null;
+	}
+	
+	/**
+	 * @param ADORecordSet $rs
+	 * @return Model_Alert[]
+	 */
+	static private function _getObjectsFromResult($rs) {
+		$objects = array();
+		
+		while(!$rs->EOF) {
+			$object = new Model_Alert();
+			$object->id = $rs->fields['id'];
+			$object->pos = $rs->fields['pos'];
+			$object->name = $rs->fields['name'];
+			$object->last_alert_date = $rs->fields['last_alert_date'];
+			$object->worker_id = $rs->fields['worker_id'];
+			$object->criteria_json = $rs->fields['criteria_json'];
+			$object->actions_json = $rs->fields['actions_json'];
+			$object->is_disabled = $rs->fields['is_disabled'];
+			
+			if(!empty($object->criteria_json))
+				$object->criteria = json_decode($object->criteria_json, true);
+
+			if(!empty($object->actions_json))
+				$object->actions = json_decode($object->actions_json, true);
+			
+			$objects[$object->id] = $object;
+			$rs->MoveNext();
+		}
+		
+		return $objects;
+	}
+	
+	static function delete($ids) {
+		if(!is_array($ids)) $ids = array($ids);
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		if(empty($ids))
+			return;
+		
+		$ids_list = implode(',', $ids);
+		
+		$db->Execute(sprintf("DELETE FROM alert WHERE id IN (%s)", $ids_list));
+		
+		return true;
+	}
+	
+    /**
+     * Enter description here...
+     *
+     * @param array $columns
+     * @param DevblocksSearchCriteria[] $params
+     * @param integer $limit
+     * @param integer $page
+     * @param string $sortBy
+     * @param boolean $sortAsc
+     * @param boolean $withCounts
+     * @return array
+     */
+    static function search($columns, $params, $limit=10, $page=0, $sortBy=null, $sortAsc=null, $withCounts=true) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$fields = SearchFields_Alert::getFields();
+		
+		// Sanitize
+		if(!isset($fields[$sortBy]))
+			$sortBy=null;
+
+        list($tables,$wheres) = parent::_parseSearchParams($params, $columns, $fields, $sortBy);
+		$start = ($page * $limit); // [JAS]: 1-based
+		$total = -1;
+		
+		$select_sql = sprintf("SELECT ".
+			"alert.id as %s, ".
+			"alert.pos as %s, ".
+			"alert.name as %s, ".
+			"alert.last_alert_date as %s, ".
+			"alert.worker_id as %s, ".
+			"alert.criteria_json as %s, ".
+			"alert.actions_json as %s, ".
+			"alert.is_disabled as %s ",
+				SearchFields_Alert::ID,
+				SearchFields_Alert::POS,
+				SearchFields_Alert::NAME,
+				SearchFields_Alert::LAST_ALERT_DATE,
+				SearchFields_Alert::WORKER_ID,
+				SearchFields_Alert::CRITERIA_JSON,
+				SearchFields_Alert::ACTIONS_JSON,
+				SearchFields_Alert::IS_DISABLED
+			);
+			
+		$join_sql = "FROM alert ";
+		
+		// Custom field joins
+		list($select_sql, $join_sql, $has_multiple_values) = self::_appendSelectJoinSqlForCustomFieldTables(
+			$tables,
+			$params,
+			'alert.id',
+			$select_sql,
+			$join_sql
+		);
+				
+		$where_sql = "".
+			(!empty($wheres) ? sprintf("WHERE %s ",implode(' AND ',$wheres)) : "");
+			
+		$sort_sql = (!empty($sortBy)) ? sprintf("ORDER BY %s %s ",$sortBy,($sortAsc || is_null($sortAsc))?"ASC":"DESC") : " ";
+			
+		$sql = 
+			$select_sql.
+			$join_sql.
+			$where_sql.
+			($has_multiple_values ? 'GROUP BY alert.id ' : '').
+			$sort_sql;
+		
+		// [TODO] Could push the select logic down a level too
+		if($limit > 0) {
+    		$rs = $db->SelectLimit($sql,$limit,$start) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+		} else {
+		    $rs = $db->Execute($sql) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+            $total = $rs->RecordCount();
+		}
+		
+		$results = array();
+		
+		if(is_a($rs,'ADORecordSet'))
+		while(!$rs->EOF) {
+			$result = array();
+			foreach($rs->fields as $f => $v) {
+				$result[$f] = $v;
+			}
+			$object_id = intval($rs->fields[SearchFields_Alert::ID]);
+			$results[$object_id] = $result;
+			$rs->MoveNext();
+		}
+
+		// [JAS]: Count all
+		if($withCounts) {
+			$count_sql = 
+				($has_multiple_values ? "SELECT COUNT(DISTINCT alert.id) " : "SELECT COUNT(alert.id) ").
+				$join_sql.
+				$where_sql;
+			$total = $db->GetOne($count_sql);
+		}
+		
+		return array($results,$total);
+	}
+};
+
+class SearchFields_Alert implements IDevblocksSearchFields {
+	const ID = 'a_id';
+	const POS = 'a_pos';
+	const NAME = 'a_name';
+	const LAST_ALERT_DATE = 'a_last_alert_date';
+	const WORKER_ID = 'a_worker_id';
+	const CRITERIA_JSON = 'a_criteria_json';
+	const ACTIONS_JSON = 'a_actions_json';
+	const IS_DISABLED = 'a_is_disabled';
+	
+	/**
+	 * @return DevblocksSearchField[]
+	 */
+	static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		$columns = array(
+			self::ID => new DevblocksSearchField(self::ID, 'alert', 'id', null, $translate->_('common.id')),
+			self::POS => new DevblocksSearchField(self::POS, 'alert', 'pos', null, $translate->_('alert.pos')),
+			self::NAME => new DevblocksSearchField(self::NAME, 'alert', 'name', null, $translate->_('alert.name')),
+			self::LAST_ALERT_DATE => new DevblocksSearchField(self::LAST_ALERT_DATE, 'alert', 'last_alert_date', null, $translate->_('alert.last_alert_date')),
+			self::WORKER_ID => new DevblocksSearchField(self::WORKER_ID, 'alert', 'worker_id', null, $translate->_('common.worker')),
+			self::CRITERIA_JSON => new DevblocksSearchField(self::CRITERIA_JSON, 'alert', 'criteria_json', null, $translate->_('criteria_json')),
+			self::ACTIONS_JSON => new DevblocksSearchField(self::ACTIONS_JSON, 'alert', 'actions_json', null, $translate->_('actions_json')),
+			self::IS_DISABLED => new DevblocksSearchField(self::IS_DISABLED, 'alert', 'is_disabled', null, ucwords($translate->_('common.disabled'))),
+		);
+		
+		// Custom Fields
+		//$fields = DAO_CustomField::getBySource(PsCustomFieldSource_XXX::ID);
+
+		//if(is_array($fields))
+		//foreach($fields as $field_id => $field) {
+		//	$key = 'cf_'.$field_id;
+		//	$columns[$key] = new DevblocksSearchField($key,$key,'field_value',null,$field->name);
+		//}
+		
+		// Sort by label (translation-conscious)
+		uasort($columns, create_function('$a, $b', "return strcasecmp(\$a->db_label,\$b->db_label);\n"));
+
+		return $columns;		
+	}
+};
+
 class DAO_CustomField extends DevblocksORMHelper {
 	const ID = 'id';
 	const NAME = 'name';
@@ -801,6 +1050,7 @@ class DAO_Sensor extends Ps_ORMHelper {
     /**
      * Enter description here...
      *
+     * @param array $columns
      * @param DevblocksSearchCriteria[] $params
      * @param integer $limit
      * @param integer $page

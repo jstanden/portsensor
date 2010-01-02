@@ -92,10 +92,9 @@ class Cron_SensorRunner extends PortSensorCronExtension {
 
 		// Only pull enabled sensors with an extension_id
 		$sensors = DAO_Sensor::getWhere(
-			sprintf("%s=%d AND %s!=''", 
+			sprintf("%s=%d", 
 				DAO_Sensor::IS_DISABLED,
-				0,
-				DAO_Sensor::EXTENSION_ID
+				0
 			)
 		);
 		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', true);
@@ -103,6 +102,10 @@ class Cron_SensorRunner extends PortSensorCronExtension {
 		if(is_array($sensors))
 		foreach($sensors as $sensor) {
 			if(!empty($sensor->extension_id) && isset($sensor_types[$sensor->extension_id])) {
+				// Skip external sensors
+				if('sensor.external' == $sensor->extension_id)
+					continue;
+				
 				$runner = $sensor_types[$sensor->extension_id]; 
 				$output = sprintf("%s (%s)",
 					$sensor->name,
@@ -149,8 +152,16 @@ class Cron_Alerts extends PortSensorCronExtension {
 		$logger = DevblocksPlatform::getConsoleLog();
 		$logger->info("[Alerts] Starting...");
 		
-//		$notify_sensors = DAO_Sensor::getWhere(sprintf("%s > %d", DAO_Sensor::STATUS, 0));
-//		print_r($notify_sensors);
+		$check_sensors = DAO_Sensor::getWhere();
+		if(is_array($check_sensors))
+		foreach($check_sensors as $sensor) {
+			$alerts = Model_Alert::getMatches($sensor);
+			
+			// [TODO] Make sure the alert hasn't triggered recently
+			if(is_array($alerts))
+			foreach($alerts as $alert)
+				$alert->run(array($sensor->id));
+		}
 		
 		$logger->info("[Alerts] Finished!");
 	}

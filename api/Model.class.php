@@ -54,6 +54,296 @@ class Model_Activity {
 	}
 };
 
+class Model_Alert {
+	public $id;
+	public $pos;
+	public $name;
+	public $last_alert_date;
+	public $worker_id;
+	public $criteria_json;
+	public $criteria;
+	public $actions_json;
+	public $actions;
+	public $is_disabled;
+	
+	/**
+	 * @return Model_Sensor[]|false
+	 */
+	static function getMatches(Model_Sensor $sensor, $only_alert_id=0) {
+		$matches = array();
+		
+		// Check the sensor
+		if(null == $sensor)
+			return false;
+
+		if(!empty($only_alert_id)) {
+			$alerts = array(
+				DAO_Alert::get($only_alert_id)
+			);
+		} else {
+			$alerts = DAO_Alert::getWhere(); // [TODO] cache
+		}
+		
+		$custom_fields = DAO_CustomField::getAll();
+		
+		// Lazy load when needed on criteria basis
+		$sensor_field_values = null;
+		
+		// Check filters
+		if(is_array($alerts))
+		foreach($alerts as $alert) { /* @var $alert Model_Alert */
+			$passed = 0;
+
+			// Skip alerts with no criteria
+			if(!is_array($alert->criteria) || empty($alert->criteria))
+				continue; 
+
+			// check criteria
+			foreach($alert->criteria as $rule_key => $rule) {
+				@$value = $rule['value'];
+							
+				switch($rule_key) {
+					case 'dayofweek':
+						$current_day = strftime('%w');
+//						$current_day = 1;
+
+						// Forced to English abbrevs as indexes
+						$days = array('sun','mon','tue','wed','thu','fri','sat');
+						
+						// Is the current day enabled?
+						if(isset($rule[$days[$current_day]])) {
+							$passed++;
+						}
+							
+						break;
+						
+					case 'timeofday':
+						$current_hour = strftime('%H');
+						$current_min = strftime('%M');
+//						$current_hour = 17;
+//						$current_min = 5;
+
+						if(null != ($from_time = @$rule['from']))
+							list($from_hour, $from_min) = explode(':', $from_time);
+						
+						if(null != ($to_time = @$rule['to']))
+							if(list($to_hour, $to_min) = explode(':', $to_time));
+
+						// Do we need to wrap around to the next day's hours?
+						if($from_hour > $to_hour) { // yes
+							$to_hour += 24; // add 24 hrs to the destination (1am = 25th hour)
+						}
+							
+						// Are we in the right 24 hourly range?
+						if((integer)$current_hour >= $from_hour && (integer)$current_hour <= $to_hour) {
+							// If we're in the first hour, are we minutes early?
+							if($current_hour==$from_hour && (integer)$current_min < $from_min)
+								break;
+							// If we're in the last hour, are we minutes late?
+							if($current_hour==$to_hour && (integer)$current_min > $to_min)
+								break;
+							
+							$passed++;
+						}
+						break;						
+						
+					case 'event':
+						switch($sensor->status) {
+							case 0: // OK
+								if(isset($rule['ok']))
+									$passed++;
+								break;
+							case 1: // WARNING
+								if(isset($rule['warning']))
+									$passed++;
+								break;
+							case 2: // CRITICAL
+								if(isset($rule['critical']))
+									$passed++;
+								break;
+							case 3: // M.I.A
+								if(isset($rule['mia']))
+									$passed++;
+								break;
+						}
+						break;
+
+					case 'sensor_name':
+						$regexp_sensor_name = DevblocksPlatform::strToRegExp($value);
+						if(@preg_match($regexp_sensor_name, $sensor->name)) {
+							$passed++;
+						}
+						break;
+						
+					case 'sensor_type':
+						if(isset($rule[$sensor->extension_id]))
+							$passed++;
+						break;
+						
+					default: // ignore invalids
+						// Custom Fields
+						if(0==strcasecmp('cf_',substr($rule_key,0,3))) {
+							$field_id = substr($rule_key,3);
+
+							// Make sure it exists
+							if(null == (@$field = $custom_fields[$field_id]))
+								continue;
+
+							// Lazy values loader
+							$field_values = array();
+							switch($field->source_extension) {
+								case PsCustomFieldSource_Sensor::ID:
+									if(null == $sensor_field_values)
+										$sensor_field_values = array_shift(DAO_CustomFieldValue::getValuesBySourceIds(PsCustomFieldSource_Sensor::ID, $sensor->id));
+									$field_values =& $sensor_field_values;
+									break;
+							}
+							
+							// No values, default.
+//							if(!isset($field_values[$field_id]))
+//								continue;
+							
+							// Type sensitive value comparisons
+							// [TODO] Operators
+							switch($field->type) {
+								case 'S': // string
+								case 'T': // clob
+								case 'U': // URL
+									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : '';
+									$oper = isset($rule['oper']) ? $rule['oper'] : "=";
+									
+									if($oper == "=" && @preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
+										$passed++;
+									elseif($oper == "!=" && @!preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
+										$passed++;
+									break;
+								case 'N': // number
+									if(!isset($field_values[$field_id]))
+										break;
+								
+									$field_val = intval($field_values[$field_id]);
+									$oper = isset($rule['oper']) ? $rule['oper'] : "=";
+									
+									if($oper=="=" && $field_val == intval($value))
+										$passed++;
+									elseif($oper=="!=" && $field_val != intval($value))
+										$passed++;
+									elseif($oper==">" && $field_val > intval($value))
+										$passed++;
+									elseif($oper=="<" && $field_val < intval($value))
+										$passed++;
+									break;
+								case 'E': // date
+									$field_val = isset($field_values[$field_id]) ? intval($field_values[$field_id]) : 0;
+									$from = isset($rule['from']) ? $rule['from'] : "0";
+									$to = isset($rule['to']) ? $rule['to'] : "now";
+									
+									if(intval(@strtotime($from)) <= $field_val && intval(@strtotime($to)) >= $field_val) {
+										$passed++;
+									}
+									break;
+								case 'C': // checkbox
+									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : 0;
+									if(intval($value)==intval($field_val))
+										$passed++;
+									break;
+								case 'D': // dropdown
+								case 'X': // multi-checkbox
+								case 'M': // multi-picklist
+								case 'W': // worker
+									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : array();
+									if(!is_array($value)) $value = array($value);
+										
+									if(is_array($field_val)) { // if multiple things set
+										foreach($field_val as $v) { // loop through possible
+											if(isset($value[$v])) { // is any possible set?
+												$passed++;
+												break;
+											}
+										}
+										
+									} else { // single
+										if(isset($value[$field_val])) { // is our set field in possibles?
+											$passed++;
+											break;
+										}
+										
+									}
+									break;
+							}
+						}
+						break;
+				}
+			}
+			
+			// If our rule matched every criteria, stop and return the alert
+			if($passed == count($alert->criteria)) {
+//				DAO_Alert::increment($alert->id); // ++ the times we've matched
+				$matches[$alert->id] = $alert;
+				
+				// If we're not stackable anymore, bail out.
+//				if(!$alert->is_stackable)
+//					return $matches;
+			}
+		}
+		
+		// If last alert was still stackable...
+		if(!empty($matches))
+			return $matches;
+		
+		// No matches
+		return false;
+	}
+	
+	/**
+	 * @param integer[] $sensor_ids
+	 */
+	function run($sensor_ids) {
+		$fields = array();
+		$field_values = array();
+
+		$custom_fields = DAO_CustomField::getAll();
+		
+		// actions
+		if(is_array($this->actions))
+		foreach($this->actions as $action => $params) {
+			switch($action) {
+//				case 'spam':
+//					if(isset($params['is_spam'])) {
+//						if(intval($params['is_spam'])) {
+//							foreach($ticket_ids as $ticket_id)
+//								CerberusBayes::markTicketAsSpam($ticket_id);
+//						} else {
+//							foreach($ticket_ids as $ticket_id)
+//								CerberusBayes::markTicketAsNotSpam($ticket_id);
+//						}
+//					}
+//					break;
+
+				default:
+					// Custom fields
+					if(substr($action,0,3)=="cf_") {
+						$field_id = intval(substr($action,3));
+						
+						if(!isset($custom_fields[$field_id]) || !isset($params['value']))
+							break;
+
+						$field_values[$field_id] = $params;
+					}
+					break;
+			}
+		}
+
+		if(!empty($sensor_ids)) {
+			if(!empty($fields))
+				DAO_Sensor::update($sensor_ids, $fields);
+			
+			// Custom Fields
+			Ps_AbstractView::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $field_values, $sensor_ids);
+		}
+	}	
+};
+
 class Model_CustomField {
 	const TYPE_CHECKBOX = 'C';
 	const TYPE_DROPDOWN = 'D';
@@ -642,6 +932,247 @@ class Model_Worker {
 class Model_WorkerRole {
 	public $id;
 	public $name;
+};
+
+class Ps_AlertView extends Ps_AbstractView {
+	const DEFAULT_ID = 'alerts';
+
+	function __construct() {
+		$this->id = self::DEFAULT_ID;
+		$this->name = 'Alerts';
+		$this->renderLimit = 25;
+		$this->renderSortBy = SearchFields_Alert::POS;
+		$this->renderSortAsc = false;
+
+		$this->view_columns = array(
+			SearchFields_Alert::NAME,
+			SearchFields_Alert::POS,
+			SearchFields_Alert::LAST_ALERT_DATE,
+		);
+		
+		$this->doResetCriteria();
+	}
+
+	function getData() {
+		return DAO_Alert::search(
+			$this->view_columns,
+			$this->params,
+			$this->renderLimit,
+			$this->renderPage,
+			$this->renderSortBy,
+			$this->renderSortAsc
+		);
+	}
+
+	function render() {
+		$this->_sanitize();
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('id', $this->id);
+		$tpl->assign('view', $this);
+
+//		$custom_fields = DAO_CustomField::getBySource(PsCustomFieldSource_Sensor::ID);
+//		$tpl->assign('custom_fields', $custom_fields);
+
+//		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor',false);
+//		$tpl->assign('sensor_types', $sensor_types);
+		
+		$tpl->cache_lifetime = "0";
+		$tpl->assign('view_fields', $this->getColumns());
+		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/alerts/view.tpl');
+	}
+
+	function renderCriteria($field) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('id', $this->id);
+
+		switch($field) {
+			case SearchFields_Alert::NAME:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				break;
+			case SearchFields_Alert::POS:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+				break;
+			case SearchFields_Alert::IS_DISABLED:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				break;
+			case SearchFields_Alert::LAST_ALERT_DATE:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				break;
+			case SearchFields_Alert::WORKER_ID:
+				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__worker.tpl');
+				break;
+			default:
+				// Custom Fields
+				if('cf_' == substr($field,0,3)) {
+					$this->_renderCriteriaCustomField($tpl, substr($field,3));
+				} else {
+					echo ' ';
+				}
+				break;
+		}
+	}
+
+	function renderCriteriaParam($param) {
+		$field = $param->field;
+		$values = !is_array($param->value) ? array($param->value) : $param->value;
+
+		switch($field) {
+			case SearchFields_Alert::WORKER_ID:
+				$workers = DAO_Worker::getAll();
+				$strings = array();
+
+				foreach($values as $val) {
+					if(empty($val))
+					$strings[] = "Nobody";
+					elseif(!isset($workers[$val]))
+					continue;
+					else
+					$strings[] = $workers[$val]->getName();
+				}
+				echo implode(", ", $strings);
+				break;
+			default:
+				parent::renderCriteriaParam($param);
+				break;
+		}
+	}
+
+	static function getFields() {
+		return SearchFields_Alert::getFields();
+	}
+
+	static function getSearchFields() {
+		$fields = self::getFields();
+		unset($fields[SearchFields_Alert::ID]);
+		unset($fields[SearchFields_Alert::CRITERIA_JSON]);
+		unset($fields[SearchFields_Alert::ACTIONS_JSON]);
+		return $fields;
+	}
+
+	static function getColumns() {
+		$fields = self::getFields();
+		unset($fields[SearchFields_Alert::CRITERIA_JSON]);
+		unset($fields[SearchFields_Alert::ACTIONS_JSON]);
+		return $fields;
+	}
+
+	function doResetCriteria() {
+		parent::doResetCriteria();
+		
+		$this->params = array(
+			SearchFields_Alert::IS_DISABLED => new DevblocksSearchCriteria(SearchFields_Alert::IS_DISABLED,'=',0),
+		);
+	}
+	
+	function doSetCriteria($field, $oper, $value) {
+		$criteria = null;
+
+		switch($field) {
+			case SearchFields_Alert::NAME:
+				// force wildcards if none used on a LIKE
+				if(($oper == DevblocksSearchCriteria::OPER_LIKE || $oper == DevblocksSearchCriteria::OPER_NOT_LIKE)
+				&& false === (strpos($value,'*'))) {
+					$value = '*'.$value.'*';
+				}
+				$criteria = new DevblocksSearchCriteria($field, $oper, $value);
+				break;
+				
+			case SearchFields_Alert::LAST_ALERT_DATE:
+				@$from = DevblocksPlatform::importGPC($_REQUEST['from'],'string','');
+				@$to = DevblocksPlatform::importGPC($_REQUEST['to'],'string','');
+
+				if(empty($from)) $from = 0;
+				if(empty($to)) $to = 'today';
+
+				$criteria = new DevblocksSearchCriteria($field,$oper,array($from,$to));
+				break;
+
+			case SearchFields_Alert::POS:
+				$criteria = new DevblocksSearchCriteria($field,$oper,$value);
+				break;
+
+			case SearchFields_Alert::WORKER_ID:
+				@$worker_ids = DevblocksPlatform::importGPC($_REQUEST['worker_id'],'array',array());
+				$criteria = new DevblocksSearchCriteria($field,$oper,$worker_ids);
+				break;
+				
+			case SearchFields_Alert::IS_DISABLED:
+				@$bool = DevblocksPlatform::importGPC($_REQUEST['bool'],'integer',1);
+				$criteria = new DevblocksSearchCriteria($field,$oper,$bool);
+				break;
+				
+			default:
+				// Custom Fields
+				if(substr($field,0,3)=='cf_') {
+					$criteria = $this->_doSetCriteriaCustomField($field, substr($field,3));
+				}
+				break;
+		}
+
+		if(!empty($criteria)) {
+			$this->params[$field] = $criteria;
+			$this->renderPage = 0;
+		}
+	}
+
+	function doBulkUpdate($filter, $do, $ids=array()) {
+		@set_time_limit(600); // [TODO] Temp!
+	  
+		$change_fields = array();
+		$custom_fields = array();
+
+		if(empty($do))
+			return;
+
+		if(is_array($do))
+		foreach($do as $k => $v) {
+			switch($k) {
+//				case 'is_disabled':
+//					$change_fields[DAO_Sensor::IS_DISABLED] = intval($v);
+//					break;
+				default:
+					// Custom fields
+					if(substr($k,0,3)=="cf_") {
+						$custom_fields[substr($k,3)] = $v;
+					}
+					break;
+
+			}
+		}
+
+		$pg = 0;
+
+		if(empty($ids))
+		do {
+			list($objects,$null) = DAO_Alert::search(
+			array(),
+			$this->params,
+			100,
+			$pg++,
+			SearchFields_Alert::ID,
+			true,
+			false
+			);
+			 
+			$ids = array_merge($ids, array_keys($objects));
+			 
+		} while(!empty($objects));
+
+		$batch_total = count($ids);
+		for($x=0;$x<=$batch_total;$x+=100) {
+			$batch_ids = array_slice($ids,$x,100);
+			DAO_Alert::update($batch_ids, $change_fields);
+			
+			// Custom Fields
+//			self::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $custom_fields, $batch_ids);
+			
+			unset($batch_ids);
+		}
+
+		unset($ids);
+	}
+
 };
 
 class Ps_SensorView extends Ps_AbstractView {

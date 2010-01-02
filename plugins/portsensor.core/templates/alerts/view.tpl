@@ -3,7 +3,7 @@
 {assign var=data value=$results[0]}
 <table cellpadding="0" cellspacing="0" border="0" class="tableBlue" width="100%">
 	<tr>
-		<td nowrap="nowrap" class="tableThBlue">{$view->name} {if $view->id == 'search'}<a href="#{$view->id}_actions" style="color:rgb(255,255,255);font-size:11px;">{$translate->_('views.jump_to_actions')}</a>{/if}</td>
+		<td nowrap="nowrap" class="tableThBlue">{$view->name}</td>
 		<td nowrap="nowrap" class="tableThBlue" align="right">
 			<a href="javascript:;" onclick="genericAjaxGet('customize{$view->id}','c=internal&a=viewCustomize&id={$view->id}');toggleDiv('customize{$view->id}','block');" class="tableThLink">{$translate->_('common.customize')|lower}</a>
 			{*if $active_worker->hasPriv('core.home.workspaces')}<span style="font-size:12px"> | </span><a href="javascript:;" onclick="genericAjaxGet('{$view->id}_tips','c=internal&a=viewShowCopy&view_id={$view->id}');toggleDiv('{$view->id}_tips','block');" class="tableThLink">{$translate->_('common.copy')|lower}</a>{/if*}
@@ -16,7 +16,7 @@
 <form id="customize{$view->id}" name="customize{$view->id}" action="#" onsubmit="return false;" style="display:none;"></form>
 <form id="viewForm{$view->id}" name="viewForm{$view->id}" action="#">
 <input type="hidden" name="view_id" value="{$view->id}">
-<input type="hidden" name="c" value="sensors">
+<input type="hidden" name="c" value="preferences">
 <input type="hidden" name="a" value="">
 <table cellpadding="1" cellspacing="0" border="0" width="100%" class="tableRowBg">
 
@@ -26,7 +26,7 @@
 		{foreach from=$view->view_columns item=header name=headers}
 			{* start table header, insert column title and link *}
 			<th nowrap="nowrap">
-			{if $header=="x"}<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy=s_id');">{$translate->_('contact_org.id')|capitalize}</a>
+			{if $header=="x"}<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy=a_id');">{$translate->_('contact_org.id')|capitalize}</a>
 			{else}<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy={$header}');">{$view_fields.$header->db_label}</a>
 			{/if}
 			
@@ -45,7 +45,7 @@
 	{* Column Data *}
 	{foreach from=$data item=result key=idx name=results}
 
-	{assign var=rowIdPrefix value="row_"|cat:$view->id|cat:"_"|cat:$result.s_id}
+	{assign var=rowIdPrefix value="row_"|cat:$view->id|cat:"_"|cat:$result.a_id}
 	{if $smarty.foreach.results.iteration % 2}
 		{assign var=tableRowBg value="tableRowBg"}
 	{else}
@@ -53,83 +53,25 @@
 	{/if}
 	
 		<tr class="{$tableRowBg}" id="{$rowIdPrefix}_s" onmouseover="toggleClass(this.id,'tableRowHover');toggleClass('{$rowIdPrefix}','tableRowHover');" onmouseout="toggleClass(this.id,'{$tableRowBg}');toggleClass('{$rowIdPrefix}','{$tableRowBg}');" onclick="if(getEventTarget(event)=='TD' || getEventTarget(event)=='DIV') checkAll('{$rowIdPrefix}_s');">
-			<td align="center" rowspan="2"><input type="checkbox" name="row_id[]" value="{$result.s_id}"></td>
+			<td align="center" rowspan="2"><input type="checkbox" name="row_id[]" value="{$result.a_id}"></td>
 		</tr>
 		<tr class="{$tableRowBg}" id="{$rowIdPrefix}" onmouseover="toggleClass(this.id,'tableRowHover');toggleClass('{$rowIdPrefix}_s','tableRowHover');" onmouseout="toggleClass(this.id,'{$tableRowBg}');toggleClass('{$rowIdPrefix}_s','{$tableRowBg}');" onclick="if(getEventTarget(event)=='TD') checkAll('{$rowIdPrefix}_s');">
 		{foreach from=$view->view_columns item=column name=columns}
 			{if substr($column,0,3)=="cf_"}
 				{include file="file:$core_tpl/internal/custom_fields/view/cell_renderer.tpl"}
-			{elseif $column=="s_id"}
-			<td valign="top">{$result.s_id}&nbsp;</td>
-			{elseif $column=="s_extension_id"}
+			{elseif $column=="a_id"}
+			<td valign="top">{$result.a_id}&nbsp;</td>
+			{elseif $column=="a_name"}
 			<td valign="top">
-				{if ''==$result.$column}
-					(External)
-				{else}
-					{assign var=ext_id value=$result.$column}
-					{assign var=ext value=$sensor_types.$ext_id}
-					{if $ext}{$ext->name}{/if}
-				{/if}
-			</td>
-			{elseif $column=="s_name"}
-			<td valign="top">
-				{if $result.s_is_disabled}
+				{if $result.a_is_disabled}
 					<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_gray.png{/devblocks_url}" align="top">
-				{else}
-					{if 0==$result.s_status}
-						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_green.png{/devblocks_url}" align="top">
-					{elseif 1==$result.s_status}
-						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_yellow.png{/devblocks_url}" align="top">
-					{elseif 2==$result.s_status}
-						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_red.png{/devblocks_url}" align="top">
-					{/if}
 				{/if}
-				<a href="javascript:;" onclick="genericAjaxPanel('c=sensors&a=showSensorPeek&id={$result.s_id}&view_id={$view->id}',this,false,'500px');" style="color:rgb(75,75,75);font-size:12px;font-weight:bold;">{$result.s_name}</a>
+				<a href="javascript:;" onclick="genericAjaxPanel('c=preferences&a=showAlertPeek&id={$result.a_id}&view_id={$view->id}',this,false,'550px');" style="color:rgb(75,75,75);font-size:12px;font-weight:bold;">{$result.a_name}</a>
 			</td>
-			{elseif $column=="s_updated_date"}
-			<td valign="top"><abbr title="{$result.s_updated_date|devblocks_date}">{$result.s_updated_date|devblocks_prettytime}</abbr>&nbsp;</td>
-			{elseif $column=="s_is_disabled"}
+			{elseif $column=="a_last_alert_date"}
+			<td valign="top"><abbr title="{$result.$column|devblocks_date}">{$result.$column|devblocks_prettytime}</abbr>&nbsp;</td>
+			{elseif $column=="a_is_disabled"}
 			<td valign="top">{if $result.$column}<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check_gray.gif{/devblocks_url}" align="top">{/if}&nbsp;</td>
-			{elseif $column=="s_status"}
-			<td valign="top">
-				{if $result.s_is_disabled}
-					<span class="status_disabled">DISABLED</span>
-				{else}
-					{if 0==$result.$column}
-						<span class="status_ok">OK</span>
-					{elseif 1==$result.$column}
-						<span class="status_warning">WARNING</span>
-					{elseif 2==$result.$column}
-						<span class="status_critical">CRITICAL</span>
-					{/if}
-				{/if}
-			</td>
-			{elseif $column=="s_metric_type"}
-			<td valign="top">
-				{if 'T'==$result.$column}
-					Text
-				{elseif 'D'==$result.$column}
-					Decimal
-				{elseif 'N'==$result.$column}
-					Number
-				{elseif 'U'==$result.$column}
-					Up/Down
-				{/if}
-			</td>
-			{elseif $column=="s_metric" || $column=="s_output"}
-			<td valign="top">
-				{if $result.s_is_disabled}
-					<span class="status_disabled"></span>
-				{else}
-					{if 0==$result.s_status}
-						<span class="status_ok">{$result.$column|nl2br}</span>
-					{elseif 1==$result.s_status}
-						<span class="status_warning">{$result.$column|nl2br}</span>
-					{elseif 2==$result.s_status}
-						<span class="status_critical">{$result.$column|nl2br}</span>
-					{/if}
-				{/if}
-			</td>
 			{else}
 			<td valign="top">{$result.$column}&nbsp;</td>
 			{/if}
@@ -139,10 +81,10 @@
 	
 </table>
 <table cellpadding="2" cellspacing="0" border="0" width="100%" class="tableBg" id="{$view->id}_actions">
-	{if $total}
+	{if 0 && $total}
 	<tr>
 		<td colspan="2">
-			<button type="button" id="btn{$view->id}RunNow" onclick="this.form.a.value='viewRunNow';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=sensors');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/media_play_green.png{/devblocks_url}" align="top"> {$translate->_('sensors.button.run_now')}</button>
+			{*<button type="button" id="btn{$view->id}RunNow" onclick="this.form.a.value='viewRunNow';genericAjaxPost('viewForm{$view->id}','view{$view->id}','c=sensors');document.location.href='#top';"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/media_play_green.png{/devblocks_url}" align="top"> {$translate->_('sensors.button.run_now')}</button>*}
 		</td>
 	</tr>
 	{/if}

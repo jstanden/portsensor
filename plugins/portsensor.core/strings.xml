@@ -123,6 +123,9 @@
 		<tu tuid='common.url'>
 			<tuv xml:lang="en_US"><seg>URL</seg></tuv>
 		</tu>
+		<tu tuid='common.worker'>
+			<tuv xml:lang="en_US"><seg>Worker</seg></tuv>
+		</tu>
 		<tu tuid='common.yes'>
 			<tuv xml:lang="en_US"><seg>yes</seg></tuv>
 		</tu>
@@ -137,6 +140,18 @@
 		</tu>
 		<tu tuid='activity.setup'>
 			<tuv xml:lang="en_US"><seg>%s is configuring the application</seg></tuv>
+		</tu>
+
+		<!-- Alerts -->
+		
+		<tu tuid='alert.last_alert_date'>
+			<tuv xml:lang="en_US"><seg>Last Alert</seg></tuv>
+		</tu>
+		<tu tuid='alert.name'>
+			<tuv xml:lang="en_US"><seg>Name</seg></tuv>
+		</tu>
+		<tu tuid='alert.pos'>
+			<tuv xml:lang="en_US"><seg># Hits</seg></tuv>
 		</tu>
 
 		<!-- Cron -->

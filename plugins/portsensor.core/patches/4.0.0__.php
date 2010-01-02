@@ -296,4 +296,33 @@ if(!isset($indexes['is_disabled'])) {
 	$datadict->ExecuteSQLArray($sql);
 }
 
+// `alert` =============================
+if(!isset($tables['alert'])) {
+    $flds = "
+		id I4 DEFAULT 0 NOTNULL PRIMARY,
+		pos I1 DEFAULT 0 NOTNULL,
+		name C(255) DEFAULT '' NOTNULL,
+		last_alert_date I4 DEFAULT 0 NOTNULL,
+		worker_id I4 DEFAULT 0 NOTNULL,
+		criteria_json XL,
+		actions_json XL,
+		is_disabled I1 DEFAULT 0 NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('alert', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+$columns = $datadict->MetaColumns('alert');
+$indexes = $datadict->MetaIndexes('alert',false);
+
+if(!isset($indexes['worker_id'])) {
+	$sql = $datadict->CreateIndexSQL('worker_id','alert','worker_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['is_disabled'])) {
+	$sql = $datadict->CreateIndexSQL('is_disabled','alert','is_disabled');
+	$datadict->ExecuteSQLArray($sql);
+}
+
 return TRUE;

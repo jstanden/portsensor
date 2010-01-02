@@ -11,6 +11,50 @@
 |	http://www.cerberusweb.com	  http://www.webgroupmedia.com/
 ***********************************************************************/
 
+class PsExternalSensor extends Extension_Sensor {
+	private $_TPL_PATH = '';
+	
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+		$this->_TPL_PATH = dirname(dirname(__FILE__)) . '/templates/';
+	}
+	
+	/**
+	 * 
+	 * @return array 
+	 */
+	function run(Model_Sensor $sensor, &$fields) {
+//		$fields = array(
+//			DAO_Sensor::STATUS => ($success?0:2),
+//			DAO_Sensor::METRIC => ($success?1:0),
+//			DAO_Sensor::METRIC_TYPE => 'U',
+//			DAO_Sensor::OUTPUT => $output,
+//		);
+//		
+//		return $success;
+	}
+	
+	function renderConfig(Model_Sensor $sensor) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('sensor', $sensor);
+
+		$tpl->cache_lifetime = "0";
+		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/config/external.tpl');
+	}
+
+	function saveConfig(Model_Sensor $sensor) {
+//		@$url = DevblocksPlatform::importGPC($_POST['url'],'string','');
+//		
+//		$fields = array(
+//			DAO_Sensor::PARAMS_JSON => json_encode(array(
+//				'url' => $url,
+//			)),
+//		);
+//		
+//		DAO_Sensor::update($sensor->id, $fields);
+	}
+};
+
 class PsHttpSensor extends Extension_Sensor {
 	private $_TPL_PATH = '';
 	

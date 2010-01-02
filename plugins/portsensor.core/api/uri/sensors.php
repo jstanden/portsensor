@@ -82,15 +82,19 @@ class PsSensorsPage extends PortSensorPageExtension {
 		
 		$tpl->assign('view_id', $view_id);
 		
-		$sensor = DAO_Sensor::get($id);
+		if(null == ($sensor = DAO_Sensor::get($id))) {
+			$sensor = new Model_Sensor();
+			$sensor->extension_id = 'sensor.external';
+		}
 		$tpl->assign('sensor', $sensor);
 		
 		$sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', false);
 		$tpl->assign('sensor_types', $sensor_types);
 		
 		// Sensor extension instance
-		if(!empty($sensor) && !empty($sensor->extension_id))
+		if(!empty($sensor->extension_id) && isset($sensor_types[$sensor->extension_id])) {
 			$tpl->assign('sensor_extension', DevblocksPlatform::getExtension($sensor->extension_id,true));
+		}
 		
 		// Custom Fields
 		$custom_fields = DAO_CustomField::getBySource(PsCustomFieldSource_Sensor::ID);
@@ -195,22 +199,24 @@ class PsSensorsPage extends PortSensorPageExtension {
 	    	
 	    	if(is_array($sensors))
 	    	foreach($sensors as $sensor) {
-	    		if(!empty($sensor->extension_id)) {
-	    			if(isset($sensor_types[$sensor->extension_id])) {
-	    				$runner = $sensor_types[$sensor->extension_id];
-	    				
-	    				// [TODO] This duplicates cron
-						if(method_exists($runner,'run')) {
-							$fields = array();
-							$success = $runner->run($sensor, $fields);
-							
-							$fields[DAO_Sensor::UPDATED_DATE] = time();
-							$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
-							
-							DAO_Sensor::update($sensor->id, $fields);
-						}
-	    			}
-	    		}
+    			if(isset($sensor_types[$sensor->extension_id])) {
+    				// Skip external sensors
+    				if('sensor.external' == $sensor->extension_id)
+    					continue;
+    				
+    				$runner = $sensor_types[$sensor->extension_id];
+    				
+    				// [TODO] This duplicates cron
+					if(method_exists($runner,'run')) {
+						$fields = array();
+						$success = $runner->run($sensor, $fields);
+						
+						$fields[DAO_Sensor::UPDATED_DATE] = time();
+						$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
+						
+						DAO_Sensor::update($sensor->id, $fields);
+					}
+    			}
 	    	}
 	    	
 	    } catch(Exception $e) {
