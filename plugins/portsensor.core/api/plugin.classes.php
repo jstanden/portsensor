@@ -31,6 +31,57 @@ class PsCustomFieldSource_Worker extends Extension_CustomFieldSource {
 	const ID = 'portsensor.fields.source.worker';
 };
 
+// Alert Actions
+
+class PsAlertActionSendMail extends Extension_AlertAction {
+	const EXTENSION_ID = 'portsensor.alert.action.send_mail';
+	
+	function __construct($manifest) {
+		parent::__construct($manifest);	
+	}
+	
+	function run(Model_Alert $alert, Model_Sensor $sensor) {
+    	@$to = DevblocksPlatform::parseCsvString($alert->actions[self::EXTENSION_ID]['to']);
+    	
+		$logger = DevblocksPlatform::getConsoleLog();
+    	
+		if(is_array($to))
+		foreach($to as $address) {
+			$logger->info(sprintf("Sending mail to %s about %s", $address, $sensor->name));
+			
+			PortSensorMail::quickSend(
+				$address,
+				sprintf("=ALERT= %s: %s",
+					$sensor->name,
+					$sensor->output
+				),
+				sprintf("%s: %s",
+					$sensor->name,
+					$sensor->output
+				)
+			);
+		}
+	}
+	
+	function renderConfig(Model_Alert $alert=null) {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
+		
+		@$params = $alert->actions[self::EXTENSION_ID];
+		$tpl->assign('params', $params);
+		
+		$tpl->display($tpl_path . 'alerts/actions/send_mail.tpl');
+	}
+	
+	function saveConfig() { 
+    	@$to = DevblocksPlatform::importGPC($_REQUEST['core_alert_action_to'],'string',null);
+		
+        return array(
+			'to' => $to, 
+		);
+	}
+}
+
 class PsPageController extends DevblocksControllerExtension {
     const ID = 'core.controller.page';
     

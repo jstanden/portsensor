@@ -371,8 +371,7 @@
 				<file>api/plugin.classes.php</file>
 				<name>PsCustomFieldSource_Sensor</name>
 			</class>
-			<params>
-			</params>
+			<params/>
 		</extension>
 		
 		<extension point="portsensor.fields.source">
@@ -382,8 +381,7 @@
 				<file>api/plugin.classes.php</file>
 				<name>PsCustomFieldSource_Worker</name>
 			</class>
-			<params>
-			</params>
+			<params/>
 		</extension>
 				
 		<!-- Workspace Sources -->
@@ -401,6 +399,16 @@
 			</params>
 		</extension>
 		-->
+
+		<extension point="portsensor.alert.action">
+			<id>portsensor.alert.action.send_mail</id>
+			<name>Send e-mail</name>
+			<class>
+			  <file>api/plugin.classes.php</file>
+			  <name>PsAlertActionSendMail</name>
+			</class>
+			<params/>
+		</extension>
 
 	</extensions>
 </plugin>
