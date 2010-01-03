@@ -153,6 +153,7 @@ class Cron_Alerts extends PortSensorCronExtension {
 		$logger->info("[Alerts] Starting...");
 		
 		$check_sensors = DAO_Sensor::getWhere();
+		
 		if(is_array($check_sensors))
 		foreach($check_sensors as $sensor) {
 			$alerts = Model_Alert::getMatches($sensor);
@@ -160,7 +161,7 @@ class Cron_Alerts extends PortSensorCronExtension {
 			// [TODO] Make sure the alert hasn't triggered recently
 			if(is_array($alerts))
 			foreach($alerts as $alert)
-				$alert->run(array($sensor->id));
+				$alert->run($sensor);
 		}
 		
 		$logger->info("[Alerts] Finished!");

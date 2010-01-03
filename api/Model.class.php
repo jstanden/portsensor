@@ -89,6 +89,9 @@ class Model_Alert {
 		// Lazy load when needed on criteria basis
 		$sensor_field_values = null;
 		
+		// Criteria extensions
+		$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', false);
+		
 		// Check filters
 		if(is_array($alerts))
 		foreach($alerts as $alert) { /* @var $alert Model_Alert */
@@ -297,7 +300,21 @@ class Model_Alert {
 									}
 									break;
 							}
+						} elseif(isset($alert_criteria_exts[$rule_key])) { // criteria extensions
+							try {
+								$crit_ext = $alert_criteria_exts[$rule_key]->createInstance();
+								if($crit_ext->matches($alert, $sensor)) {
+									$passed++;
+									break;
+								}
+								
+							} catch(Exception $e) {
+								// Oops!
+								//print_r($e);
+							}
+							
 						}
+						
 						break;
 				}
 			}
@@ -324,11 +341,15 @@ class Model_Alert {
 	/**
 	 * @param integer[] $sensor_ids
 	 */
-	function run($sensor_ids) {
+	function run(Model_Sensor $sensor) {
 		$fields = array();
 		$field_values = array();
 
+		// Custom fields
 		$custom_fields = DAO_CustomField::getAll();
+		
+		// Action extensions
+		$alert_action_exts = DevblocksPlatform::getExtensions('portsensor.alert.action', false);
 		
 		// actions
 		if(is_array($this->actions))
@@ -355,17 +376,27 @@ class Model_Alert {
 							break;
 
 						$field_values[$field_id] = $params;
+						
+					} elseif(isset($alert_action_exts[$action])) { // criteria extensions
+						try {
+							$act_ext = $alert_action_exts[$action]->createInstance();
+							$act_ext->run($this, $sensor);
+							
+						} catch(Exception $e) {
+							// Oops!
+							//print_r($e);
+						}
 					}
 					break;
 			}
 		}
 
-		if(!empty($sensor_ids)) {
+		if(!empty($sensor)) {
 			if(!empty($fields))
-				DAO_Sensor::update($sensor_ids, $fields);
+				DAO_Sensor::update($sensor->id, $fields);
 			
 			// Custom Fields
-			Ps_AbstractView::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $field_values, $sensor_ids);
+			Ps_AbstractView::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $field_values, array($sensor->id));
 		}
 	}	
 };

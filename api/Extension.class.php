@@ -171,3 +171,25 @@ abstract class Extension_HomeTab extends DevblocksExtension {
 	function showTab() {}
 	function saveTab() {}
 };
+
+abstract class Extension_AlertCriteria extends DevblocksExtension {
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+	
+	function matches(Model_Alert $alert, Model_Sensor $sensor) {}
+	
+	function renderConfig(Model_Alert $alert=null) {}
+	function saveConfig() { return array(); }
+};
+
+abstract class Extension_AlertAction extends DevblocksExtension {
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+	
+	function run(Model_Alert $alert, Model_Sensor $sensor) {}
+	
+	function renderConfig(Model_Alert $alert=null) {}
+	function saveConfig() { return array(); }
+};

@@ -144,6 +144,16 @@
 {* Get Sensor Fields *}
 {include file="file:$core_tpl/internal/custom_fields/filters/peek_get_custom_fields.tpl" fields=$sensor_fields filter=$alert divName="divGetSensorFields" label="Sensor custom fields"}
 
+{if is_array($alert_criteria_exts) && !empty($alert_criteria_exts)}
+{foreach from=$alert_criteria_exts item=alert_criteria_ext key=extid}
+{assign var=ext_crit value=$alert->criteria.$extid}
+<label><input type="checkbox" name="rules[]" value="{$extid}" {if !is_null($ext_crit)}checked="checked"{/if} onclick="toggleDiv('crit_{$extid}',(this.checked?'block':'none'));"> <b>{$alert_criteria_ext->manifest->name}</b></label><br>
+<blockquote style="margin:0px 0px 5px 10px;display:{if !is_null($ext_crit)}block{else}none{/if};" id="crit_{$extid}">
+	{if method_exists($alert_criteria_ext,'renderConfig')}{$alert_criteria_ext->renderConfig($alert)}{/if}
+</blockquote>
+{/foreach}
+{/if}
+
 <br>
 <h2>Then perform these actions:</h2>
 
@@ -156,11 +166,15 @@
 </blockquote>
 *}
 
-{assign var=act_email value=$alert->actions.email}
-<label><input type="checkbox" name="do[]" value="email" {if !is_null($alert->actions.email)}checked="checked"{/if}> <b>Forward e-mail to:</b></label><br>
-<blockquote style="margin-top:0px;" id="div_do_email">
-	[[ EMAIL ADDY ]]
+{if is_array($alert_action_exts) && !empty($alert_action_exts)}
+{foreach from=$alert_action_exts item=alert_action_ext key=extid}
+{assign var=ext_act value=$alert->actions.$extid}
+<label><input type="checkbox" name="do[]" value="{$extid}" {if !is_null($ext_act)}checked="checked"{/if} onclick="toggleDiv('do_{$extid}',(this.checked?'block':'none'));"> <b>{$alert_action_ext->manifest->name}</b></label><br>
+<blockquote style="margin:0px 0px 5px 20px;display:{if !is_null($ext_act)}block{else}none{/if};" id="do_{$extid}">
+	{if method_exists($alert_action_ext,'renderConfig')}{$alert_action_ext->renderConfig($alert)}{/if}
 </blockquote>
+{/foreach}
+{/if}
 
 </div>
 <br>

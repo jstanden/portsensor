@@ -233,6 +233,14 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$sensor_fields = DAO_CustomField::getBySource(PsCustomFieldSource_Sensor::ID);
 		$tpl->assign('sensor_fields', $sensor_fields);
 		
+		// Criteria extensions
+		$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', true);
+		$tpl->assign('alert_criteria_exts', $alert_criteria_exts);
+		
+		// Action extensions
+		$alert_action_exts = DevblocksPlatform::getExtensions('portsensor.alert.action', true);
+		$tpl->assign('alert_action_exts', $alert_action_exts);
+		
 		$tpl->display('file:' . $this->_TPL_PATH . 'alerts/peek.tpl');
 	}
 	
@@ -258,6 +266,8 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		
 		// Custom fields
 		$custom_fields = DAO_CustomField::getAll();
+		
+		$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', false);
 		
 		// Criteria
 		if(is_array($rules))
@@ -361,6 +371,15 @@ class PsPreferencesPage extends PortSensorPageExtension {
 								break;
 						}
 						
+					} elseif(isset($alert_criteria_exts[$rule])) { // Extensions
+						// Save custom criteria properties
+						try {
+							$crit_ext = $alert_criteria_exts[$rule]->createInstance();
+							/* @var $crit_ext Extension_AlertCriteria */
+							$criteria = $crit_ext->saveConfig();
+						} catch(Exception $e) {
+							// print_r($e);
+						}
 					} else {
 						continue;
 					}
@@ -370,6 +389,8 @@ class PsPreferencesPage extends PortSensorPageExtension {
 			
 			$criterion[$rule] = $criteria;
 		}
+		
+		$alert_action_exts = DevblocksPlatform::getExtensions('portsensor.alert.action', false);
 		
 		// Actions
 		if(is_array($do))
@@ -439,6 +460,15 @@ class PsPreferencesPage extends PortSensorPageExtension {
 								break;
 						}
 						
+					} elseif(isset($alert_action_exts[$act])) {
+						// Save custom action properties
+						try {
+							$action_ext = $alert_action_exts[$act]->createInstance();
+							$action = $action_ext->saveConfig();
+							
+						} catch(Exception $e) {
+							// print_r($e);
+						}
 					} else {
 						continue;
 					}
