@@ -27,7 +27,6 @@ class PsExternalSensor extends Extension_Sensor {
 //		$fields = array(
 //			DAO_Sensor::STATUS => ($success?0:2),
 //			DAO_Sensor::METRIC => ($success?1:0),
-//			DAO_Sensor::METRIC_TYPE => 'U',
 //			DAO_Sensor::OUTPUT => $output,
 //		);
 //		
@@ -95,7 +94,6 @@ class PsHttpSensor extends Extension_Sensor {
 		$fields = array(
 			DAO_Sensor::STATUS => ($success?0:2),
 			DAO_Sensor::METRIC => ($success?1:0),
-			DAO_Sensor::METRIC_TYPE => 'U',
 			DAO_Sensor::OUTPUT => $output,
 		);
 		
@@ -156,7 +154,6 @@ class PsPortSensor extends Extension_Sensor {
 		$fields = array(
 			DAO_Sensor::STATUS => ($success?0:2),
 			DAO_Sensor::METRIC => ($success?1:0),
-			DAO_Sensor::METRIC_TYPE => 'U',
 			DAO_Sensor::OUTPUT => $output,
 		);
 		

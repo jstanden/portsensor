@@ -269,7 +269,6 @@ if(!isset($tables['sensor'])) {
 		status I1 DEFAULT 0 NOTNULL,
 		updated_date I4 DEFAULT 0 NOTNULL,
 		is_disabled I1 DEFAULT 0 NOTNULL,
-		metric_type C(32) DEFAULT 'text' NOTNULL,
 		metric XL,
 		output XL,
 		fail_count I1 DEFAULT 0 NOTNULL

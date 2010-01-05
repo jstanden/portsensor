@@ -455,7 +455,6 @@ class Rest_SensorsController extends Ps_RestController {
 			's_status' => 'status',
 			's_updated_date' => 'updated_date',
 			's_is_disabled' => 'is_disabled',
-			's_metric_type' => 'metric_type',
 			's_metric' => 'metric',
 			's_output' => 'output',
 			's_fail_count' => 'fail_count',
@@ -479,7 +478,6 @@ class Rest_SensorsController extends Ps_RestController {
 			case 'name':
 			case 'extension_id':
 			case 'params_json':
-			case 'metric_type':
 			case 'metric':
 			case 'output':
 				return !empty($value) ? true : false;

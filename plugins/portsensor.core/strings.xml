@@ -335,9 +335,6 @@ For example: *receipt*</seg></tuv>
 		<tu tuid='sensor.fail_count'>
 			<tuv xml:lang="en_US"><seg># Fails</seg></tuv>
 		</tu>
-		<tu tuid='sensor.metric_type'>
-			<tuv xml:lang="en_US"><seg>Metric Type</seg></tuv>
-		</tu>
 		<tu tuid='sensor.metric'>
 			<tuv xml:lang="en_US"><seg>Metric</seg></tuv>
 		</tu>

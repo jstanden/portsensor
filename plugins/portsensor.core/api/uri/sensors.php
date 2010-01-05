@@ -118,7 +118,6 @@ class PsSensorsPage extends PortSensorPageExtension {
 		@$view_id = DevblocksPlatform::importGPC($_POST['view_id'],'string');
 		@$name= DevblocksPlatform::importGPC($_POST['name'],'string');
 		@$extension_id = DevblocksPlatform::importGPC($_POST['extension_id'],'string');
-		@$metric_type = DevblocksPlatform::importGPC($_POST['metric_type'],'string');
 		@$disabled = DevblocksPlatform::importGPC($_POST['is_disabled'],'integer',0);
 		@$delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
 
@@ -136,15 +135,6 @@ class PsSensorsPage extends PortSensorPageExtension {
 		    	DAO_Sensor::IS_DISABLED => $disabled,
 		    );
 
-		    if(empty($extension_id)) {
-		    	// Manual sensor requires an explicit metric type
-		    	$fields[DAO_Sensor::METRIC_TYPE] = $metric_type;
-		    } else {
-		    	$sensor_type = DevblocksPlatform::getExtension($extension_id,false);
-		    	// Sensor extension provides metric type
-		    	$fields[DAO_Sensor::METRIC_TYPE] = $sensor_type->params['metric_type'];
-		    }
-		    
 			if(empty($id))
 				$id = DAO_Sensor::create($fields);
 			else

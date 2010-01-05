@@ -275,7 +275,6 @@
 				<name>PsExternalSensor</name>
 			</class>
 			<params>
-				<param key="metric_type" value="" />
 			</params>
 		</extension>
 
@@ -287,7 +286,6 @@
 				<name>PsHttpSensor</name>
 			</class>
 			<params>
-				<param key="metric_type" value="updown" />
 			</params>
 		</extension>
 
@@ -299,7 +297,6 @@
 				<name>PsPortSensor</name>
 			</class>
 			<params>
-				<param key="metric_type" value="updown" />
 			</params>
 		</extension>
 

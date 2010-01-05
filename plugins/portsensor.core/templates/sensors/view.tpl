@@ -108,18 +108,6 @@
 					{/if}
 				{/if}
 			</td>
-			{elseif $column=="s_metric_type"}
-			<td valign="top">
-				{if 'T'==$result.$column}
-					Text
-				{elseif 'D'==$result.$column}
-					Decimal
-				{elseif 'N'==$result.$column}
-					Number
-				{elseif 'U'==$result.$column}
-					Up/Down
-				{/if}
-			</td>
 			{elseif $column=="s_metric" || $column=="s_output"}
 			<td valign="top">
 				{if $result.s_is_disabled}

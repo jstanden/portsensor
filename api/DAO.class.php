@@ -923,7 +923,6 @@ class DAO_Sensor extends Ps_ORMHelper {
 	const PARAMS_JSON = 'params_json';
 	const STATUS = 'status';
 	const UPDATED_DATE = 'updated_date';
-	const METRIC_TYPE = 'metric_type';
 	const METRIC = 'metric';
 	const OUTPUT = 'output';
 	const IS_DISABLED = 'is_disabled';
@@ -938,7 +937,6 @@ class DAO_Sensor extends Ps_ORMHelper {
 //			self::PARAMS_JSON => $translate->_('sensor.params_json'),
 			self::STATUS => $translate->_('sensor.status'),
 			self::UPDATED_DATE => $translate->_('sensor.updated_date'),
-			self::METRIC_TYPE => $translate->_('sensor.metric_type'),
 			self::METRIC => $translate->_('sensor.metric'),
 			self::OUTPUT => $translate->_('sensor.output'),
 			self::IS_DISABLED => $translate->_('sensor.is_disabled'),
@@ -973,7 +971,7 @@ class DAO_Sensor extends Ps_ORMHelper {
 	static function getWhere($where=null) {
 		$db = DevblocksPlatform::getDatabaseService();
 		
-		$sql = "SELECT id, name, extension_id, params_json, updated_date, status, metric_type, metric, output, is_disabled, fail_count ".
+		$sql = "SELECT id, name, extension_id, params_json, updated_date, status, metric, output, is_disabled, fail_count ".
 			"FROM sensor ".
 			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
 			"ORDER BY id asc";
@@ -1011,7 +1009,6 @@ class DAO_Sensor extends Ps_ORMHelper {
 			$object->extension_id = $rs->fields['extension_id'];
 			$object->updated_date = $rs->fields['updated_date'];
 			$object->status = $rs->fields['status'];
-			$object->metric_type = $rs->fields['metric_type'];
 			$object->metric = $rs->fields['metric'];
 			$object->output = $rs->fields['output'];
 			$object->is_disabled = $rs->fields['is_disabled'];
@@ -1077,7 +1074,6 @@ class DAO_Sensor extends Ps_ORMHelper {
 			"s.extension_id as %s, ".
 			"s.updated_date as %s, ".
 			"s.status as %s, ".
-			"s.metric_type as %s, ".
 			"s.metric as %s, ".
 			"s.output as %s, ".
 			"s.is_disabled as %s, ".
@@ -1087,7 +1083,6 @@ class DAO_Sensor extends Ps_ORMHelper {
 			    SearchFields_Sensor::EXTENSION_ID,
 			    SearchFields_Sensor::UPDATED_DATE,
 			    SearchFields_Sensor::STATUS,
-			    SearchFields_Sensor::METRIC_TYPE,
 			    SearchFields_Sensor::METRIC,
 			    SearchFields_Sensor::OUTPUT,
 			    SearchFields_Sensor::IS_DISABLED,
@@ -1159,7 +1154,6 @@ class SearchFields_Sensor implements IDevblocksSearchFields {
 	const EXTENSION_ID = 's_extension_id';
 	const UPDATED_DATE = 's_updated_date';
 	const STATUS = 's_status';
-	const METRIC_TYPE = 's_metric_type';
 	const METRIC = 's_metric';
 	const OUTPUT = 's_output';
 	const IS_DISABLED = 's_is_disabled';
@@ -1177,7 +1171,6 @@ class SearchFields_Sensor implements IDevblocksSearchFields {
 			self::EXTENSION_ID => new DevblocksSearchField(self::EXTENSION_ID, 's', 'extension_id', null, $translate->_('sensor.extension_id')),
 			self::UPDATED_DATE => new DevblocksSearchField(self::UPDATED_DATE, 's', 'updated_date', null, $translate->_('sensor.updated_date')),
 			self::STATUS => new DevblocksSearchField(self::STATUS, 's', 'status', null, $translate->_('sensor.status')),
-			self::METRIC_TYPE => new DevblocksSearchField(self::METRIC_TYPE, 's', 'metric_type', null, $translate->_('sensor.metric_type')),
 			self::METRIC => new DevblocksSearchField(self::METRIC, 's', 'metric', null, $translate->_('sensor.metric')),
 			self::OUTPUT => new DevblocksSearchField(self::OUTPUT, 's', 'output', null, $translate->_('sensor.output')),
 			self::IS_DISABLED => new DevblocksSearchField(self::IS_DISABLED, 's', 'is_disabled', null, $translate->_('sensor.is_disabled')),

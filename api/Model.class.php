@@ -445,7 +445,6 @@ class Model_Sensor {
 	public $params = array();
 	public $updated_date;
 	public $status;
-	public $metric_type;
 	public $metric = '';
 	public $output = '';
 	public $is_disabled = 0;
@@ -1379,13 +1378,11 @@ class Ps_SensorView extends Ps_AbstractView {
 	static function getSearchFields() {
 		$fields = self::getFields();
 		unset($fields[SearchFields_Sensor::ID]);
-		unset($fields[SearchFields_Sensor::METRIC_TYPE]);
 		return $fields;
 	}
 
 	static function getColumns() {
 		$fields = self::getFields();
-		unset($fields[SearchFields_Sensor::METRIC_TYPE]);
 		return $fields;
 	}
 
@@ -1401,7 +1398,6 @@ class Ps_SensorView extends Ps_AbstractView {
 		$criteria = null;
 
 		switch($field) {
-			case SearchFields_Sensor::METRIC_TYPE:
 			case SearchFields_Sensor::METRIC:
 			case SearchFields_Sensor::NAME:
 			case SearchFields_Sensor::OUTPUT:
