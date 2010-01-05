@@ -288,6 +288,9 @@
 		<tu tuid='preferences.tab.alerts'>
 			<tuv xml:lang="en_US"><seg>Alerts</seg></tuv>
 		</tu>
+		<tu tuid='preferences.tab.alerts.button.add'>
+			<tuv xml:lang="en_US"><seg>Add Alert</seg></tuv>
+		</tu>
 		<tu tuid='preferences.tab.general'>
 			<tuv xml:lang="en_US"><seg>General</seg></tuv>
 		</tu>
