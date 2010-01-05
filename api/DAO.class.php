@@ -2151,3 +2151,261 @@ class DAO_WorkerRole extends DevblocksORMHelper {
 		$cache->remove(self::_CACHE_ALL);
 	}
 };
+
+class DAO_Worklist extends DevblocksORMHelper {
+	const ID = 'id';
+	const WORKER_ID = 'worker_id';
+	const WORKSPACE = 'workspace';
+	const VIEW_SERIALIZED = 'view_serialized';
+	const VIEW_POS = 'view_pos';
+	const SOURCE_EXTENSION = 'source_extension';
+
+	static function create($fields) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$id = $db->GenID('generic_seq');
+		
+		$sql = sprintf("INSERT INTO worklist (id) ".
+			"VALUES (%d)",
+			$id
+		);
+		$db->Execute($sql);
+		
+		self::update($id, $fields);
+		
+		return $id;
+	}
+	
+	static function update($ids, $fields) {
+		parent::_update($ids, 'worklist', $fields);
+	}
+	
+	static function updateWhere($fields, $where) {
+		parent::_updateWhere('worklist', $fields, $where);
+	}
+	
+	/**
+	 * @param string $where
+	 * @return Model_Worklist[]
+	 */
+	static function getWhere($where=null) {
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$sql = "SELECT id, worker_id, workspace, view_serialized, view_pos, source_extension ".
+			"FROM worklist ".
+			(!empty($where) ? sprintf("WHERE %s ",$where) : "").
+			"ORDER BY view_pos asc";
+		$rs = $db->Execute($sql);
+		
+		return self::_getObjectsFromResult($rs);
+	}
+
+	/**
+	 * @param integer $id
+	 * @return Model_Worklist	 */
+	static function get($id) {
+		$objects = self::getWhere(sprintf("%s = %d",
+			self::ID,
+			$id
+		));
+		
+		if(isset($objects[$id]))
+			return $objects[$id];
+		
+		return null;
+	}
+	
+	/**
+	 * @param ADORecordSet $rs
+	 * @return Model_Worklist[]
+	 */
+	static private function _getObjectsFromResult($rs) {
+		$objects = array();
+		
+		while(!$rs->EOF) {
+			$object = new Model_Worklist();
+			$object->id = $rs->fields['id'];
+			$object->worker_id = $rs->fields['worker_id'];
+			$object->workspace = $rs->fields['workspace'];
+			$object->view_serialized = $rs->fields['view_serialized'];
+			$object->view_pos = $rs->fields['view_pos'];
+			$object->source_extension = $rs->fields['source_extension'];
+			
+			if(!empty($object->view_serialized))
+				@$object->view = unserialize($object->view_serialized);
+			
+			$objects[$object->id] = $object;
+			$rs->MoveNext();
+		}
+		
+		return $objects;
+	}
+	
+	static function getWorkspaces($worker_id = 0) {
+		$workspaces = array();
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$sql = "SELECT DISTINCT workspace AS workspace ".
+			"FROM worklist ".
+			(!empty($worker_id) ? sprintf("WHERE worker_id = %d ",$worker_id) : " ").
+			"ORDER BY workspace";
+		$rs = $db->Execute($sql) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+
+		if(is_a($rs,'ADORecordSet'))
+		while(!$rs->EOF) {
+			$workspaces[] = $rs->fields['workspace'];
+			$rs->MoveNext();
+		}
+		
+		return $workspaces;
+	}
+	
+	static function delete($ids) {
+		if(!is_array($ids)) $ids = array($ids);
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		if(empty($ids))
+			return;
+		
+		$ids_list = implode(',', $ids);
+		
+		$db->Execute(sprintf("DELETE FROM worklist WHERE id IN (%s)", $ids_list));
+		
+		return true;
+	}
+	
+    /**
+     * Enter description here...
+     *
+     * @param array $columns
+     * @param DevblocksSearchCriteria[] $params
+     * @param integer $limit
+     * @param integer $page
+     * @param string $sortBy
+     * @param boolean $sortAsc
+     * @param boolean $withCounts
+     * @return array
+     */
+    static function search($columns, $params, $limit=10, $page=0, $sortBy=null, $sortAsc=null, $withCounts=true) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$fields = SearchFields_Worklist::getFields();
+		
+		// Sanitize
+		if(!isset($fields[$sortBy]))
+			$sortBy=null;
+
+        list($tables,$wheres) = parent::_parseSearchParams($params, $columns, $fields, $sortBy);
+		$start = ($page * $limit); // [JAS]: 1-based
+		$total = -1;
+		
+		$select_sql = sprintf("SELECT ".
+			"worklist.id as %s, ".
+			"worklist.worker_id as %s, ".
+			"worklist.workspace as %s, ".
+			"worklist.view_serialized as %s, ".
+			"worklist.view_pos as %s, ".
+			"worklist.source_extension as %s ",
+				SearchFields_Worklist::ID,
+				SearchFields_Worklist::WORKER_ID,
+				SearchFields_Worklist::WORKSPACE,
+				SearchFields_Worklist::VIEW_SERIALIZED,
+				SearchFields_Worklist::VIEW_POS,
+				SearchFields_Worklist::SOURCE_EXTENSION
+			);
+			
+		$join_sql = "FROM worklist ";
+		
+		// Custom field joins
+		//list($select_sql, $join_sql, $has_multiple_values) = self::_appendSelectJoinSqlForCustomFieldTables(
+		//	$tables,
+		//	$params,
+		//	'worklist.id',
+		//	$select_sql,
+		//	$join_sql
+		//);
+				
+		$where_sql = "".
+			(!empty($wheres) ? sprintf("WHERE %s ",implode(' AND ',$wheres)) : "");
+			
+		$sort_sql = (!empty($sortBy)) ? sprintf("ORDER BY %s %s ",$sortBy,($sortAsc || is_null($sortAsc))?"ASC":"DESC") : " ";
+			
+		$sql = 
+			$select_sql.
+			$join_sql.
+			$where_sql.
+			($has_multiple_values ? 'GROUP BY worklist.id ' : '').
+			$sort_sql;
+			
+		// [TODO] Could push the select logic down a level too
+		if($limit > 0) {
+    		$rs = $db->SelectLimit($sql,$limit,$start) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+		} else {
+		    $rs = $db->Execute($sql) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg()); /* @var $rs ADORecordSet */
+            $total = $rs->RecordCount();
+		}
+		
+		$results = array();
+		
+		if(is_a($rs,'ADORecordSet'))
+		while(!$rs->EOF) {
+			$result = array();
+			foreach($rs->fields as $f => $v) {
+				$result[$f] = $v;
+			}
+			$object_id = intval($rs->fields[SearchFields_Worklist::ID]);
+			$results[$object_id] = $result;
+			$rs->MoveNext();
+		}
+
+		// [JAS]: Count all
+		if($withCounts) {
+			$count_sql = 
+				($has_multiple_values ? "SELECT COUNT(DISTINCT worklist.id) " : "SELECT COUNT(worklist.id) ").
+				$join_sql.
+				$where_sql;
+			$total = $db->GetOne($count_sql);
+		}
+		
+		return array($results,$total);
+	}
+
+};
+
+class SearchFields_Worklist implements IDevblocksSearchFields {
+	const ID = 'w_id';
+	const WORKER_ID = 'w_worker_id';
+	const WORKSPACE = 'w_workspace';
+	const VIEW_SERIALIZED = 'w_view_serialized';
+	const VIEW_POS = 'w_view_pos';
+	const SOURCE_EXTENSION = 'w_source_extension';
+	
+	/**
+	 * @return DevblocksSearchField[]
+	 */
+	static function getFields() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		$columns = array(
+			self::ID => new DevblocksSearchField(self::ID, 'worklist', 'id', null, $translate->_('id')),
+			self::WORKER_ID => new DevblocksSearchField(self::WORKER_ID, 'worklist', 'worker_id', null, $translate->_('worker_id')),
+			self::WORKSPACE => new DevblocksSearchField(self::WORKSPACE, 'worklist', 'workspace', null, $translate->_('workspace')),
+			self::VIEW_SERIALIZED => new DevblocksSearchField(self::VIEW_SERIALIZED, 'worklist', 'view_serialized', null, $translate->_('view_serialized')),
+			self::VIEW_POS => new DevblocksSearchField(self::VIEW_POS, 'worklist', 'view_pos', null, $translate->_('view_pos')),
+			self::SOURCE_EXTENSION => new DevblocksSearchField(self::SOURCE_EXTENSION, 'worklist', 'source_extension', null, $translate->_('source_extension')),
+		);
+		
+		// Custom Fields
+		//$fields = DAO_CustomField::getBySource(PsCustomFieldSource_XXX::ID);
+
+		//if(is_array($fields))
+		//foreach($fields as $field_id => $field) {
+		//	$key = 'cf_'.$field_id;
+		//	$columns[$key] = new DevblocksSearchField($key,$key,'field_value',null,$field->name);
+		//}
+		
+		// Sort by label (translation-conscious)
+		uasort($columns, create_function('$a, $b', "return strcasecmp(\$a->db_label,\$b->db_label);\n"));
+
+		return $columns;		
+	}
+};

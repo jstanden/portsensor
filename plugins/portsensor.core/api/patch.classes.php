@@ -11,6 +11,6 @@ class PsCorePatchContainer extends DevblocksPatchContainerExtension {
 
 		$file_prefix = dirname(dirname(__FILE__)) . '/patches/';
 		
-		$this->registerPatch(new DevblocksPatch('portsensor.core',8,$file_prefix.'4.0.0__.php',''));
+		$this->registerPatch(new DevblocksPatch('portsensor.core',9,$file_prefix.'4.0.0__.php',''));
 	}
 };

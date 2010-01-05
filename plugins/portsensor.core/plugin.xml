@@ -38,9 +38,9 @@
 			<class name="PsPageController" />
 			<class name="PsCustomFieldSource_Sensor" />
 			<class name="PsCustomFieldSource_Worker" />
+			<class name="PsWorklistSource_Sensor" />
 			<!--
 			<class name="ChTaskSource_Ticket" />
-			<class name="ChWorkspaceSource_Worker" />
 			-->
 		</file>
 	</class_loader>
@@ -346,19 +346,6 @@
 			</params>
 		</extension>
 		
-		<!--
-		<extension point="portsensor.cron">
-			<id>cron.import</id>
-			<name>Background Importing and Synchronization</name>
-			<class>
-				<file>api/cron.classes.php</file>
-				<name>ImportCron</name>
-			</class>
-			<params>
-			</params>
-		</extension>
-		-->
-		
 		<!-- Custom Field Sources -->
 
 		<extension point="portsensor.fields.source">
@@ -381,21 +368,21 @@
 			<params/>
 		</extension>
 				
-		<!-- Workspace Sources -->
+		<!-- Worklist Sources -->
 		
-		<!--
-		<extension point="cerberusweb.workspace.source">
-			<id>core.workspace.source.address</id>
-			<name>Addresses</name>
+		<extension point="portsensor.worklist.source">
+			<id>core.worklist.source.sensor</id>
+			<name>Sensors</name>
 			<class>
 				<file>api/plugin.classes.php</file>
-				<name>ChWorkspaceSource_Address</name>
+				<name>PsWorklistSource_Sensor</name>
 			</class>
 			<params>
-				<param key="view_class" value="C4_AddressView" />
+				<param key="view_class" value="Ps_SensorView" />
 			</params>
 		</extension>
-		-->
+
+		<!-- Alert Actions -->
 
 		<extension point="portsensor.alert.action">
 			<id>portsensor.alert.action.send_mail</id>

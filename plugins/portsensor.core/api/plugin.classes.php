@@ -31,6 +31,10 @@ class PsCustomFieldSource_Worker extends Extension_CustomFieldSource {
 	const ID = 'portsensor.fields.source.worker';
 };
 
+class PsWorklistSource_Sensor extends Extension_WorklistSource {
+	const ID = 'core.worklist.source.sensor';
+};
+
 // Alert Actions
 
 class PsAlertActionSendMail extends Extension_AlertAction {

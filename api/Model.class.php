@@ -990,6 +990,25 @@ class Model_WorkerRole {
 	public $name;
 };
 
+class Model_Worklist {
+	public $id;
+	public $worker_id;
+	public $workspace;
+	public $view_json;
+	public $view_pos;
+	public $source_extension;
+};
+
+class Model_WorklistView {
+	public $title = 'New List';
+//	public $workspace = '';
+	public $columns = array();
+	public $num_rows = 10;
+	public $params = array();
+	public $sort_by = null;
+	public $sort_asc = 1;
+};
+
 class Ps_AlertView extends Ps_AbstractView {
 	const DEFAULT_ID = 'alerts';
 

@@ -165,83 +165,136 @@ class PsInternalController extends DevblocksControllerExtension {
 		$tpl->display('file:' . $this->_TPL_PATH . 'internal/views/customize_view.tpl');
 	}
 	
-//	function viewShowCopyAction() {
-//        @$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string');
-//
-//		$active_worker = PortSensorApplication::getActiveWorker();
-//
-//		$tpl = DevblocksPlatform::getTemplateService();
-//		$tpl_path = $this->_TPL_PATH . '';
-//		$tpl->assign('path', $tpl_path);
-//        
-//        $view = Ps_AbstractViewLoader::getView($view_id);
-//
-//		$workspaces = DAO_WorkerWorkspaceList::getWorkspaces($active_worker->id);
-//		$tpl->assign('workspaces', $workspaces);
-//        
-//        $tpl->assign('view_id', $view_id);
-//		$tpl->assign('view', $view);
-//
-//        $tpl->display($tpl_path.'internal/views/copy.tpl');
-//	}
-//	
-//	function viewDoCopyAction() {
-//		$translate = DevblocksPlatform::getTranslationService();
-//		$active_worker = PortSensorApplication::getActiveWorker();
-//		$visit = PortSensorApplication::getVisit();
-//		
-//	    @$view_id = DevblocksPlatform::importGPC($_POST['view_id'],'string');
-//		$view = Ps_AbstractViewLoader::getView($view_id);
-//	    
-//		@$list_title = DevblocksPlatform::importGPC($_POST['list_title'],'string', '');
-//		@$workspace = DevblocksPlatform::importGPC($_POST['workspace'],'string', '');
-//		@$new_workspace = DevblocksPlatform::importGPC($_POST['new_workspace'],'string', '');
-//		
-//		if(empty($workspace) && empty($new_workspace))
-//			$new_workspace = $translate->_('mail.workspaces.new');
-//			
-//		if(empty($list_title))
-//			$list_title = $translate->_('mail.workspaces.new_list');
-//		
-//		$workspace_name = (!empty($new_workspace) ? $new_workspace : $workspace);
-//		
-//        // Find the proper workspace source based on the class of the view
-//        $source_manifests = DevblocksPlatform::getExtensions(Extension_WorkspaceSource::EXTENSION_POINT, false);
-//        $source_manifest = null;
-//        if(is_array($source_manifests))
-//        foreach($source_manifests as $mft) {
-//        	if(is_a($view, $mft->params['view_class'])) {
-//				$source_manifest = $mft;       		
-//        		break;
-//        	}
-//        }
-//		
-//        if(!is_null($source_manifest)) {
-//			// View params inside the list for quick render overload
-//			$list_view = new Model_WorkerWorkspaceListView();
-//			$list_view->title = $list_title;
-//			$list_view->num_rows = $view->renderLimit;
-//			$list_view->columns = $view->view_columns;
-//			$list_view->params = $view->params;
-//			$list_view->sort_by = $view->renderSortBy;
-//			$list_view->sort_asc = $view->renderSortAsc;
-//			
-//			// Save the new worklist
-//			$fields = array(
-//				DAO_WorkerWorkspaceList::WORKER_ID => $active_worker->id,
-//				DAO_WorkerWorkspaceList::WORKSPACE => $workspace_name,
-//				DAO_WorkerWorkspaceList::SOURCE_EXTENSION => $source_manifest->id,
-//				DAO_WorkerWorkspaceList::LIST_VIEW => serialize($list_view),
-//				DAO_WorkerWorkspaceList::LIST_POS => 99,
-//			);
-//			$list_id = DAO_WorkerWorkspaceList::create($fields);
-//        }
-//		
-//		// Select the workspace tab
-//		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'w_'.$workspace_name);
-//        
-//		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('home')));
-//	}
+	// Post?
+	function viewSaveCustomizeAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		@$id = DevblocksPlatform::importGPC($_REQUEST['id']);
+		@$columns = DevblocksPlatform::importGPC($_REQUEST['columns'],'array', array());
+		@$num_rows = DevblocksPlatform::importGPC($_REQUEST['num_rows'],'integer',10);
+		
+		$num_rows = max($num_rows, 1); // make 1 the minimum
+		
+		$view = Ps_AbstractViewLoader::getView($id);
+		$view->doCustomize($columns, $num_rows);
+
+		$active_worker = PortSensorApplication::getActiveWorker();
+		
+		// Conditional Persist
+		if(substr($id,0,5)=="cust_") { // custom workspace
+			$list_view_id = intval(substr($id,5));
+			
+			// Special custom view fields
+			@$title = DevblocksPlatform::importGPC($_REQUEST['title'],'string', $translate->_('views.new_list'));
+			
+			$view->name = $title;
+
+			// Persist Object
+			$list_view = new Model_WorklistView();
+			$list_view->title = $title;
+			$list_view->columns = $view->view_columns;
+			$list_view->num_rows = $view->renderLimit;
+			$list_view->params = $view->params;
+			$list_view->sort_by = $view->renderSortBy;
+			$list_view->sort_asc = $view->renderSortAsc;
+			
+			DAO_Worklist::update($list_view_id, array(
+				DAO_Worklist::VIEW_SERIALIZED => serialize($list_view)
+			));
+			
+		} else {
+			$prefs = new Ps_AbstractViewModel();
+			$prefs->class_name = get_class($view);
+			$prefs->view_columns = $view->view_columns;
+			$prefs->renderLimit = $view->renderLimit;
+			$prefs->renderSortBy = $view->renderSortBy;
+			$prefs->renderSortAsc = $view->renderSortAsc;
+			
+			DAO_WorkerPref::set($active_worker->id, 'view'.$view->id, serialize($prefs));
+		}
+		
+		Ps_AbstractViewLoader::setView($id, $view);
+		
+		$view->render();
+	}	
+	
+	function viewShowCopyAction() {
+        @$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string');
+
+		$active_worker = PortSensorApplication::getActiveWorker();
+
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl_path = $this->_TPL_PATH . '';
+		$tpl->assign('path', $tpl_path);
+        
+        $view = Ps_AbstractViewLoader::getView($view_id);
+
+		$workspaces = DAO_Worklist::getWorkspaces($active_worker->id);
+		$tpl->assign('workspaces', $workspaces);
+        
+        $tpl->assign('view_id', $view_id);
+		$tpl->assign('view', $view);
+
+        $tpl->display($tpl_path.'internal/views/copy.tpl');
+	}
+	
+	function viewDoCopyAction() {
+		$translate = DevblocksPlatform::getTranslationService();
+		$active_worker = PortSensorApplication::getActiveWorker();
+		$visit = PortSensorApplication::getVisit();
+		
+	    @$view_id = DevblocksPlatform::importGPC($_POST['view_id'],'string');
+		$view = Ps_AbstractViewLoader::getView($view_id);
+	    
+		@$list_title = DevblocksPlatform::importGPC($_POST['list_title'],'string', '');
+		@$workspace = DevblocksPlatform::importGPC($_POST['workspace'],'string', '');
+		@$new_workspace = DevblocksPlatform::importGPC($_POST['new_workspace'],'string', '');
+		
+		if(empty($workspace) && empty($new_workspace))
+			$new_workspace = $translate->_('New Workspace');
+			
+		if(empty($list_title))
+			$list_title = $translate->_('New Worklist');
+		
+		$workspace_name = (!empty($new_workspace) ? $new_workspace : $workspace);
+		
+        // Find the proper workspace source based on the class of the view
+        $source_manifests = DevblocksPlatform::getExtensions(Extension_WorklistSource::EXTENSION_POINT, false);
+        $source_manifest = null;
+        if(is_array($source_manifests))
+        foreach($source_manifests as $mft) {
+        	if(is_a($view, $mft->params['view_class'])) {
+				$source_manifest = $mft;       		
+        		break;
+        	}
+        }
+		
+        if(!is_null($source_manifest)) {
+			// View params inside the list for quick render overload
+			$list_view = new Model_WorklistView();
+			$list_view->title = $list_title;
+			$list_view->num_rows = $view->renderLimit;
+			$list_view->columns = $view->view_columns;
+			$list_view->params = $view->params;
+			$list_view->sort_by = $view->renderSortBy;
+			$list_view->sort_asc = $view->renderSortAsc;
+			
+			// Save the new worklist
+			$fields = array(
+				DAO_Worklist::WORKER_ID => $active_worker->id,
+				DAO_Worklist::WORKSPACE => $workspace_name,
+				DAO_Worklist::SOURCE_EXTENSION => $source_manifest->id,
+				DAO_Worklist::VIEW_SERIALIZED => serialize($list_view),
+				DAO_Worklist::VIEW_POS => 99,
+			);
+			$list_id = DAO_Worklist::create($fields);
+        }
+		
+		// Select the workspace tab
+		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'w_'.$workspace_name);
+        
+		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('home')));
+	}
 
 	// Ajax
 	function viewShowExportAction() {
@@ -345,59 +398,6 @@ class PsInternalController extends DevblocksControllerExtension {
 		}
 		
 		exit;
-	}
-	
-	// Post?
-	function viewSaveCustomizeAction() {
-		$translate = DevblocksPlatform::getTranslationService();
-		
-		@$id = DevblocksPlatform::importGPC($_REQUEST['id']);
-		@$columns = DevblocksPlatform::importGPC($_REQUEST['columns'],'array', array());
-		@$num_rows = DevblocksPlatform::importGPC($_REQUEST['num_rows'],'integer',10);
-		
-		$num_rows = max($num_rows, 1); // make 1 the minimum
-		
-		$view = Ps_AbstractViewLoader::getView($id);
-		$view->doCustomize($columns, $num_rows);
-
-		$active_worker = PortSensorApplication::getActiveWorker();
-		
-		// Conditional Persist
-//		if(substr($id,0,5)=="cust_") { // custom workspace
-//			$list_view_id = intval(substr($id,5));
-//			
-//			// Special custom view fields
-//			@$title = DevblocksPlatform::importGPC($_REQUEST['title'],'string', $translate->_('views.new_list'));
-//			
-//			$view->name = $title;
-//
-//			// Persist Object
-//			$list_view = new Model_WorkerWorkspaceListView();
-//			$list_view->title = $title;
-//			$list_view->columns = $view->view_columns;
-//			$list_view->num_rows = $view->renderLimit;
-//			$list_view->params = $view->params;
-//			$list_view->sort_by = $view->renderSortBy;
-//			$list_view->sort_asc = $view->renderSortAsc;
-//			
-//			DAO_WorkerWorkspaceList::update($list_view_id, array(
-//				DAO_WorkerWorkspaceList::LIST_VIEW => serialize($list_view)
-//			));
-//			
-//		} else {
-			$prefs = new Ps_AbstractViewModel();
-			$prefs->class_name = get_class($view);
-			$prefs->view_columns = $view->view_columns;
-			$prefs->renderLimit = $view->renderLimit;
-			$prefs->renderSortBy = $view->renderSortBy;
-			$prefs->renderSortAsc = $view->renderSortAsc;
-			
-			DAO_WorkerPref::set($active_worker->id, 'view'.$view->id, serialize($prefs));
-//		}
-		
-		Ps_AbstractViewLoader::setView($id, $view);
-		
-		$view->render();
 	}
 	
 	function startAutoRefreshAction() {

@@ -324,4 +324,31 @@ if(!isset($indexes['is_disabled'])) {
 	$datadict->ExecuteSQLArray($sql);
 }
 
+// `worklist` =============================
+if(!isset($tables['worklist'])) {
+    $flds = "
+		id I4 DEFAULT 0 NOTNULL PRIMARY,
+		worker_id I4 DEFAULT 0 NOTNULL,
+		workspace C(128) DEFAULT '' NOTNULL,
+		view_serialized XL,
+		view_pos I1 DEFAULT 0 NOTNULL,
+		source_extension C(255) DEFAULT '' NOTNULL
+    ";
+    $sql = $datadict->CreateTableSQL('worklist', $flds);
+    $datadict->ExecuteSQLArray($sql);
+}
+
+$columns = $datadict->MetaColumns('worklist');
+$indexes = $datadict->MetaIndexes('worklist',false);
+
+if(!isset($indexes['worker_id'])) {
+	$sql = $datadict->CreateIndexSQL('worker_id','worklist','worker_id');
+	$datadict->ExecuteSQLArray($sql);
+}
+
+if(!isset($indexes['workspace'])) {
+	$sql = $datadict->CreateIndexSQL('workspace','worklist','workspace');
+	$datadict->ExecuteSQLArray($sql);
+}
+
 return TRUE;

@@ -46,8 +46,8 @@ class PsHomePage extends PortSensorPageExtension {
 		$tpl->assign('tab_manifests', $tab_manifests);
 		
 		// Custom workspaces
-//		$workspaces = DAO_WorkerWorkspaceList::getWorkspaces($active_worker->id);
-//		$tpl->assign('workspaces', $workspaces);
+		$workspaces = DAO_Worklist::getWorkspaces($active_worker->id);
+		$tpl->assign('workspaces', $workspaces);
 		
 		// ====== Who's Online
 		$whos_online = DAO_Worker::getAllOnline();
@@ -98,6 +98,273 @@ class PsHomePage extends PortSensorPageExtension {
 				}
 		}
 	}
+	
+	function showAddWorkspacePanelAction() {
+		$active_worker = PortSensorApplication::getActiveWorker();
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('path', $this->_TPL_PATH);
+
+		$source_manifests = DevblocksPlatform::getExtensions(Extension_WorklistSource::EXTENSION_POINT, false);
+		uasort($source_manifests, create_function('$a, $b', "return strcasecmp(\$a->name,\$b->name);\n"));
+		$tpl->assign('sources', $source_manifests);		
+		
+		$workspaces = DAO_Worklist::getWorkspaces($active_worker->id);
+		$tpl->assign('workspaces', $workspaces);
+		
+		$tpl->display('file:' . $this->_TPL_PATH . 'home/workspaces/add_workspace_panel.tpl');
+	}
+	
+	function doAddWorkspaceAction() {
+		@$name = DevblocksPlatform::importGPC($_REQUEST['name'], 'string', '');
+		@$source = DevblocksPlatform::importGPC($_REQUEST['source'], 'string', '');
+		@$workspace = DevblocksPlatform::importGPC($_REQUEST['workspace'], 'string', '');
+		@$new_workspace = DevblocksPlatform::importGPC($_REQUEST['new_workspace'], 'string', '');
+		
+		$active_worker = PortSensorApplication::getActiveWorker();
+		$visit = PortSensorApplication::getVisit();
+
+		// Source extension exists
+		if(null != ($source_manifest = DevblocksPlatform::getExtension($source, false))) {
+			
+			// Class exists
+			if(null != (@$class = $source_manifest->params['view_class'])) {
+
+				if(empty($name))
+					$name = $source_manifest->name;
+				
+				// New workspace
+				if(!empty($new_workspace))
+					$workspace = $new_workspace;
+					
+				if(empty($workspace))
+					$workspace = 'New Workspace';
+					
+				$view = new $class; /* @var $view Ps_AbstractView */ 
+					
+				// Build the list model
+				$list = new Model_WorklistView();
+				$list->title = $name;
+				$list->columns = $view->view_columns;
+				$list->params = $view->params;
+				$list->num_rows = $view->renderLimit;
+				$list->sort_by = $view->renderSortBy;
+				$list->sort_asc = $view->renderSortAsc;
+				
+				// Add the worklist
+				$fields = array(
+					DAO_Worklist::WORKER_ID => $active_worker->id,
+					DAO_Worklist::VIEW_POS => 1,
+					DAO_Worklist::VIEW_SERIALIZED => serialize($list),
+					DAO_Worklist::WORKSPACE => $workspace,
+					DAO_Worklist::SOURCE_EXTENSION => $source_manifest->id,
+				);
+				DAO_Worklist::create($fields);
+				
+				// Select the new tab
+				$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'w_'.$workspace);
+			}
+		}
+		
+		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('home')));
+	}	
+	
+	function showWorkspaceTabAction() {
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl->assign('path', $this->_TPL_PATH);
+		
+		$visit = PortSensorApplication::getVisit();
+		$db = DevblocksPlatform::getDatabaseService();
+		$active_worker = PortSensorApplication::getActiveWorker();
+		
+		$current_workspace = DevblocksPlatform::importGPC($_REQUEST['workspace'],'string','');
+		$workspaces = DAO_Worklist::getWorkspaces($active_worker->id);
+
+		// Fix a bad/old cache
+		if(!empty($current_workspace) && false === array_search($current_workspace,$workspaces))
+			$current_workspace = '';
+		
+		$views = array();
+			
+		if(empty($current_workspace) && !empty($workspaces)) { // custom dashboards
+			$current_workspace = reset($workspaces);
+		}
+		
+		if(!empty($current_workspace)) {
+			// Remember the tab
+			$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'w_'.$current_workspace);
+			
+			$lists = DAO_Worklist::getWhere(sprintf("%s = %d AND %s = %s",
+				DAO_Worklist::WORKER_ID,
+				$active_worker->id,
+				DAO_Worklist::WORKSPACE,
+				$db->qstr($current_workspace)
+			));
+
+			// Load the workspace sources to map to view renderer
+	        $source_manifests = DevblocksPlatform::getExtensions(Extension_WorklistSource::EXTENSION_POINT, false);
+
+	        // Loop through list schemas
+			if(is_array($lists) && !empty($lists))
+			foreach($lists as $list) { /* @var $list Model_Worklist */
+				$view_id = 'cust_'.$list->id;
+				if(null == ($view = Ps_AbstractViewLoader::getView($view_id))) {
+					$list_view = $list->view;
+					
+					// Make sure we can find the workspace source (plugin not disabled)
+					if(!isset($source_manifests[$list->source_extension])
+						|| null == ($workspace_source = $source_manifests[$list->source_extension])
+						|| !isset($workspace_source->params['view_class']))
+						continue;
+					
+					// Make sure our workspace source has a valid renderer class
+					$view_class = $workspace_source->params['view_class'];
+					if(!class_exists($view_class))
+						continue;
+					
+					$view = new $view_class;
+					$view->id = $view_id;
+					$view->name = $list_view->title;
+					$view->renderLimit = $list_view->num_rows;
+					$view->renderPage = 0;
+					$view->view_columns = $list_view->columns;
+					$view->params = $list_view->params;
+					$view->renderSortBy = $list_view->sort_by;
+					$view->renderSortAsc = $list_view->sort_asc;
+					Ps_AbstractViewLoader::setView($view_id, $view);
+				}
+				
+				if(!empty($view))
+					$views[] = $view;
+			}
+		
+			$tpl->assign('current_workspace', $current_workspace);
+			$tpl->assign('views', $views);
+		}
+		
+		// Log activity
+		DAO_Worker::logActivity(
+			$active_worker->id,
+			new Model_Activity(
+				'activity.mail.workspaces',
+				array(
+					'<i>'.$current_workspace.'</i>'
+				)
+			)
+		);
+		
+		$tpl->display('file:' . $this->_TPL_PATH . 'home/workspaces/index.tpl');
+	}
+	
+	function showEditWorkspacePanelAction() {
+		@$workspace = DevblocksPlatform::importGPC($_REQUEST['workspace'],'string', '');
+		
+		$tpl = DevblocksPlatform::getTemplateService();
+		$tpl_path = $this->_TPL_PATH;
+		$tpl->assign('path', $tpl_path);
+
+		$db = DevblocksPlatform::getDatabaseService();
+		
+		$active_worker = PortSensorApplication::getActiveWorker();
+
+		$tpl->assign('workspace', $workspace);
+		
+		$worklists = DAO_Worklist::getWhere(sprintf("%s = %s AND %s = %d",
+			DAO_Worklist::WORKSPACE,
+			$db->qstr($workspace),
+			DAO_Worklist::WORKER_ID,
+			$active_worker->id
+		));
+		$tpl->assign('worklists', $worklists);
+		
+		$tpl->display('file:' . $this->_TPL_PATH . 'home/workspaces/edit_workspace_panel.tpl');
+	}
+	
+	function doEditWorkspaceAction() {
+		@$workspace = DevblocksPlatform::importGPC($_POST['workspace'],'string', '');
+		@$rename_workspace = DevblocksPlatform::importGPC($_POST['rename_workspace'],'string', '');
+		@$ids = DevblocksPlatform::importGPC($_POST['ids'],'array', array());
+		@$names = DevblocksPlatform::importGPC($_POST['names'],'array', array());
+		@$pos = DevblocksPlatform::importGPC($_POST['pos'],'array', array());
+		@$deletes = DevblocksPlatform::importGPC($_POST['deletes'],'array', array());
+
+		$db = DevblocksPlatform::getDatabaseService();
+		$active_worker = PortSensorApplication::getActiveWorker();
+		$visit = PortSensorApplication::getVisit();
+		
+		$worklists = DAO_Worklist::getWhere(sprintf("%s = %s",
+			DAO_Worklist::WORKSPACE,
+			$db->qstr($workspace)
+		));
+		
+		// Reorder worklists, rename lists, delete lists, on workspace
+		if(is_array($ids) && !empty($ids))
+		foreach($ids as $idx => $id) {
+			if(false !== array_search($id, $deletes)) {
+				DAO_Worklist::delete($id);
+				Ps_AbstractViewLoader::deleteView('cust_'.$id); // free up a little memory
+				
+			} else {
+				if(!isset($worklists[$id]))
+					continue;
+					
+				$list_view = $worklists[$id]->view;
+				
+				// If the name changed
+				if(isset($names[$idx]) && 0 != strcmp($list_view->title,$names[$idx])) {
+					$list_view->title = $names[$idx];
+				
+					// Save the view in the session
+					$view = Ps_AbstractViewLoader::getView('cust_'.$id);
+					$view->name = $list_view->title;
+					Ps_AbstractViewLoader::setView('cust_'.$id, $view);
+				}
+					
+				DAO_Worklist::update($id,array(
+					DAO_Worklist::VIEW_POS => @intval($pos[$idx]),
+					DAO_Worklist::VIEW_SERIALIZED => serialize($list_view),
+				));
+			}
+		}
+
+		// Rename workspace
+		if(!empty($rename_workspace)) {
+			$fields = array(
+				DAO_Worklist::WORKSPACE => $rename_workspace,
+			);
+			DAO_Worklist::updateWhere($fields, sprintf("%s = %s AND %s = %d",
+				DAO_Worklist::WORKSPACE,
+				$db->qstr($workspace),
+				DAO_Worklist::WORKER_ID,
+				$active_worker->id
+			));
+			
+			$workspace = $rename_workspace;
+		}
+		
+		// Change active tab
+		$visit->set(PortSensorVisit::KEY_HOME_SELECTED_TAB, 'w_'.$workspace);
+		
+		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('home')));	
+	}
+	
+	function doDeleteWorkspaceAction() {
+		@$workspace = DevblocksPlatform::importGPC($_POST['workspace'],'string', '');
+		
+		$db = DevblocksPlatform::getDatabaseService();
+		$active_worker = PortSensorApplication::getActiveWorker();
+
+		$lists = DAO_Worklist::getWhere(sprintf("%s = %s AND %s = %d",
+			DAO_Worklist::WORKSPACE,
+			$db->qstr($workspace),
+			DAO_Worklist::WORKER_ID,
+			$active_worker->id
+		));
+
+		DAO_Worklist::delete(array_keys($lists));
+		
+		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('home')));	
+	}	
 	
 	function showTabNotificationsAction() {
 		$visit = PortSensorApplication::getVisit();

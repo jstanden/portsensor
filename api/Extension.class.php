@@ -193,3 +193,11 @@ abstract class Extension_AlertAction extends DevblocksExtension {
 	function renderConfig(Model_Alert $alert=null) {}
 	function saveConfig() { return array(); }
 };
+
+abstract class Extension_WorklistSource extends DevblocksExtension {
+	const EXTENSION_POINT = 'portsensor.worklist.source';
+	
+	function __construct($manifest) {
+		$this->DevblocksExtension($manifest,1);
+	}
+};

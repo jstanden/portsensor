@@ -48,6 +48,9 @@
 		<tu tuid='common.clear'>
 			<tuv xml:lang="en_US"><seg>clear</seg></tuv>
 		</tu>
+		<tu tuid='common.copy'>
+			<tuv xml:lang="en_US"><seg>copy</seg></tuv>
+		</tu>
 		<tu tuid='common.custom_fields'>
 			<tuv xml:lang="en_US"><seg>custom fields</seg></tuv>
 		</tu>
@@ -68,6 +71,9 @@
 		</tu>
 		<tu tuid='common.export'>
 			<tuv xml:lang="en_US"><seg>export</seg></tuv>
+		</tu>
+		<tu tuid='common.field'>
+			<tuv xml:lang="en_US"><seg>field</seg></tuv>
 		</tu>
 		<tu tuid='common.filter'>
 			<tuv xml:lang="en_US"><seg>filter</seg></tuv>
@@ -90,6 +96,12 @@
 		<tu tuid='common.no'>
 			<tuv xml:lang="en_US"><seg>no</seg></tuv>
 		</tu>
+		<tu tuid='common.or'>
+			<tuv xml:lang="en_US"><seg>or</seg></tuv>
+		</tu>
+		<tu tuid='common.order'>
+			<tuv xml:lang="en_US"><seg>order</seg></tuv>
+		</tu>
 		<tu tuid='common.password'>
 			<tuv xml:lang="en_US"><seg>Password</seg></tuv>
 		</tu>
@@ -104,6 +116,9 @@
 		</tu>
 		<tu tuid='common.refresh.auto'>
 			<tuv xml:lang="en_US"><seg>Auto-Refresh</seg></tuv>
+		</tu>
+		<tu tuid='common.remove'>
+			<tuv xml:lang="en_US"><seg>remove</seg></tuv>
 		</tu>
 		<tu tuid='common.reset'>
 			<tuv xml:lang="en_US"><seg>reset</seg></tuv>
@@ -125,6 +140,9 @@
 		</tu>
 		<tu tuid='common.worker'>
 			<tuv xml:lang="en_US"><seg>Worker</seg></tuv>
+		</tu>
+		<tu tuid='common.worklist'>
+			<tuv xml:lang="en_US"><seg>worklist</seg></tuv>
 		</tu>
 		<tu tuid='common.yes'>
 			<tuv xml:lang="en_US"><seg>yes</seg></tuv>
@@ -192,6 +210,37 @@
 
 		<tu tuid='home.tab.notifications'>
 			<tuv xml:lang="en_US"><seg>Notifications</seg></tuv>
+		</tu>
+
+		<tu tuid='home.workspaces.delete'>
+			<tuv xml:lang="en_US"><seg>delete workspace</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.delete.confirm'>
+			<tuv xml:lang="en_US"><seg>Are you sure you want to delete this entire workspace?</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.edit'>
+			<tuv xml:lang="en_US"><seg>edit workspace</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.rename'>
+			<tuv xml:lang="en_US"><seg>Rename Workspace</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.button.add'>
+			<tuv xml:lang="en_US"><seg>Add Worklist</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.add.existing'>
+			<tuv xml:lang="en_US"><seg>Existing</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.add.new'>
+			<tuv xml:lang="en_US"><seg>New</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.add.to_workspace'>
+			<tuv xml:lang="en_US"><seg>Add Worklist to Workspace</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.name'>
+			<tuv xml:lang="en_US"><seg>Worklist Name</seg></tuv>
+		</tu>
+		<tu tuid='home.workspaces.worklist.type'>
+			<tuv xml:lang="en_US"><seg>Worklist Type</seg></tuv>
 		</tu>
 
 		<!-- Login -->
