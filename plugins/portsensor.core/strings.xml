@@ -400,6 +400,25 @@ For example: *receipt*</seg></tuv>
 			<tuv xml:lang="en_US"><seg>Last Updated</seg></tuv>
 		</tu>
 
+		<!-- Sensor Statuses -->
+
+		<tu tuid='sensor.status.disabled'>
+			<tuv xml:lang="en_US"><seg>DISABLED</seg></tuv>
+		</tu>
+		<tu tuid='sensor.status.critical'>
+			<tuv xml:lang="en_US"><seg>CRITICAL</seg></tuv>
+		</tu>
+		<tu tuid='sensor.status.ok'>
+			<tuv xml:lang="en_US"><seg>OK</seg></tuv>
+		</tu>
+		<tu tuid='sensor.status.warning'>
+			<tuv xml:lang="en_US"><seg>WARNING</seg></tuv>
+		</tu>
+		<tu tuid='sensor.status.mia'>
+			<tuv xml:lang="en_US"><seg>M.I.A.</seg></tuv>
+		</tu>
+
+
 		<!-- Sensors -->
 		
 		<tu tuid='sensors.add'>

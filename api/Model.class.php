@@ -439,16 +439,39 @@ class Model_CustomField {
 };
 
 class Model_Sensor {
-	public $id;
-	public $name;
-	public $extension_id;
+	public $id = 0;
+	public $name = '';
+	public $extension_id = '';
 	public $params = array();
-	public $updated_date;
-	public $status;
+	public $updated_date = 0;
+	public $status = 0;
 	public $metric = '';
 	public $output = '';
 	public $is_disabled = 0;
 	public $fail_count = 0;
+	
+	public function getStatusName() {
+		$translate = DevblocksPlatform::getTranslationService();
+		
+		if($this->is_disabled)
+			return $translate->_('sensor.status.disabled');
+		
+		switch($this->status) {
+			default:
+			case 0:
+				return $translate->_('sensor.status.ok');
+				break;
+			case 1:
+				return $translate->_('sensor.status.warning');
+				break;
+			case 2:
+				return $translate->_('sensor.status.critical');
+				break;
+			case 3:
+				return $translate->_('sensor.status.mia');
+				break;
+		}
+	}
 };
 
 abstract class Ps_AbstractView {
@@ -1344,6 +1367,8 @@ class Ps_SensorView extends Ps_AbstractView {
 		$field = $param->field;
 		$values = !is_array($param->value) ? array($param->value) : $param->value;
 
+		$translate = DevblocksPlatform::getTranslationService();
+		
 		switch($field) {
 			case SearchFields_Sensor::STATUS:
 				$strings = array();
@@ -1352,16 +1377,16 @@ class Ps_SensorView extends Ps_AbstractView {
 				foreach($values as $val) {
 					switch($val) {
 						case 0:
-							$strings[] = 'OK';
+							$strings[] = $translate->_('sensor.status.ok');
 							break;
 						case 1:
-							$strings[] = 'WARNING';
+							$strings[] = $translate->_('sensor.status.warning');
 							break;
 						case 2:
-							$strings[] = 'CRITICAL';
+							$strings[] = $translate->_('sensor.status.critical');
 							break;
 						case 3:
-							$strings[] = 'M.I.A.';
+							$strings[] = $translate->_('sensor.status.mia');
 							break;
 					}
 				}

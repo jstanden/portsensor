@@ -95,16 +95,16 @@
 			{elseif $column=="s_status"}
 			<td valign="top">
 				{if $result.s_is_disabled}
-					<span class="status_disabled">DISABLED</span>
+					<span class="status_disabled">{'sensor.status.disabled'|devblocks_translate|upper}</span>
 				{else}
 					{if 0==$result.$column}
-						<span class="status_ok">OK</span>
+						<span class="status_ok">{'sensor.status.ok'|devblocks_translate|upper}</span>
 					{elseif 1==$result.$column}
-						<span class="status_warning">WARNING</span>
+						<span class="status_warning">{'sensor.status.warning'|devblocks_translate|upper}</span>
 					{elseif 2==$result.$column}
-						<span class="status_critical">CRITICAL</span>
+						<span class="status_critical">{'sensor.status.critical'|devblocks_translate|upper}</span>
 					{elseif 3==$result.$column}
-						<span class="status_critical">M.I.A.</span>
+						<span class="status_critical">{'sensor.status.mia'|devblocks_translate|upper}</span>
 					{/if}
 				{/if}
 			</td>

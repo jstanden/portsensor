@@ -29,10 +29,10 @@
 <h2>In these sensor events:</h2>
 {assign var=crit_event value=$alert->criteria.event}
 <input type="hidden" name="rules[]" value="event">
-<label><input type="checkbox" name="value_event[]" value="ok" {if isset($crit_event.ok)}checked="checked"{/if}> <span class="status_ok"><b>OK</b></span></label>
-<label><input type="checkbox" name="value_event[]" value="warning" {if isset($crit_event.warning)}checked="checked"{/if}> <span class="status_warning"><b>WARNING</b></span></label>
-<label><input type="checkbox" name="value_event[]" value="critical" {if isset($crit_event.critical)}checked="checked"{/if}> <span class="status_critical"><b>CRITICAL</b></span></label>
-<label><input type="checkbox" name="value_event[]" value="mia" {if isset($crit_event.mia)}checked="checked"{/if}> <span class="status_mia"><b>M.I.A.</b></span></label>
+<label><input type="checkbox" name="value_event[]" value="ok" {if isset($crit_event.ok)}checked="checked"{/if}> <span class="status_ok"><b>{'sensor.status.ok'|devblocks_translate|upper}</b></span></label>
+<label><input type="checkbox" name="value_event[]" value="warning" {if isset($crit_event.warning)}checked="checked"{/if}> <span class="status_warning"><b>{'sensor.status.warning'|devblocks_translate|upper}</b></span></label>
+<label><input type="checkbox" name="value_event[]" value="critical" {if isset($crit_event.critical)}checked="checked"{/if}> <span class="status_critical"><b>{'sensor.status.critical'|devblocks_translate|upper}</b></span></label>
+<label><input type="checkbox" name="value_event[]" value="mia" {if isset($crit_event.mia)}checked="checked"{/if}> <span class="status_mia"><b>{'sensor.status.mia'|devblocks_translate|upper}</b></span></label>
 <br>
 <br>
 
