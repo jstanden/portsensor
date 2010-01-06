@@ -98,7 +98,7 @@
 
 {* Sensor *}
 {assign var=expanded value=false}
-{if isset($alert->criteria.sensor_type)}
+{if isset($alert->criteria.sensor_type) || isset($alert->criteria.sensor_name) || isset($alert->criteria.sensor_fail_count)}
 	{assign var=expanded value=true}
 {/if}
 <label><input type="checkbox" {if $expanded}checked="checked"{/if} onclick="toggleDiv('divBlockSensor',(this.checked?'block':'none'));if(!this.checked)checkAll('divBlockSensor',false);"> <b>Sensor</b></label><br>
