@@ -188,7 +188,7 @@ abstract class Extension_AlertAction extends DevblocksExtension {
 		$this->DevblocksExtension($manifest,1);
 	}
 	
-	function run(Model_Alert $alert, Model_Sensor $sensor) {}
+	function run(Model_Alert $alert, Model_Sensor $sensors) {}
 	
 	function renderConfig(Model_Alert $alert=null) {}
 	function saveConfig() { return array(); }

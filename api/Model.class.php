@@ -69,11 +69,11 @@ class Model_Alert {
 	/**
 	 * @return Model_Sensor[]|false
 	 */
-	static function getMatches(Model_Sensor $sensor, $only_alert_id=0) {
+	public function getMatches($sensors, $only_alert_id=0) {
 		$matches = array();
 		
 		// Check the sensor
-		if(null == $sensor)
+		if(empty($sensors))
 			return false;
 
 		if(!empty($only_alert_id)) {
@@ -92,241 +92,245 @@ class Model_Alert {
 		// Criteria extensions
 		$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', false);
 		
-		// Check filters
-		if(is_array($alerts))
-		foreach($alerts as $alert) { /* @var $alert Model_Alert */
-			$passed = 0;
-
-			// Skip alerts with no criteria
-			if(!is_array($alert->criteria) || empty($alert->criteria))
-				continue; 
-
-			// check criteria
-			foreach($alert->criteria as $rule_key => $rule) {
-				@$value = $rule['value'];
+		if(is_array($sensors))
+		foreach($sensors as $sensor) {
+			// Check filters
+			if(is_array($alerts))
+			foreach($alerts as $alert) { /* @var $alert Model_Alert */
+				$passed = 0;
+	
+				// Skip alerts with no criteria
+				if(!is_array($alert->criteria) || empty($alert->criteria))
+					continue; 
+	
+				// check criteria
+				if(is_array($alert->criteria))
+				foreach($alert->criteria as $rule_key => $rule) {
+					@$value = $rule['value'];
+								
+					switch($rule_key) {
+						case 'dayofweek':
+							$current_day = strftime('%w');
+	//						$current_day = 1;
+	
+							// Forced to English abbrevs as indexes
+							$days = array('sun','mon','tue','wed','thu','fri','sat');
 							
-				switch($rule_key) {
-					case 'dayofweek':
-						$current_day = strftime('%w');
-//						$current_day = 1;
-
-						// Forced to English abbrevs as indexes
-						$days = array('sun','mon','tue','wed','thu','fri','sat');
-						
-						// Is the current day enabled?
-						if(isset($rule[$days[$current_day]])) {
-							$passed++;
-						}
+							// Is the current day enabled?
+							if(isset($rule[$days[$current_day]])) {
+								$passed++;
+							}
+								
+							break;
 							
-						break;
-						
-					case 'timeofday':
-						$current_hour = strftime('%H');
-						$current_min = strftime('%M');
-//						$current_hour = 17;
-//						$current_min = 5;
-
-						if(null != ($from_time = @$rule['from']))
-							list($from_hour, $from_min) = explode(':', $from_time);
-						
-						if(null != ($to_time = @$rule['to']))
-							if(list($to_hour, $to_min) = explode(':', $to_time));
-
-						// Do we need to wrap around to the next day's hours?
-						if($from_hour > $to_hour) { // yes
-							$to_hour += 24; // add 24 hrs to the destination (1am = 25th hour)
-						}
+						case 'timeofday':
+							$current_hour = strftime('%H');
+							$current_min = strftime('%M');
+	//						$current_hour = 17;
+	//						$current_min = 5;
+	
+							if(null != ($from_time = @$rule['from']))
+								list($from_hour, $from_min) = explode(':', $from_time);
 							
-						// Are we in the right 24 hourly range?
-						if((integer)$current_hour >= $from_hour && (integer)$current_hour <= $to_hour) {
-							// If we're in the first hour, are we minutes early?
-							if($current_hour==$from_hour && (integer)$current_min < $from_min)
-								break;
-							// If we're in the last hour, are we minutes late?
-							if($current_hour==$to_hour && (integer)$current_min > $to_min)
-								break;
+							if(null != ($to_time = @$rule['to']))
+								if(list($to_hour, $to_min) = explode(':', $to_time));
+	
+							// Do we need to wrap around to the next day's hours?
+							if($from_hour > $to_hour) { // yes
+								$to_hour += 24; // add 24 hrs to the destination (1am = 25th hour)
+							}
+								
+							// Are we in the right 24 hourly range?
+							if((integer)$current_hour >= $from_hour && (integer)$current_hour <= $to_hour) {
+								// If we're in the first hour, are we minutes early?
+								if($current_hour==$from_hour && (integer)$current_min < $from_min)
+									break;
+								// If we're in the last hour, are we minutes late?
+								if($current_hour==$to_hour && (integer)$current_min > $to_min)
+									break;
+								
+								$passed++;
+							}
+							break;						
 							
-							$passed++;
-						}
-						break;						
-						
-					case 'event':
-						switch($sensor->status) {
-							case 0: // OK
-								if(isset($rule['ok']))
-									$passed++;
-								break;
-							case 1: // WARNING
-								if(isset($rule['warning']))
-									$passed++;
-								break;
-							case 2: // CRITICAL
-								if(isset($rule['critical']))
-									$passed++;
-								break;
-							case 3: // M.I.A
-								if(isset($rule['mia']))
-									$passed++;
-								break;
-						}
-						break;
-
-					case 'sensor_name':
-						$regexp_sensor_name = DevblocksPlatform::strToRegExp($value);
-						if(@preg_match($regexp_sensor_name, $sensor->name)) {
-							$passed++;
-						}
-						break;
-						
-					case 'sensor_type':
-						if(isset($rule[$sensor->extension_id]))
-							$passed++;
-						break;
-
-					case 'sensor_fail_count':
-						$oper = $rule['oper'];
-						
-						switch($oper) {
-							default:
-								if($sensor->fail_count == $value)
-									$passed++;
-								break;
-							case '!=':
-								if($sensor->fail_count != $value)
-									$passed++;
-								break;
-							case '>':
-								if($sensor->fail_count > $value)
-									$passed++;
-								break;
-							case '<':
-								if($sensor->fail_count < $value)
-									$passed++;
-								break;
-						}
-						
-						if(isset($rule[$sensor->extension_id]))
-							$passed++;
-						break;
-						
-					default: // ignore invalids
-						// Custom Fields
-						if(0==strcasecmp('cf_',substr($rule_key,0,3))) {
-							$field_id = substr($rule_key,3);
-
-							// Make sure it exists
-							if(null == (@$field = $custom_fields[$field_id]))
-								continue;
-
-							// Lazy values loader
-							$field_values = array();
-							switch($field->source_extension) {
-								case PsCustomFieldSource_Sensor::ID:
-									if(null == $sensor_field_values)
-										$sensor_field_values = array_shift(DAO_CustomFieldValue::getValuesBySourceIds(PsCustomFieldSource_Sensor::ID, $sensor->id));
-									$field_values =& $sensor_field_values;
+						case 'event':
+							switch($sensor->status) {
+								case 0: // OK
+									if(isset($rule['ok']))
+										$passed++;
+									break;
+								case 1: // WARNING
+									if(isset($rule['warning']))
+										$passed++;
+									break;
+								case 2: // CRITICAL
+									if(isset($rule['critical']))
+										$passed++;
+									break;
+								case 3: // M.I.A
+									if(isset($rule['mia']))
+										$passed++;
+									break;
+							}
+							break;
+	
+						case 'sensor_name':
+							$regexp_sensor_name = DevblocksPlatform::strToRegExp($value);
+							if(@preg_match($regexp_sensor_name, $sensor->name)) {
+								$passed++;
+							}
+							break;
+							
+						case 'sensor_type':
+							if(isset($rule[$sensor->extension_id]))
+								$passed++;
+							break;
+	
+						case 'sensor_fail_count':
+							$oper = $rule['oper'];
+							
+							switch($oper) {
+								default:
+									if($sensor->fail_count == $value)
+										$passed++;
+									break;
+								case '!=':
+									if($sensor->fail_count != $value)
+										$passed++;
+									break;
+								case '>':
+									if($sensor->fail_count > $value)
+										$passed++;
+									break;
+								case '<':
+									if($sensor->fail_count < $value)
+										$passed++;
 									break;
 							}
 							
-							// No values, default.
-//							if(!isset($field_values[$field_id]))
-//								continue;
+							if(isset($rule[$sensor->extension_id]))
+								$passed++;
+							break;
 							
-							// Type sensitive value comparisons
-							// [TODO] Operators
-							switch($field->type) {
-								case 'S': // string
-								case 'T': // clob
-								case 'U': // URL
-									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : '';
-									$oper = isset($rule['oper']) ? $rule['oper'] : "=";
-									
-									if($oper == "=" && @preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
-										$passed++;
-									elseif($oper == "!=" && @!preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
-										$passed++;
-									break;
-								case 'N': // number
-									if(!isset($field_values[$field_id]))
+						default: // ignore invalids
+							// Custom Fields
+							if(0==strcasecmp('cf_',substr($rule_key,0,3))) {
+								$field_id = substr($rule_key,3);
+	
+								// Make sure it exists
+								if(null == (@$field = $custom_fields[$field_id]))
+									continue;
+	
+								// Lazy values loader
+								$field_values = array();
+								switch($field->source_extension) {
+									case PsCustomFieldSource_Sensor::ID:
+										if(null == $sensor_field_values)
+											$sensor_field_values = array_shift(DAO_CustomFieldValue::getValuesBySourceIds(PsCustomFieldSource_Sensor::ID, $sensor->id));
+										$field_values =& $sensor_field_values;
 										break;
+								}
 								
-									$field_val = intval($field_values[$field_id]);
-									$oper = isset($rule['oper']) ? $rule['oper'] : "=";
-									
-									if($oper=="=" && $field_val == intval($value))
-										$passed++;
-									elseif($oper=="!=" && $field_val != intval($value))
-										$passed++;
-									elseif($oper==">" && $field_val > intval($value))
-										$passed++;
-									elseif($oper=="<" && $field_val < intval($value))
-										$passed++;
-									break;
-								case 'E': // date
-									$field_val = isset($field_values[$field_id]) ? intval($field_values[$field_id]) : 0;
-									$from = isset($rule['from']) ? $rule['from'] : "0";
-									$to = isset($rule['to']) ? $rule['to'] : "now";
-									
-									if(intval(@strtotime($from)) <= $field_val && intval(@strtotime($to)) >= $field_val) {
-										$passed++;
-									}
-									break;
-								case 'C': // checkbox
-									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : 0;
-									if(intval($value)==intval($field_val))
-										$passed++;
-									break;
-								case 'D': // dropdown
-								case 'X': // multi-checkbox
-								case 'M': // multi-picklist
-								case 'W': // worker
-									$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : array();
-									if(!is_array($value)) $value = array($value);
+								// No values, default.
+	//							if(!isset($field_values[$field_id]))
+	//								continue;
+								
+								// Type sensitive value comparisons
+								// [TODO] Operators
+								switch($field->type) {
+									case 'S': // string
+									case 'T': // clob
+									case 'U': // URL
+										$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : '';
+										$oper = isset($rule['oper']) ? $rule['oper'] : "=";
 										
-									if(is_array($field_val)) { // if multiple things set
-										foreach($field_val as $v) { // loop through possible
-											if(isset($value[$v])) { // is any possible set?
+										if($oper == "=" && @preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
+											$passed++;
+										elseif($oper == "!=" && @!preg_match(DevblocksPlatform::strToRegExp($value, true), $field_val))
+											$passed++;
+										break;
+									case 'N': // number
+										if(!isset($field_values[$field_id]))
+											break;
+									
+										$field_val = intval($field_values[$field_id]);
+										$oper = isset($rule['oper']) ? $rule['oper'] : "=";
+										
+										if($oper=="=" && $field_val == intval($value))
+											$passed++;
+										elseif($oper=="!=" && $field_val != intval($value))
+											$passed++;
+										elseif($oper==">" && $field_val > intval($value))
+											$passed++;
+										elseif($oper=="<" && $field_val < intval($value))
+											$passed++;
+										break;
+									case 'E': // date
+										$field_val = isset($field_values[$field_id]) ? intval($field_values[$field_id]) : 0;
+										$from = isset($rule['from']) ? $rule['from'] : "0";
+										$to = isset($rule['to']) ? $rule['to'] : "now";
+										
+										if(intval(@strtotime($from)) <= $field_val && intval(@strtotime($to)) >= $field_val) {
+											$passed++;
+										}
+										break;
+									case 'C': // checkbox
+										$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : 0;
+										if(intval($value)==intval($field_val))
+											$passed++;
+										break;
+									case 'D': // dropdown
+									case 'X': // multi-checkbox
+									case 'M': // multi-picklist
+									case 'W': // worker
+										$field_val = isset($field_values[$field_id]) ? $field_values[$field_id] : array();
+										if(!is_array($value)) $value = array($value);
+											
+										if(is_array($field_val)) { // if multiple things set
+											foreach($field_val as $v) { // loop through possible
+												if(isset($value[$v])) { // is any possible set?
+													$passed++;
+													break;
+												}
+											}
+											
+										} else { // single
+											if(isset($value[$field_val])) { // is our set field in possibles?
 												$passed++;
 												break;
 											}
+											
 										}
-										
-									} else { // single
-										if(isset($value[$field_val])) { // is our set field in possibles?
-											$passed++;
-											break;
-										}
-										
+										break;
+								}
+							} elseif(isset($alert_criteria_exts[$rule_key])) { // criteria extensions
+								try {
+									$crit_ext = $alert_criteria_exts[$rule_key]->createInstance();
+									if($crit_ext->matches($alert, $sensor)) {
+										$passed++;
+										break;
 									}
-									break;
-							}
-						} elseif(isset($alert_criteria_exts[$rule_key])) { // criteria extensions
-							try {
-								$crit_ext = $alert_criteria_exts[$rule_key]->createInstance();
-								if($crit_ext->matches($alert, $sensor)) {
-									$passed++;
-									break;
+									
+								} catch(Exception $e) {
+									// Oops!
+									//print_r($e);
 								}
 								
-							} catch(Exception $e) {
-								// Oops!
-								//print_r($e);
 							}
 							
-						}
-						
-						break;
+							break;
+					}
 				}
-			}
-			
-			// If our rule matched every criteria, stop and return the alert
-			if($passed == count($alert->criteria)) {
-//				DAO_Alert::increment($alert->id); // ++ the times we've matched
-				$matches[$alert->id] = $alert;
 				
-				// If we're not stackable anymore, bail out.
-//				if(!$alert->is_stackable)
-//					return $matches;
+				// If our rule matched every criteria, stop and return the alert
+				if($passed == count($alert->criteria)) {
+	//				DAO_Alert::increment($alert->id); // ++ the times we've matched
+					$matches[$sensor->id] = $sensor;
+					
+					// If we're not stackable anymore, bail out.
+	//				if(!$alert->is_stackable)
+	//					return $matches;
+				}
 			}
 		}
 		
@@ -339,9 +343,9 @@ class Model_Alert {
 	}
 	
 	/**
-	 * @param integer[] $sensor_ids
+	 * @param Model_Sensor[] $sensors
 	 */
-	function run(Model_Sensor $sensor) {
+	function run($sensors) {
 		$fields = array();
 		$field_values = array();
 
@@ -380,7 +384,7 @@ class Model_Alert {
 					} elseif(isset($alert_action_exts[$action])) { // criteria extensions
 						try {
 							$act_ext = $alert_action_exts[$action]->createInstance();
-							$act_ext->run($this, $sensor);
+							$act_ext->run($this, $sensors);
 							
 						} catch(Exception $e) {
 							// Oops!
@@ -391,14 +395,14 @@ class Model_Alert {
 			}
 		}
 
-		if(!empty($sensor)) {
+		if(!empty($sensors)) {
 			if(!empty($fields))
-				DAO_Sensor::update($sensor->id, $fields);
+				DAO_Sensor::update(array_keys($sensors), $fields);
 			
 			// Custom Fields
-			Ps_AbstractView::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $field_values, array($sensor->id));
+			Ps_AbstractView::_doBulkSetCustomFields(PsCustomFieldSource_Sensor::ID, $field_values, array_keys($sensors));
 		}
-	}	
+	}
 };
 
 class Model_CustomField {

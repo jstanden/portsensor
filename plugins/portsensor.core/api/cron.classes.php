@@ -152,16 +152,18 @@ class Cron_Alerts extends PortSensorCronExtension {
 		$logger = DevblocksPlatform::getConsoleLog();
 		$logger->info("[Alerts] Starting...");
 		
-		$check_sensors = DAO_Sensor::getWhere();
+		// [TODO] Make sure the alerts haven't triggered lately
 		
-		if(is_array($check_sensors))
-		foreach($check_sensors as $sensor) {
-			$alerts = Model_Alert::getMatches($sensor);
+		$alerts = DAO_Alert::getWhere(); // [todo] cache
+		$check_sensors = DAO_Sensor::getWhere(); // [todo] cache
+
+		if(is_array($alerts))
+		foreach($alerts as $alert) {
+			$logger->info(sprintf("[Alerts] Checking %s...", $alert->name));
+			$hit_sensors = $alert->getMatches($check_sensors);
 			
-			// [TODO] Make sure the alert hasn't triggered recently
-			if(is_array($alerts))
-			foreach($alerts as $alert)
-				$alert->run($sensor);
+			if(is_array($hit_sensors))
+				$alert->run($hit_sensors);
 		}
 		
 		$logger->info("[Alerts] Finished!");

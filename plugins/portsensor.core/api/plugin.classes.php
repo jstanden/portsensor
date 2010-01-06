@@ -44,7 +44,7 @@ class PsAlertActionSendMail extends Extension_AlertAction {
 		parent::__construct($manifest);	
 	}
 
-	function run(Model_Alert $alert, Model_Sensor $sensor) {
+	function run(Model_Alert $alert, $sensors) {
     	@$to = DevblocksPlatform::parseCsvString($alert->actions[self::EXTENSION_ID]['to']);
     	@$template_subject = $alert->actions[self::EXTENSION_ID]['template_subject'];
     	@$template_body = $alert->actions[self::EXTENSION_ID]['template_body'];
@@ -55,7 +55,8 @@ class PsAlertActionSendMail extends Extension_AlertAction {
     	$tpl = DevblocksPlatform::getTemplateService();
     	$tpl->clear_all_assign();
 		$tpl->assign('alert', $alert);
-		$tpl->assign('sensor', $sensor);
+		$tpl->assign('sensors', $sensors);
+		$tpl->assign('num_sensors', count($sensors));
 		
 		// Build template
 		$tpl_builder = DevblocksPlatform::getTemplateBuilder();
@@ -64,7 +65,7 @@ class PsAlertActionSendMail extends Extension_AlertAction {
 		
 		if(is_array($to))
 		foreach($to as $address) {
-			$logger->info(sprintf("Sending mail to %s about %s", $address, $sensor->name));
+			$logger->info(sprintf("Sending mail to %s about %d sensors", $address, count($sensors)));
 			
 			PortSensorMail::quickSend(
 				$address,
@@ -83,7 +84,7 @@ class PsAlertActionSendMail extends Extension_AlertAction {
 
 		$tpl->assign('models', array(
 			'alert' => get_class_vars("Model_Alert"),
-			'sensor' => get_class_vars("Model_Sensor"),
+			'sensors[sensor]' => get_class_vars("Model_Sensor"),
 		));
 		
 		$tpl->display($tpl_path . 'alerts/actions/send_mail.tpl');
