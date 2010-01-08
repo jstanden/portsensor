@@ -1,0 +1,63 @@
+<!DOCTYPE plugin SYSTEM "../../libs/devblocks/plugin.dtd">
+<plugin>
+	<id>portsensor.sms</id>
+	<name>[PortSensor] SMS Alerts</name>
+	<description>Send SMS alerts with a Clickatell.com account.</description>
+	<author>WebGroup Media, LLC.</author>
+	<revision>0</revision>
+	<link>http://wiki.portsensor.com/wiki/</link>
+
+	<!-- Exported Classes -->
+	
+	<class_loader>
+		<!--
+		<file path="api/Plugin.php">
+			<class name="ChRestPlugin" />
+		</file>
+		-->
+	</class_loader>
+
+	<!-- Extensions -->
+	
+	<extensions>
+		<!-- Translations -->
+		
+		<extension point="devblocks.i18n.strings">
+			<id>sms.translations</id>
+			<name>SMS Strings</name>
+			<class>
+				<file>api/Plugin.php</file>
+				<name>PsSmsTranslations</name>
+			</class>
+			<params/>
+		</extension>
+
+		<!-- Setup Tabs -->
+		
+		<extension point="portsensor.setup.tab">
+			<id>sms.setup.tab</id>
+			<name>SMS Tab</name>
+			<class>
+				<file>api/Plugin.php</file>
+				<name>PsSmsSetupTab</name>
+			</class>
+			<params>
+				<param key="uri" value="sms" />
+				<param key="title" value="SMS Gateways" />
+			</params>
+		</extension>
+
+		<!-- Alert Actions -->
+
+		<extension point="portsensor.alert.action">
+			<id>portsensor.alert.action.sms</id>
+			<name>Send SMS</name>
+			<class>
+			  <file>api/Plugin.php</file>
+			  <name>PsAlertActionSMS</name>
+			</class>
+			<params/>
+		</extension>
+		
+	</extensions>
+</plugin>
