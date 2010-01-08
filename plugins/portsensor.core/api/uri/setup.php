@@ -656,10 +656,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
 		$tpl->assign('acl_enabled', $acl_enabled);
 		
-		if(empty($license) || (!empty($license)&&isset($license['a'])))
-			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/trial.tpl');
-		else
-			$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
+		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
 	}
 	
 	function toggleACLAction() {
