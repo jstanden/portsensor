@@ -1,7 +1,7 @@
 <?php
 abstract class PortSensorPageExtension extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function isVisible() { return true; }
@@ -17,7 +17,7 @@ abstract class PortSensorPageExtension extends DevblocksExtension {
 
 abstract class Extension_Sensor extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	/**
@@ -45,7 +45,7 @@ abstract class PortSensorCronExtension extends DevblocksExtension {
     const PARAM_LASTRUN = 'lastrun';
     
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest, 1);
+		$this->DevblocksExtension($manifest);
 	}
 
 	/**
@@ -123,7 +123,7 @@ abstract class PortSensorCronExtension extends DevblocksExtension {
 
 abstract class Extension_AppPreBodyRenderer extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function render() { }
@@ -131,7 +131,7 @@ abstract class Extension_AppPreBodyRenderer extends DevblocksExtension {
 
 abstract class Extension_AppPostBodyRenderer extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function render() { }
@@ -141,13 +141,13 @@ abstract class Extension_CustomFieldSource extends DevblocksExtension {
 	const EXTENSION_POINT = 'portsensor.fields.source';
 	
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 };
 
 abstract class Extension_SetupTab extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function showTab() {}
@@ -156,7 +156,7 @@ abstract class Extension_SetupTab extends DevblocksExtension {
 
 abstract class Extension_PreferenceTab extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function showTab() {}
@@ -165,7 +165,7 @@ abstract class Extension_PreferenceTab extends DevblocksExtension {
 
 abstract class Extension_HomeTab extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function showTab() {}
@@ -174,7 +174,7 @@ abstract class Extension_HomeTab extends DevblocksExtension {
 
 abstract class Extension_AlertCriteria extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function matches(Model_Alert $alert, Model_Sensor $sensor) {}
@@ -185,7 +185,7 @@ abstract class Extension_AlertCriteria extends DevblocksExtension {
 
 abstract class Extension_AlertAction extends DevblocksExtension {
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 	
 	function run(Model_Alert $alert, Model_Sensor $sensors) {}
@@ -198,6 +198,6 @@ abstract class Extension_WorklistSource extends DevblocksExtension {
 	const EXTENSION_POINT = 'portsensor.worklist.source';
 	
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 	}
 };

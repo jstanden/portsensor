@@ -15,7 +15,7 @@ class PsExternalSensor extends Extension_Sensor {
 	private $_TPL_PATH = '';
 	
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 		$this->_TPL_PATH = dirname(dirname(__FILE__)) . '/templates/';
 	}
 	
@@ -58,7 +58,7 @@ class PsHttpSensor extends Extension_Sensor {
 	private $_TPL_PATH = '';
 	
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 		$this->_TPL_PATH = dirname(dirname(__FILE__)) . '/templates/';
 	}
 	
@@ -125,7 +125,7 @@ class PsPortSensor extends Extension_Sensor {
 	private $_TPL_PATH = '';
 	
 	function __construct($manifest) {
-		$this->DevblocksExtension($manifest,1);
+		$this->DevblocksExtension($manifest);
 		$this->_TPL_PATH = dirname(dirname(__FILE__)) . '/templates/';
 	}
 	

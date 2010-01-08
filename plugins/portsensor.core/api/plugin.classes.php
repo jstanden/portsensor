@@ -101,7 +101,7 @@ class PsAlertActionSendMail extends Extension_AlertAction {
         	'template_body' => $body,
 		);
 	}
-}
+};
 
 class PsPageController extends DevblocksControllerExtension {
     const ID = 'core.controller.page';
