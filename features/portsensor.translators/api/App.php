@@ -81,7 +81,7 @@ class Ps_TranslationView extends Ps_AbstractView {
 		
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('view_fields', $this->getColumns());
-		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.translators/templates/setup/translations/view.tpl');
+		$tpl->display('file:' . APP_PATH . '/features/portsensor.translators/templates/setup/translations/view.tpl');
 	}
 
 	function renderCriteria($field) {
@@ -92,15 +92,15 @@ class Ps_TranslationView extends Ps_AbstractView {
 			case SearchFields_Translation::STRING_ID:
 			case SearchFields_Translation::STRING_DEFAULT:
 			case SearchFields_Translation::STRING_OVERRIDE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 			case SearchFields_Translation::ID:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__number.tpl');
 				break;
 			case SearchFields_Translation::LANG_CODE:
 				$langs = DAO_Translation::getDefinedLangCodes(); // [TODO] Cache!
 				$tpl->assign('langs', $langs);
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__language.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__language.tpl');
 				break;
 			default:
 				echo '';

@@ -502,7 +502,7 @@ abstract class Ps_AbstractView {
 
 	protected function _renderCriteriaCustomField($tpl, $field_id) {
 		$field = DAO_CustomField::get($field_id);
-		$tpl_path = DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/';
+		$tpl_path = APP_PATH . 'portsensor.core/templates/';
 		
 		switch($field->type) {
 			case Model_CustomField::TYPE_DROPDOWN:
@@ -1081,7 +1081,7 @@ class Ps_AlertView extends Ps_AbstractView {
 		
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('view_fields', $this->getColumns());
-		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/alerts/view.tpl');
+		$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/alerts/view.tpl');
 	}
 
 	function renderCriteria($field) {
@@ -1090,19 +1090,19 @@ class Ps_AlertView extends Ps_AbstractView {
 
 		switch($field) {
 			case SearchFields_Alert::NAME:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 			case SearchFields_Alert::POS:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__number.tpl');
 				break;
 			case SearchFields_Alert::IS_DISABLED:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__bool.tpl');
 				break;
 			case SearchFields_Alert::LAST_ALERT_DATE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__date.tpl');
 				break;
 			case SearchFields_Alert::WORKER_ID:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__worker.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__worker.tpl');
 				break;
 			default:
 				// Custom Fields
@@ -1325,7 +1325,7 @@ class Ps_SensorView extends Ps_AbstractView {
 		
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('view_fields', $this->getColumns());
-		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/sensors/view.tpl');
+		$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/sensors/view.tpl');
 	}
 
 	function renderCriteria($field) {
@@ -1336,25 +1336,25 @@ class Ps_SensorView extends Ps_AbstractView {
 			case SearchFields_Sensor::METRIC:
 			case SearchFields_Sensor::NAME:
 			case SearchFields_Sensor::OUTPUT:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 			case SearchFields_Sensor::FAIL_COUNT:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__number.tpl');
 				break;
 			case SearchFields_Sensor::IS_DISABLED:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__bool.tpl');
 				break;
 			case SearchFields_Sensor::UPDATED_DATE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__date.tpl');
 				break;
 			case SearchFields_Sensor::STATUS:
 				// [TODO] Translate statuses
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/sensors/criteria/status.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/sensors/criteria/status.tpl');
 				break;
 			case SearchFields_Sensor::EXTENSION_ID:
 				$sensor_type_mfts = DevblocksPlatform::getExtensions('portsensor.sensor', false);
 				$tpl->assign('sensor_type_mfts', $sensor_type_mfts);
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/sensors/criteria/extension_id.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/sensors/criteria/extension_id.tpl');
 				break;
 			default:
 				// Custom Fields
@@ -1604,7 +1604,7 @@ class Ps_WorkerView extends Ps_AbstractView {
 
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('view_fields', $this->getColumns());
-		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/setup/tabs/workers/view.tpl');
+		$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/setup/tabs/workers/view.tpl');
 	}
 
 	function renderCriteria($field) {
@@ -1616,14 +1616,14 @@ class Ps_WorkerView extends Ps_AbstractView {
 			case SearchFields_Worker::FIRST_NAME:
 			case SearchFields_Worker::LAST_NAME:
 			case SearchFields_Worker::TITLE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 			case SearchFields_Worker::IS_DISABLED:
 			case SearchFields_Worker::IS_SUPERUSER:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__bool.tpl');
 				break;
 			case SearchFields_Worker::LAST_ACTIVITY_DATE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__date.tpl');
 				break;
 			default:
 				// Custom Fields
@@ -1841,7 +1841,7 @@ class Ps_WorkerEventView extends Ps_AbstractView {
 		
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('view_fields', $this->getColumns());
-		$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/home/tabs/my_notifications/view.tpl');
+		$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/home/tabs/my_notifications/view.tpl');
 	}
 
 	function renderCriteria($field) {
@@ -1852,24 +1852,24 @@ class Ps_WorkerEventView extends Ps_AbstractView {
 			case SearchFields_WorkerEvent::TITLE:
 			case SearchFields_WorkerEvent::CONTENT:
 			case SearchFields_WorkerEvent::URL:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__string.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__string.tpl');
 				break;
 //			case SearchFields_WorkerEvent::ID:
 //			case SearchFields_WorkerEvent::MESSAGE_ID:
 //			case SearchFields_WorkerEvent::TICKET_ID:
 //			case SearchFields_WorkerEvent::FILE_SIZE:
-//				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__number.tpl');
+//				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__number.tpl');
 //				break;
 			case SearchFields_WorkerEvent::IS_READ:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__bool.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__bool.tpl');
 				break;
 			case SearchFields_WorkerEvent::CREATED_DATE:
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__date.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__date.tpl');
 				break;
 			case SearchFields_WorkerEvent::WORKER_ID:
 				$workers = DAO_Worker::getAllActive();
 				$tpl->assign('workers', $workers);
-				$tpl->display('file:' . DEVBLOCKS_PLUGIN_PATH . 'portsensor.core/templates/internal/views/criteria/__worker.tpl');
+				$tpl->display('file:' . APP_PATH . '/features/portsensor.core/templates/internal/views/criteria/__worker.tpl');
 				break;
 			default:
 				echo '';
