@@ -16,21 +16,6 @@ $datadict = NewDataDictionary($db); /* @var $datadict ADODB_DataDict */ // ,'mys
 $tables = $datadict->MetaTables();
 $tables = array_flip($tables);
 
-// ***** Application
-
-// `setting` =============================
-if(!isset($tables['setting'])) {
-    $flds = "
-		setting C(32) DEFAULT '' NOTNULL PRIMARY,
-		value C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('setting', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('setting');
-$indexes = $datadict->MetaIndexes('setting',false);
-
 // `worker` =============================
 if(!isset($tables['worker'])) {
     $flds = "
@@ -349,6 +334,20 @@ if(!isset($indexes['worker_id'])) {
 if(!isset($indexes['workspace'])) {
 	$sql = $datadict->CreateIndexSQL('workspace','worklist','workspace');
 	$datadict->ExecuteSQLArray($sql);
+}
+
+// ===========================================================================
+// Hand 'setting' over to 'devblocks_setting' (and copy)
+
+if(isset($tables['setting']) && isset($tables['devblocks_setting'])) {
+	$sql = "INSERT INTO devblocks_setting (plugin_id, setting, value) ".
+		"SELECT 'portsensor.core', setting, value FROM setting";
+	$db->Execute($sql);
+	
+	$sql = $datadict->DropTableSQL('setting');
+	$datadict->ExecuteSQLArray($sql);
+	
+    unset($tables['setting']);
 }
 
 return TRUE;

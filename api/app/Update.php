@@ -16,7 +16,7 @@ class PsUpdateController extends DevblocksControllerExtension {
 	    array_shift($stack); // update
 
 	    $cache = DevblocksPlatform::getCacheService(); /* @var $cache _DevblocksCacheManager */
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 	    
 	    switch(array_shift($stack)) {
 	    	case 'locked':
@@ -40,7 +40,7 @@ class PsUpdateController extends DevblocksControllerExtension {
 			    $path = APP_TEMP_PATH . DIRECTORY_SEPARATOR;
 				$file = $path . 'psupdate_lock';	    		
 				
-			    $authorized_ips_str = $settings->get(PortSensorSettings::AUTHORIZED_IPS);
+			    $authorized_ips_str = $settings->get('portsensor.core',PortSensorSettings::AUTHORIZED_IPS);
 			    $authorized_ips = DevblocksPlatform::parseCrlfString($authorized_ips_str);
 			    
 		   	    $authorized_ip_defaults = DevblocksPlatform::parseCsvString(AUTHORIZED_IPS_DEFAULTS);

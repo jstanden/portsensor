@@ -11,7 +11,7 @@ DevblocksPlatform::init();
 DevblocksPlatform::setExtensionDelegate('PS_DevblocksExtensionDelegate');
 
 $session = DevblocksPlatform::getSessionService();
-$settings = PortSensorSettings::getInstance();
+$settings = DevblocksPlatform::getPluginSettingsService();
 $worker = PortSensorApplication::getActiveWorker();
 
 // Localization

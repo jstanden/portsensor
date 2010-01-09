@@ -199,7 +199,7 @@ class PsPageController extends DevblocksControllerExtension {
 
 		$tpl = DevblocksPlatform::getTemplateService();
 		$session = DevblocksPlatform::getSessionService();
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		$translate = DevblocksPlatform::getTranslationService();
 	    $active_worker = PortSensorApplication::getActiveWorker();
 		

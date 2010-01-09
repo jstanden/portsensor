@@ -164,10 +164,10 @@ class PsSetupPage extends PortSensorPageExtension  {
 	    if(empty($title))
 	    	$title = 'PortSensor - Monitor Everything';
 	    
-	    $settings = PortSensorSettings::getInstance();
-	    $settings->set(PortSensorSettings::APP_TITLE, $title);
-	    $settings->set(PortSensorSettings::APP_LOGO_URL, $logo); // [TODO] Enforce some kind of max resolution?
-	    $settings->set(PortSensorSettings::AUTHORIZED_IPS, $authorized_ips_str);
+	    $settings = DevblocksPlatform::getPluginSettingsService();
+	    $settings->set('portsensor.core',PortSensorSettings::APP_TITLE, $title);
+	    $settings->set('portsensor.core',PortSensorSettings::APP_LOGO_URL, $logo); // [TODO] Enforce some kind of max resolution?
+	    $settings->set('portsensor.core',PortSensorSettings::AUTHORIZED_IPS, $authorized_ips_str);
 	    
 	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 	}
@@ -335,9 +335,9 @@ class PsSetupPage extends PortSensorPageExtension  {
 				if ((!empty($license) && !empty($license['serial'])) || count($workers) < 3) {
 					// Creating new worker.  If password is empty, email it to them
 				    if(empty($password)) {
-				    	$settings = PortSensorSettings::getInstance();
-						$replyFrom = $settings->get(PortSensorSettings::DEFAULT_REPLY_FROM);
-						$replyPersonal = $settings->get(PortSensorSettings::DEFAULT_REPLY_PERSONAL, '');
+				    	$settings = DevblocksPlatform::getPluginSettingsService();
+						$replyFrom = $settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_FROM);
+						$replyPersonal = $settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL, '');
 						$url = DevblocksPlatform::getUrlService();
 				    	
 						$password = PortSensorApplication::generatePassword(8);
@@ -521,21 +521,21 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
 		
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		$mail_service = DevblocksPlatform::getMailService();
 		
-		$smtp_host = $settings->get(PortSensorSettings::SMTP_HOST,'');
-		$smtp_port = $settings->get(PortSensorSettings::SMTP_PORT,25);
-		$smtp_auth_enabled = $settings->get(PortSensorSettings::SMTP_AUTH_ENABLED,false);
+		$smtp_host = $settings->get('portsensor.core',PortSensorSettings::SMTP_HOST,'');
+		$smtp_port = $settings->get('portsensor.core',PortSensorSettings::SMTP_PORT,25);
+		$smtp_auth_enabled = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_ENABLED,false);
 		if ($smtp_auth_enabled) {
-			$smtp_auth_user = $settings->get(PortSensorSettings::SMTP_AUTH_USER,'');
-			$smtp_auth_pass = $settings->get(PortSensorSettings::SMTP_AUTH_PASS,''); 
+			$smtp_auth_user = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_USER,'');
+			$smtp_auth_pass = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_PASS,''); 
 		} else {
 			$smtp_auth_user = '';
 			$smtp_auth_pass = ''; 
 		}
-		$smtp_enc = $settings->get(PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None');
-		$smtp_max_sends = $settings->get(PortSensorSettings::SMTP_MAX_SENDS,'20');
+		$smtp_enc = $settings->get('portsensor.core',PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None');
+		$smtp_max_sends = $settings->get('portsensor.core',PortSensorSettings::SMTP_MAX_SENDS,'20');
 		
 		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/mail/index.tpl');
 	}
@@ -570,19 +570,19 @@ class PsSetupPage extends PortSensorPageExtension  {
 		    @$smtp_auth_pass = '';
 	    }
 	    
-	    $settings = PortSensorSettings::getInstance();
-	    $settings->set(PortSensorSettings::DEFAULT_REPLY_FROM, $default_reply_address);
-	    $settings->set(PortSensorSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
-//	    $settings->set(PortSensorSettings::DEFAULT_SIGNATURE, $default_signature);
-//	    $settings->set(PortSensorSettings::DEFAULT_SIGNATURE_POS, $default_signature_pos);
-	    $settings->set(PortSensorSettings::SMTP_HOST, $smtp_host);
-	    $settings->set(PortSensorSettings::SMTP_PORT, $smtp_port);
-	    $settings->set(PortSensorSettings::SMTP_AUTH_ENABLED, $smtp_auth_enabled);
-	    $settings->set(PortSensorSettings::SMTP_AUTH_USER, $smtp_auth_user);
-	    $settings->set(PortSensorSettings::SMTP_AUTH_PASS, $smtp_auth_pass);
-	    $settings->set(PortSensorSettings::SMTP_ENCRYPTION_TYPE, $smtp_enc);
-	    $settings->set(PortSensorSettings::SMTP_TIMEOUT, !empty($smtp_timeout) ? $smtp_timeout : 30);
-	    $settings->set(PortSensorSettings::SMTP_MAX_SENDS, !empty($smtp_max_sends) ? $smtp_max_sends : 20);
+	    $settings = DevblocksPlatform::getPluginSettingsService();
+	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_REPLY_FROM, $default_reply_address);
+	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
+//	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_SIGNATURE, $default_signature);
+//	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_SIGNATURE_POS, $default_signature_pos);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_HOST, $smtp_host);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_PORT, $smtp_port);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_AUTH_ENABLED, $smtp_auth_enabled);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_AUTH_USER, $smtp_auth_user);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_AUTH_PASS, $smtp_auth_pass);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_ENCRYPTION_TYPE, $smtp_enc);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_TIMEOUT, !empty($smtp_timeout) ? $smtp_timeout : 30);
+	    $settings->set('portsensor.core',PortSensorSettings::SMTP_MAX_SENDS, !empty($smtp_max_sends) ? $smtp_max_sends : 20);
 	    
 	    DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','mail','outgoing','test')));
 	}	
@@ -631,7 +631,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 
 	// Ajax
 	function showTabACLAction() {
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->cache_lifetime = "0";
@@ -653,7 +653,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$tpl->assign('workers', $workers);
 		
 		// Permissions enabled
-		$acl_enabled = $settings->get(PortSensorSettings::ACL_ENABLED);
+		$acl_enabled = $settings->get('portsensor.core',PortSensorSettings::ACL_ENABLED);
 		$tpl->assign('acl_enabled', $acl_enabled);
 		
 		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/acl/index.tpl');
@@ -661,7 +661,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 	
 	function toggleACLAction() {
 		$worker = PortSensorApplication::getActiveWorker();
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		
 		if(!$worker || !$worker->is_superuser) {
 			return;
@@ -669,7 +669,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		
 		@$enabled = DevblocksPlatform::importGPC($_REQUEST['enabled'],'integer',0);
 		
-		$settings->set(PortSensorSettings::ACL_ENABLED, $enabled);
+		$settings->set('portsensor.core',PortSensorSettings::ACL_ENABLED, $enabled);
 	}
 	
 	function getRoleAction() {
@@ -931,7 +931,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 	// Post
 	function saveLicensesAction() {
 		$translate = DevblocksPlatform::getTranslationService();
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		$worker = PortSensorApplication::getActiveWorker();
 		
 		if(!$worker || !$worker->is_superuser) {
@@ -944,7 +944,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		@$do_delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
 
 		if(!empty($do_delete)) {
-			$settings->set(PortSensorSettings::LICENSE, '');
+			$settings->set('portsensor.core',PortSensorSettings::LICENSE, '');
 			DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 			return;
 		}
@@ -967,7 +967,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		 */
 		$license = $valid;
 		
-		$settings->set(PortSensorSettings::LICENSE, serialize($license));
+		$settings->set('portsensor.core',PortSensorSettings::LICENSE, serialize($license));
 		
 		DevblocksPlatform::setHttpResponse(new DevblocksHttpResponse(array('setup','settings')));
 	}

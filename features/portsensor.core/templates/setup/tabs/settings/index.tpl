@@ -7,11 +7,11 @@
 <br>
 
 <b>Browser Title:</b><br>
-<input type="text" name="title" value="{$settings->get('app_title')|escape:"html"}" size="64"><br>
+<input type="text" name="title" value="{$settings->get('portsensor.core','app_title')|escape:"html"}" size="64"><br>
 <br>
 
 <b>Logo URL:</b> (leave blank for default)<br>
-<input type="text" name="logo" value="{$settings->get('app_logo_url')|escape:"html"}" size="64"><br>
+<input type="text" name="logo" value="{$settings->get('portsensor.core','app_logo_url')|escape:"html"}" size="64"><br>
 <br>
 
 <!-- 
@@ -26,7 +26,7 @@
 <br>
 <b>Allow remote administration tools (upgrade, cron) from these IPs:</b> (one IP per line)
 <br>
-<textarea name="authorized_ips" rows="5" cols="24" style="width: 400;">{$settings->get('authorized_ips')|escape:"html"}</textarea>	
+<textarea name="authorized_ips" rows="5" cols="24" style="width: 400;">{$settings->get('portsensor.core','authorized_ips')|escape:"html"}</textarea>	
 <br>
 (Partial IP matches OK. For example: 192.168.1.)<br>
 

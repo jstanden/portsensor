@@ -10,7 +10,7 @@
 	<META HTTP-EQUIV="Expires" CONTENT="0">
 	-->
 
-  <title>{$settings->get('app_title')}</title>
+  <title>{$settings->get('portsensor.core','app_title')}</title>
   <link type="image/x-icon" rel="shortcut icon" href="{devblocks_url}favicon.ico{/devblocks_url}">
   <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=scripts/yui/container/assets/skins/sam/container.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">
   <link type="text/css" rel="stylesheet" href="{devblocks_url}c=resource&p=portsensor.core&f=scripts/yui/tabview/assets/skins/sam/tabview.css{/devblocks_url}?v={$smarty.const.APP_BUILD}">

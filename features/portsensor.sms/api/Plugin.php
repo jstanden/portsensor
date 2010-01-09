@@ -112,7 +112,7 @@ class PsSmsSetupTab extends Extension_SetupTab {
 	const ID = 'sms.setup.tab';
 	
 	function showTab() {
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';

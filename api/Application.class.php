@@ -27,14 +27,6 @@ DevblocksPlatform::registerClasses($path . 'Update.php', array(
  * Application-level Facade
  */
 class PortSensorApplication extends DevblocksApplication {
-//	const INDEX_TICKETS = 'tickets';
-		
-//	const VIEW_SEARCH = 'search';
-//	const VIEW_MAIL_WORKFLOW = 'mail_workflow';
-//	const VIEW_OVERVIEW_ALL = 'overview_all';
-	
-	const CACHE_SETTINGS_DAO = 'ps_settings_dao';
-//	const CACHE_HELPDESK_FROMS = 'ch_helpdesk_froms';
 	
 	/**
 	 * @return CerberusVisit
@@ -330,8 +322,8 @@ class PortSensorLicense {
 	 * @return array
 	 */
 	public static function getInstance() {
-		$settings = PortSensorSettings::getInstance();
-		$license = $settings->get(PortSensorSettings::LICENSE,array());
+		$settings = DevblocksPlatform::getPluginSettingsService();
+		$license = $settings->get('portsensor.core',PortSensorSettings::LICENSE,array());
 		if(!empty($license)) {
 			@$license = unserialize($license);
 		}
@@ -366,16 +358,16 @@ class PortSensorMail {
 	private function __construct() {}
 	
 	static function getMailerDefaults() {
-		$settings = PortSensorSettings::getInstance();
+		$settings = DevblocksPlatform::getPluginSettingsService();
 
 		return array(
-			'host' => $settings->get(PortSensorSettings::SMTP_HOST,'localhost'),
-			'port' => $settings->get(PortSensorSettings::SMTP_PORT,'25'),
-			'auth_user' => $settings->get(PortSensorSettings::SMTP_AUTH_USER,null),
-			'auth_pass' => $settings->get(PortSensorSettings::SMTP_AUTH_PASS,null),
-			'enc' => $settings->get(PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None'),
-			'max_sends' => $settings->get(PortSensorSettings::SMTP_MAX_SENDS,20),
-			'timeout' => $settings->get(PortSensorSettings::SMTP_TIMEOUT,30),
+			'host' => $settings->get('portsensor.core',PortSensorSettings::SMTP_HOST,'localhost'),
+			'port' => $settings->get('portsensor.core',PortSensorSettings::SMTP_PORT,'25'),
+			'auth_user' => $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_USER,null),
+			'auth_pass' => $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_PASS,null),
+			'enc' => $settings->get('portsensor.core',PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None'),
+			'max_sends' => $settings->get('portsensor.core',PortSensorSettings::SMTP_MAX_SENDS,20),
+			'timeout' => $settings->get('portsensor.core',PortSensorSettings::SMTP_TIMEOUT,30),
 		);
 	}
 	
@@ -385,13 +377,13 @@ class PortSensorMail {
 			$mailer = $mail_service->getMailer(PortSensorMail::getMailerDefaults());
 			$mail = $mail_service->createMessage();
 	
-		    $settings = PortSensorSettings::getInstance();
+		    $settings = DevblocksPlatform::getPluginSettingsService();
 		    
 		    if(empty($from_addy))
-				@$from_addy = $settings->get(PortSensorSettings::DEFAULT_REPLY_FROM, $_SERVER['SERVER_ADMIN']);
+				@$from_addy = $settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_FROM, $_SERVER['SERVER_ADMIN']);
 		    
 		    if(empty($from_personal))
-				@$from_personal = $settings->get(PortSensorSettings::DEFAULT_REPLY_PERSONAL,'');
+				@$from_personal = $settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL,'');
 			
 			$mail->setTo(array($to));
 			$mail->setFrom(array($from_addy => $from_personal));
@@ -434,8 +426,6 @@ class PortSensorSettings {
 	const LICENSE = 'license';
 	const ACL_ENABLED = 'acl_enabled';
 	
-	private static $instance = null;
-	
 	private $settings = array( // defaults
 		self::APP_TITLE => 'PortSensor - Monitor Everything',
 		self::APP_LOGO_URL => '',
@@ -453,50 +443,6 @@ class PortSensorSettings {
 		self::LICENSE => '',
 		self::ACL_ENABLED => 0,
 	);
-
-	/**
-	 * @return PortSensorSettings
-	 */
-	private function __construct() {
-	    // Defaults (dynamic)
-		$saved_settings = DAO_Setting::getSettings();
-		foreach($saved_settings as $k => $v) {
-			$this->settings[$k] = $v;
-		}
-	}
-	
-	/**
-	 * @return PortSensorSettings
-	 */
-	public static function getInstance() {
-		if(self::$instance==null) {
-			self::$instance = new PortSensorSettings();	
-		}
-		
-		return self::$instance;		
-	}
-	
-	public function set($key,$value) {
-		DAO_Setting::set($key,$value);
-		$this->settings[$key] = $value;
-		
-	    $cache = DevblocksPlatform::getCacheService();
-		$cache->remove(PortSensorApplication::CACHE_SETTINGS_DAO);
-		
-		return TRUE;
-	}
-	
-	/**
-	 * @param string $key
-	 * @param string $default
-	 * @return mixed
-	 */
-	public function get($key,$default=null) {
-		if(isset($this->settings[$key]))
-			return $this->settings[$key];
-		else 
-			return $default;
-	}
 };
 
 // [TODO] This gets called a lot when it happens after the registry cache

@@ -18,8 +18,8 @@ class PsCronController extends DevblocksControllerExtension {
 		$logger = DevblocksPlatform::getConsoleLog();
 		$translate = DevblocksPlatform::getTranslationService();
 		
-	    $settings = PortSensorSettings::getInstance();
-	    $authorized_ips_str = $settings->get(PortSensorSettings::AUTHORIZED_IPS);
+	    $settings = DevblocksPlatform::getPluginSettingsService();
+	    $authorized_ips_str = $settings->get('portsensor.core',PortSensorSettings::AUTHORIZED_IPS);
 	    $authorized_ips = DevblocksPlatform::parseCrlfString($authorized_ips_str);
 	    
 	    $authorized_ip_defaults = DevblocksPlatform::parseCsvString(AUTHORIZED_IPS_DEFAULTS);
