@@ -96,6 +96,28 @@
 	</tr>
 </table>
 
+{* Alert *}
+{assign var=expanded value=false}
+{if isset($alert->criteria.alert_last_ran)}
+	{assign var=expanded value=true}
+{/if}
+<label><input type="checkbox" {if $expanded}checked="checked"{/if} onclick="toggleDiv('divBlockAlert',(this.checked?'block':'none'));if(!this.checked)checkAll('divBlockAlert',false);"> <b>Alert</b></label><br>
+<table width="500" style="margin-left:10px;display:{if $expanded}block{else}none{/if};" id="divBlockAlert">
+	<tr>
+		<td valign="top">
+			{assign var=crit_alert_last_ran value=$alert->criteria.alert_last_ran}
+			<label><input type="checkbox" id="chkRuleAlertLastRan" name="rules[]" value="alert_last_ran" {if !is_null($crit_alert_last_ran)}checked="checked"{/if}> Last Ran Date:</label>
+		</td>
+		<td valign="top">
+			<i>between:</i><br>
+			<input type="text" name="value_alert_last_ran_from" size="20" value="{$crit_alert_last_ran.from|escape}" onchange="document.getElementById('chkRuleAlertLastRan').checked=((0==this.value.length)?false:true);" style="width:95%;"><br>
+			<i>and:</i><br>
+			<input type="text" name="value_alert_last_ran_to" size="20" value="{$crit_alert_last_ran.to|escape}" onchange="document.getElementById('chkRuleAlertLastRan').checked=((0==this.value.length)?false:true);" style="width:95%;"><br>
+			<i>(+2 hours, now, next Friday 5pm, 2pm, Jan 25)</i>
+		</td>
+	</tr>
+</table>
+
 {* Sensor *}
 {assign var=expanded value=false}
 {if isset($alert->criteria.sensor_type) || isset($alert->criteria.sensor_name) || isset($alert->criteria.sensor_fail_count)}

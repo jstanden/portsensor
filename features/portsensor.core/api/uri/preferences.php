@@ -309,6 +309,13 @@ class PsPreferencesPage extends PortSensorPageExtension {
 						$criteria[$event] = true;
 					unset($criteria['value']);
 					break;
+				case 'alert_last_ran':
+					@$from = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_from'],'string','');
+					@$to = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_to'],'string','');
+					$criteria['from'] = $from;
+					$criteria['to'] = $to;
+					unset($criteria['value']);
+					break;
 				case 'sensor_name':
 					break;
 				case 'sensor_fail_count':

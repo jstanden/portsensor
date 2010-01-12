@@ -152,8 +152,6 @@ class Cron_Alerts extends PortSensorCronExtension {
 		$logger = DevblocksPlatform::getConsoleLog();
 		$logger->info("[Alerts] Starting...");
 		
-		// [TODO] Make sure the alerts haven't triggered lately
-		
 		$alerts = DAO_Alert::getWhere(); // [todo] cache
 		$check_sensors = DAO_Sensor::getWhere(); // [todo] cache
 

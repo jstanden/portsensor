@@ -290,6 +290,19 @@ class DAO_Alert extends Ps_ORMHelper {
 		
 		return array($results,$total);
 	}
+	
+	/**
+	 * Increment the number of times we've matched this alert
+	 *
+	 * @param integer $id
+	 */
+	static function increment($id) {
+		$db = DevblocksPlatform::getDatabaseService();
+		$db->Execute(sprintf("UPDATE alert SET pos = pos + 1 WHERE id = %d",
+			$id
+		));
+	}
+	
 };
 
 class SearchFields_Alert implements IDevblocksSearchFields {
