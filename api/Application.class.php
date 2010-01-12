@@ -410,39 +410,21 @@ class PortSensorMail {
 };
 
 class PortSensorSettings {
-	const APP_TITLE = 'app_title'; 
-	const APP_LOGO_URL = 'app_logo_url'; 
-	const DEFAULT_REPLY_FROM = 'default_reply_from'; 
-	const DEFAULT_REPLY_PERSONAL = 'default_reply_personal'; 
-	const SMTP_HOST = 'smtp_host'; 
+	const APP_TITLE = 'app_title';
+	const APP_LOGO_URL = 'app_logo_url';
+	const DEFAULT_REPLY_FROM = 'default_reply_from';
+	const DEFAULT_REPLY_PERSONAL = 'default_reply_personal';
+	const SMTP_HOST = 'smtp_host';
 	const SMTP_AUTH_ENABLED = 'smtp_auth_enabled'; 
-	const SMTP_AUTH_USER = 'smtp_auth_user'; 
+	const SMTP_AUTH_USER = 'smtp_auth_user';
 	const SMTP_AUTH_PASS = 'smtp_auth_pass'; 
-	const SMTP_PORT = 'smtp_port'; 
+	const SMTP_PORT = 'smtp_port';
 	const SMTP_ENCRYPTION_TYPE = 'smtp_enc';
 	const SMTP_MAX_SENDS = 'smtp_max_sends';
 	const SMTP_TIMEOUT = 'smtp_timeout';
 	const AUTHORIZED_IPS = 'authorized_ips';
 	const LICENSE = 'license';
 	const ACL_ENABLED = 'acl_enabled';
-	
-	private $settings = array( // defaults
-		self::APP_TITLE => 'PortSensor - Monitor Everything',
-		self::APP_LOGO_URL => '',
-		self::DEFAULT_REPLY_FROM => '',
-		self::DEFAULT_REPLY_PERSONAL => '',
-		self::SMTP_HOST => 'localhost',
-		self::SMTP_AUTH_ENABLED => 0,
-		self::SMTP_AUTH_USER => '',
-		self::SMTP_AUTH_PASS => '',
-		self::SMTP_PORT => 25,
-		self::SMTP_ENCRYPTION_TYPE => 'None',
-		self::SMTP_MAX_SENDS => 20,
-		self::SMTP_TIMEOUT => 30,
-		self::AUTHORIZED_IPS => '127.0.0.1', 
-		self::LICENSE => '',
-		self::ACL_ENABLED => 0,
-	);
 };
 
 // [TODO] This gets called a lot when it happens after the registry cache

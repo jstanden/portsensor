@@ -520,22 +520,8 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
-		
-		$settings = DevblocksPlatform::getPluginSettingsService();
-		$mail_service = DevblocksPlatform::getMailService();
-		
-		$smtp_host = $settings->get('portsensor.core',PortSensorSettings::SMTP_HOST,'');
-		$smtp_port = $settings->get('portsensor.core',PortSensorSettings::SMTP_PORT,25);
-		$smtp_auth_enabled = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_ENABLED,false);
-		if ($smtp_auth_enabled) {
-			$smtp_auth_user = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_USER,'');
-			$smtp_auth_pass = $settings->get('portsensor.core',PortSensorSettings::SMTP_AUTH_PASS,''); 
-		} else {
-			$smtp_auth_user = '';
-			$smtp_auth_pass = ''; 
-		}
-		$smtp_enc = $settings->get('portsensor.core',PortSensorSettings::SMTP_ENCRYPTION_TYPE,'None');
-		$smtp_max_sends = $settings->get('portsensor.core',PortSensorSettings::SMTP_MAX_SENDS,'20');
+
+		// Pulls from settings
 		
 		$tpl->display('file:' . $this->_TPL_PATH . 'setup/tabs/mail/index.tpl');
 	}
@@ -552,8 +538,6 @@ class PsSetupPage extends PortSensorPageExtension  {
 		
 	    @$default_reply_address = DevblocksPlatform::importGPC($_REQUEST['sender_address'],'string');
 	    @$default_reply_personal = DevblocksPlatform::importGPC($_REQUEST['sender_personal'],'string');
-//	    @$default_signature = DevblocksPlatform::importGPC($_POST['default_signature'],'string');
-//	    @$default_signature_pos = DevblocksPlatform::importGPC($_POST['default_signature_pos'],'integer',0);
 	    @$smtp_host = DevblocksPlatform::importGPC($_REQUEST['smtp_host'],'string','localhost');
 	    @$smtp_port = DevblocksPlatform::importGPC($_REQUEST['smtp_port'],'integer',25);
 	    @$smtp_enc = DevblocksPlatform::importGPC($_REQUEST['smtp_enc'],'string','None');
@@ -573,8 +557,6 @@ class PsSetupPage extends PortSensorPageExtension  {
 	    $settings = DevblocksPlatform::getPluginSettingsService();
 	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_REPLY_FROM, $default_reply_address);
 	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
-//	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_SIGNATURE, $default_signature);
-//	    $settings->set('portsensor.core',PortSensorSettings::DEFAULT_SIGNATURE_POS, $default_signature_pos);
 	    $settings->set('portsensor.core',PortSensorSettings::SMTP_HOST, $smtp_host);
 	    $settings->set('portsensor.core',PortSensorSettings::SMTP_PORT, $smtp_port);
 	    $settings->set('portsensor.core',PortSensorSettings::SMTP_AUTH_ENABLED, $smtp_auth_enabled);

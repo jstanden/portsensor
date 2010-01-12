@@ -473,7 +473,7 @@ switch($step) {
 		
 		@$default_reply_from = DevblocksPlatform::importGPC($_POST['default_reply_from'],'string',$settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_FROM));
 		@$default_reply_personal = DevblocksPlatform::importGPC($_POST['default_reply_personal'],'string',$settings->get('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL));
-		@$app_title = DevblocksPlatform::importGPC($_POST['app_title'],'string',$settings->get('portsensor.core',PortSensorSettings::APP_TITLE));
+		@$app_title = DevblocksPlatform::importGPC($_POST['app_title'],'string',$settings->get('portsensor.core',PortSensorSettings::APP_TITLE,'PortSensor - Monitor Everything'));
 		@$form_submit = DevblocksPlatform::importGPC($_POST['form_submit'],'integer');
 		
 		if(!empty($form_submit)) { // && !empty($default_reply_from)
@@ -488,7 +488,7 @@ switch($step) {
 				$settings->set('portsensor.core',PortSensorSettings::DEFAULT_REPLY_PERSONAL, $default_reply_personal);
 			}
 			
-			if(!empty($helpdesk_title)) {
+			if(!empty($app_title)) {
 				$settings->set('portsensor.core',PortSensorSettings::APP_TITLE, $app_title);
 			}
 			
