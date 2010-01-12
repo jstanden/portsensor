@@ -87,6 +87,8 @@ class Ps_ORMHelper extends DevblocksORMHelper {
 };
 
 class DAO_Alert extends Ps_ORMHelper {
+	const _CACHE_ALL = 'ps_alerts_all';
+
 	const ID = 'id';
 	const POS = 'pos';
 	const NAME = 'name';
@@ -95,7 +97,7 @@ class DAO_Alert extends Ps_ORMHelper {
 	const CRITERIA_JSON = 'criteria_json';
 	const ACTIONS_JSON = 'actions_json';
 	const IS_DISABLED = 'is_disabled';
-
+	
 	static function create($fields) {
 		$db = DevblocksPlatform::getDatabaseService();
 		
@@ -114,6 +116,7 @@ class DAO_Alert extends Ps_ORMHelper {
 	
 	static function update($ids, $fields) {
 		parent::_update($ids, 'alert', $fields);
+		self::clearCache();
 	}
 	
 	/**
@@ -132,19 +135,26 @@ class DAO_Alert extends Ps_ORMHelper {
 		return self::_getObjectsFromResult($rs);
 	}
 
+	static function getAll($nocache=false) {
+	    $cache = DevblocksPlatform::getCacheService();
+	    if($nocache || null === ($alerts = $cache->load(self::_CACHE_ALL))) {
+    	    $alerts = self::getWhere();
+    	    $cache->save($alerts, self::_CACHE_ALL);
+	    }
+
+	    return $alerts;
+	}
+	
 	/**
 	 * @param integer $id
 	 * @return Model_Alert	 */
 	static function get($id) {
-		$objects = self::getWhere(sprintf("%s = %d",
-			self::ID,
-			$id
-		));
+		$alerts = self::getAll();
 		
-		if(isset($objects[$id]))
-			return $objects[$id];
+		if(isset($alerts[$id]))
+			return $alerts[$id];
 		
-		return null;
+		return NULL;
 	}
 	
 	/**
@@ -189,7 +199,14 @@ class DAO_Alert extends Ps_ORMHelper {
 		
 		$db->Execute(sprintf("DELETE FROM alert WHERE id IN (%s)", $ids_list));
 		
+		self::clearCache();
+		
 		return true;
+	}
+	
+	static function clearCache() {
+		$cache = DevblocksPlatform::getCacheService();
+		$cache->remove(self::_CACHE_ALL);
 	}
 	
     /**
@@ -930,6 +947,8 @@ class DAO_CustomFieldValue extends DevblocksORMHelper {
 };
 
 class DAO_Sensor extends Ps_ORMHelper {
+	const _CACHE_ALL = 'ps_sensors_all';
+	
 	const ID = 'id';
 	const NAME = 'name';
 	const EXTENSION_ID = 'extension_id';
@@ -975,6 +994,7 @@ class DAO_Sensor extends Ps_ORMHelper {
 	
 	static function update($ids, $fields) {
 		parent::_update($ids, 'sensor', $fields);
+		self::clearCache();
 	}
 	
 	/**
@@ -993,19 +1013,26 @@ class DAO_Sensor extends Ps_ORMHelper {
 		return self::_getObjectsFromResult($rs);
 	}
 
+	static function getAll($nocache=false) {
+	    $cache = DevblocksPlatform::getCacheService();
+	    if($nocache || null === ($sensors = $cache->load(self::_CACHE_ALL))) {
+    	    $sensors = self::getWhere();
+    	    $cache->save($sensors, self::_CACHE_ALL);
+	    }
+
+	    return $sensors;
+	}
+	
 	/**
 	 * @param integer $id
 	 * @return Model_Sensor	 */
 	static function get($id) {
-		$objects = self::getWhere(sprintf("%s = %d",
-			self::ID,
-			$id
-		));
+		$sensors = self::getAll();
 		
-		if(isset($objects[$id]))
-			return $objects[$id];
-		
-		return null;
+		if(isset($sensors[$id]))
+			return $sensors[$id];
+			
+		return NULL;
 	}
 	
 	/**
@@ -1054,9 +1081,16 @@ class DAO_Sensor extends Ps_ORMHelper {
 		
 		$db->Execute(sprintf("DELETE FROM sensor WHERE id IN (%s)", $ids_list));
 		
+		self::clearCache();
+		
 		return true;
 	}
 
+	static function clearCache() {
+		$cache = DevblocksPlatform::getCacheService();
+		$cache->remove(self::_CACHE_ALL);
+	}
+	
     /**
      * Enter description here...
      *
