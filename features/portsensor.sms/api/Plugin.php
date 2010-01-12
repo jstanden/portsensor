@@ -36,6 +36,7 @@ class PsAlertActionSms extends Extension_AlertAction {
     	
     	$result = true;
     	$logger = DevblocksPlatform::getConsoleLog();
+    	$settings = DevblocksPlatform::getPluginSettingsService();
     	
     	// Assign template variables
     	$tpl = DevblocksPlatform::getTemplateService();
@@ -49,9 +50,9 @@ class PsAlertActionSms extends Extension_AlertAction {
 		$text = $tpl_builder->build($template_msg); 
 		
 		// Clickatell SMS gateways
-		$user = $this->getParam('clickatell_username','');
-		$password = $this->getParam('clickatell_password','');
-		$api_id = $this->getParam('clickatell_api_id','');
+		$user = $settings->get('portsensor.sms','clickatell_username','');
+		$password = $settings->get('portsensor.sms','clickatell_password','');
+		$api_id = $settings->get('portsensor.sms','clickatell_api_id','');
 
 		if(empty($user) || empty($password) || empty($api_id))
 			return;
@@ -112,7 +113,6 @@ class PsSmsSetupTab extends Extension_SetupTab {
 	const ID = 'sms.setup.tab';
 	
 	function showTab() {
-		$settings = DevblocksPlatform::getPluginSettingsService();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
@@ -120,7 +120,8 @@ class PsSmsSetupTab extends Extension_SetupTab {
 		$tpl->assign('core_tplpath', $core_tplpath);
 		$tpl->cache_lifetime = "0";
 
-		$tpl->assign('params', $this->getParams());
+		$settings = DevblocksPlatform::getPluginSettingsService();
+		$tpl->assign('settings', $settings);
 		
 		$tpl->display('file:' . $tpl_path . 'setup/index.tpl');
 	}
@@ -129,11 +130,13 @@ class PsSmsSetupTab extends Extension_SetupTab {
 		@$clickatell_username = DevblocksPlatform::importGPC($_REQUEST['clickatell_username'],'string','');
 		@$clickatell_password = DevblocksPlatform::importGPC($_REQUEST['clickatell_password'],'string','');
 		@$clickatell_api_id = DevblocksPlatform::importGPC($_REQUEST['clickatell_api_id'],'string','');
-
+		
 		if(!empty($clickatell_username)) {
-			$this->setParam('clickatell_username',$clickatell_username);
-			$this->setParam('clickatell_password',$clickatell_password);
-			$this->setParam('clickatell_api_id',$clickatell_api_id);
+			$settings = DevblocksPlatform::getPluginSettingsService();
+			
+			$settings->set('portsensor.sms', 'clickatell_username', $clickatell_username);			
+			$settings->set('portsensor.sms', 'clickatell_password', $clickatell_password);			
+			$settings->set('portsensor.sms', 'clickatell_api_id', $clickatell_api_id);			
 		}
 		
 		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('setup','sms')));

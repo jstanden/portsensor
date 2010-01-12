@@ -7,15 +7,15 @@
 	<h2>SMS Gateway (Clickatell.com)</h2>
 	
 	<b>Username:</b><br>
-	<input type="text" name="clickatell_username" value="{$params.clickatell_username|escape}"><br>
+	<input type="text" name="clickatell_username" value="{$settings->get('portsensor.sms','clickatell_username')|escape}"><br>
 	<br>
 	
 	<b>Password:</b><br>
-	<input type="text" name="clickatell_password" value="{$params.clickatell_password|escape}"><br>
+	<input type="text" name="clickatell_password" value="{$settings->get('portsensor.sms','clickatell_password')|escape}"><br>
 	<br>
 	
 	<b>API ID:</b><br>
-	<input type="text" name="clickatell_api_id" value="{$params.clickatell_api_id|escape}"><br>
+	<input type="text" name="clickatell_api_id" value="{$settings->get('portsensor.sms','clickatell_api_id')|escape}"><br>
 	<br>
 	
 	<button type="submit"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')|capitalize}</button>
