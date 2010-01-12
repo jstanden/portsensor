@@ -42,15 +42,15 @@ class PsExternalSensor extends Extension_Sensor {
 	}
 
 	function saveConfig(Model_Sensor $sensor) {
-//		@$url = DevblocksPlatform::importGPC($_POST['url'],'string','');
-//		
-//		$fields = array(
-//			DAO_Sensor::PARAMS_JSON => json_encode(array(
-//				'url' => $url,
-//			)),
-//		);
-//		
-//		DAO_Sensor::update($sensor->id, $fields);
+		@$mia_secs = DevblocksPlatform::importGPC($_POST['mia_secs'],'integer',0);
+		
+		$fields = array(
+			DAO_Sensor::PARAMS_JSON => json_encode(array(
+				'mia_secs' => $mia_secs,
+			)),
+		);
+		
+		DAO_Sensor::update($sensor->id, $fields);
 	}
 };
 

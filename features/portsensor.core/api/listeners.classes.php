@@ -79,6 +79,10 @@ class PsCoreEventListener extends DevblocksEventListenerExtension {
 			case 'cron.maint':
 				$this->_handleCronMaint($event);
 				break;
+
+			case 'cron.sensors.post':
+				$this->_handleCronSensorsPost($event);
+				break;
 		}
 	}
 
@@ -92,6 +96,33 @@ class PsCoreEventListener extends DevblocksEventListenerExtension {
 	
 	private function _handleCronHeartbeat($event) {
 		// ... Do something
+	}
+	
+	private function _handleCronSensorsPost($event) {
+		$logger = DevblocksPlatform::getConsoleLog();
+		$sensors = DAO_Sensor::getAll();
+		
+		// Check that all external sensors aren't over their M.I.A. time
+		if(is_array($sensors))
+		foreach($sensors as $sensor) { /* @var $sensor Model_Sensor */
+			if('sensor.external' != $sensor->extension_id)
+				continue;
+				
+			$mia_secs = intval($sensor->params->mia_secs);
+			$elapsed = time() - $sensor->updated_date;
+			
+			if($mia_secs && $elapsed > $mia_secs) {
+				$fields = array(
+					DAO_Sensor::STATUS => 3, // MIA
+					DAO_Sensor::FAIL_COUNT => intval($sensor->fail_count) + 1,
+					DAO_Sensor::METRIC => '',
+					DAO_Sensor::OUTPUT => '',
+				);
+				DAO_Sensor::update($sensor->id, $fields);
+				
+				$logger->info($sensor->name . " is M.I.A. for $elapsed seconds.");
+			}
+		}
 	}
 
 };

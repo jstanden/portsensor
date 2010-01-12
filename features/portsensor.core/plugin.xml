@@ -54,6 +54,9 @@
 		<event id="cron.maint">
 			<name>Maintenance</name>
 		</event>
+		<event id="cron.sensors.post">
+			<name>After Sensor Runner</name>
+		</event>
 		<!--
 		<event id="worker.delete">
 			<name>Worker Delete</name>
@@ -94,6 +97,7 @@
 				<name>PsCoreEventListener</name>
 			</class>
 			<params>
+				<!-- Everything -->
 			</params>
 		</extension>
  

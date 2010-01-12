@@ -128,7 +128,7 @@ class Cron_SensorRunner extends PortSensorCronExtension {
 		$eventMgr = DevblocksPlatform::getEventService();
 		$eventMgr->trigger(
 			new Model_DevblocksEvent(
-	            'cron.sensors',
+	            'cron.sensors.post',
 				array(
 				)
 			)

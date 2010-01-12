@@ -1,6 +1,5 @@
-An external sensor is updated through the Web-API.
+An external sensor is updated through the Web-API.<br>
+<br>
 
-{*
-<b>URL:</b><br>
-<input type="text" name="url" size="32" value="{$sensor->params->url|escape}"><br>
-*}
+<b>Consider M.I.A. if not updated for over:</b><br>
+<input type="text" name="mia_secs" size="6" value="{$sensor->params->mia_secs|escape}"> seconds<br>
