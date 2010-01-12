@@ -184,36 +184,36 @@ class PsSensorsPage extends PortSensorPageExtension {
 	    
 	    $sensor_types = DevblocksPlatform::getExtensions('portsensor.sensor', true);
 
-	    try {
-	    	$sensors = DAO_Sensor::getWhere(sprintf("%s IN (%s)", DAO_Sensor::ID, implode(',', $ids)));
-	    	
-	    	if(is_array($sensors))
-	    	foreach($sensors as $sensor) {
-    			if(isset($sensor_types[$sensor->extension_id])) {
-    				// Skip external sensors
-    				if('sensor.external' == $sensor->extension_id)
-    					continue;
-    				
-    				$runner = $sensor_types[$sensor->extension_id];
-    				
-    				// [TODO] This duplicates cron
-					if(method_exists($runner,'run')) {
-						$fields = array();
-						$success = $runner->run($sensor, $fields);
-						
-						$fields[DAO_Sensor::UPDATED_DATE] = time();
-						$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
-						
-						DAO_Sensor::update($sensor->id, $fields);
-					}
-    			}
-	    	}
-	    	
-	    } catch(Exception $e) {
-	    	// ...
+	    if(is_array($ids) && !empty($ids)) {
+		    try {
+		    	$sensors = DAO_Sensor::getWhere(sprintf("%s IN (%s)", DAO_Sensor::ID, implode(',', $ids)));
+		    	
+		    	if(is_array($sensors))
+		    	foreach($sensors as $sensor) {
+	    			if(isset($sensor_types[$sensor->extension_id])) {
+	    				// Skip external sensors
+	    				if('sensor.external' == $sensor->extension_id)
+	    					continue;
+	    				
+	    				$runner = $sensor_types[$sensor->extension_id];
+	    				
+	    				// [TODO] This duplicates cron
+						if(method_exists($runner,'run')) {
+							$fields = array();
+							$success = $runner->run($sensor, $fields);
+							
+							$fields[DAO_Sensor::UPDATED_DATE] = time();
+							$fields[DAO_Sensor::FAIL_COUNT] = ($success ? 0 : (intval($sensor->fail_count)+1));
+							
+							DAO_Sensor::update($sensor->id, $fields);
+						}
+	    			}
+		    	}
+		    	
+		    } catch(Exception $e) {
+		    	// ...
+		    }
 	    }
-	    
-//	    Model_Sensor::run();
 	    
 	    $view = Ps_AbstractViewLoader::getView($view_id);
 	    $view->render();
