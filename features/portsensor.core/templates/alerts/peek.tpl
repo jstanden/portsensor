@@ -201,6 +201,6 @@
 </div>
 <br>
 
-<button type="button" onclick="genericPanel.hide();genericAjaxPost('frmAlertFilter', '', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
+<button type="button" onclick="genericPanel.hide();genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
 </form>
 <br>

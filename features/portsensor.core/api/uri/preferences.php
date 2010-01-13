@@ -208,10 +208,12 @@ class PsPreferencesPage extends PortSensorPageExtension {
 	// Ajax
 	function showAlertPeekAction() {
 		@$id = DevblocksPlatform::importGPC($_REQUEST['id'],'integer',0);
+		@$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string','');
 		
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
+		$tpl->assign('view_id', $view_id);
 
 		$active_worker = PortSensorApplication::getActiveWorker();
 		
@@ -248,6 +250,7 @@ class PsPreferencesPage extends PortSensorPageExtension {
    		$translate = DevblocksPlatform::getTranslationService();
    		
    		@$id = DevblocksPlatform::importGPC($_REQUEST['id'],'integer',0);
+   		@$view_id = DevblocksPlatform::importGPC($_POST['view_id'],'string');
    		
 	    @$active_worker = PortSensorApplication::getActiveWorker();
 
@@ -502,9 +505,12 @@ class PsPreferencesPage extends PortSensorPageExtension {
    		} else {
    			DAO_Alert::update($id, $fields);
    		}
+
+		if(!empty($view_id)) {
+			$view = Ps_AbstractViewLoader::getView($view_id);
+			$view->render();
+		}
    		
-		exit;
-   		//DevblocksPlatform::redirect(new DevblocksHttpResponse(array('preferences','watchers')));
 	}
 	
 };
