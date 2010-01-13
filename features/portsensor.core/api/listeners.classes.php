@@ -100,6 +100,7 @@ class PsCoreEventListener extends DevblocksEventListenerExtension {
 	
 	private function _handleCronSensorsPost($event) {
 		$logger = DevblocksPlatform::getConsoleLog();
+		$translate = DevblocksPlatform::getTranslationService();
 		$sensors = DAO_Sensor::getAll();
 		
 		// Check that all external sensors aren't over their M.I.A. time
@@ -118,10 +119,10 @@ class PsCoreEventListener extends DevblocksEventListenerExtension {
 			
 			if($mia_secs && $elapsed > $mia_secs) {
 				$fields = array(
-					DAO_Sensor::STATUS => 3, // MIA
+					DAO_Sensor::STATUS => 2, // CRITICAL
 					DAO_Sensor::FAIL_COUNT => intval($sensor->fail_count) + 1,
-					DAO_Sensor::METRIC => '',
-					DAO_Sensor::OUTPUT => '',
+					DAO_Sensor::METRIC => $translate->_('sensor.status.mia'),
+					DAO_Sensor::OUTPUT => $translate->_('sensor.status.mia'),
 				);
 				DAO_Sensor::update($sensor->id, $fields);
 				

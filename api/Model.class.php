@@ -157,10 +157,6 @@ class Model_Alert {
 								if(isset($rule['critical']))
 									$passed++;
 								break;
-							case 3: // M.I.A
-								if(isset($rule['mia']))
-									$passed++;
-								break;
 						}
 						break;
 
@@ -464,9 +460,6 @@ class Model_Sensor {
 				break;
 			case 2:
 				return $translate->_('sensor.status.critical');
-				break;
-			case 3:
-				return $translate->_('sensor.status.mia');
 				break;
 		}
 	}
@@ -1382,9 +1375,6 @@ class Ps_SensorView extends Ps_AbstractView {
 							break;
 						case 2:
 							$strings[] = $translate->_('sensor.status.critical');
-							break;
-						case 3:
-							$strings[] = $translate->_('sensor.status.mia');
 							break;
 					}
 				}

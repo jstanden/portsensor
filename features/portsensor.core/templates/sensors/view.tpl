@@ -103,8 +103,6 @@
 						<span class="status_warning">{'sensor.status.warning'|devblocks_translate|upper}</span>
 					{elseif 2==$result.$column}
 						<span class="status_critical">{'sensor.status.critical'|devblocks_translate|upper}</span>
-					{elseif 3==$result.$column}
-						<span class="status_critical">{'sensor.status.mia'|devblocks_translate|upper}</span>
 					{/if}
 				{/if}
 			</td>
@@ -118,8 +116,6 @@
 					{elseif 1==$result.s_status}
 						<span class="status_warning">{$result.$column|nl2br}</span>
 					{elseif 2==$result.s_status}
-						<span class="status_critical">{$result.$column|nl2br}</span>
-					{elseif 3==$result.s_status}
 						<span class="status_critical">{$result.$column|nl2br}</span>
 					{/if}
 				{/if}

@@ -727,7 +727,6 @@ class Rest_SensorsController extends Ps_RestController {
 					$fields[DAO_Sensor::FAIL_COUNT] = 0;
 					break;
 				case 2: // CRITICAL
-				case 3: // MIA
 					$fields[DAO_Sensor::FAIL_COUNT] = $sensor->fail_count + 1;
 					break;
 			}			
