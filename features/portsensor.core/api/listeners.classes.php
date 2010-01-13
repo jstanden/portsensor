@@ -105,7 +105,12 @@ class PsCoreEventListener extends DevblocksEventListenerExtension {
 		// Check that all external sensors aren't over their M.I.A. time
 		if(is_array($sensors))
 		foreach($sensors as $sensor) { /* @var $sensor Model_Sensor */
+			// Only external sensors
 			if('sensor.external' != $sensor->extension_id)
+				continue;
+				
+			// Skip if the sensor hasn't run once yet
+			if(0 == $sensor->updated_date)
 				continue;
 				
 			$mia_secs = intval($sensor->params->mia_secs);
