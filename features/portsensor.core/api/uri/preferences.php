@@ -261,251 +261,258 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		@$rules = DevblocksPlatform::importGPC($_POST['rules'],'array',array());
 		@$do = DevblocksPlatform::importGPC($_POST['do'],'array',array());
 		
-		if(empty($name))
-			$name = $translate->_('Alert');
+		@$delete = DevblocksPlatform::importGPC($_POST['do_delete'],'integer',0);
 		
-		$criterion = array();
-		$actions = array();
-		
-		// Custom fields
-		$custom_fields = DAO_CustomField::getAll();
-		
-		$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', false);
-		
-		// Criteria
-		if(is_array($rules))
-		foreach($rules as $rule) {
-			$rule = DevblocksPlatform::strAlphaNumDash($rule);
-			@$value = DevblocksPlatform::importGPC($_POST['value_'.$rule],'string','');
+		if(!empty($id) && !empty($delete)) {
+			DAO_Alert::delete($id);
 			
-			// [JAS]: Allow empty $value (null/blank checking)
+		} else {
+			if(empty($name))
+				$name = $translate->_('Alert');
+		
+			$criterion = array();
+			$actions = array();
 			
-			$criteria = array(
-				'value' => $value,
-			);
+			// Custom fields
+			$custom_fields = DAO_CustomField::getAll();
 			
-			// Any special rule handling
-			switch($rule) {
-				case 'dayofweek':
-					// days
-					$days = DevblocksPlatform::importGPC($_REQUEST['value_dayofweek'],'array',array());
-					if(in_array(0,$days)) $criteria['sun'] = 'Sunday';
-					if(in_array(1,$days)) $criteria['mon'] = 'Monday';
-					if(in_array(2,$days)) $criteria['tue'] = 'Tuesday';
-					if(in_array(3,$days)) $criteria['wed'] = 'Wednesday';
-					if(in_array(4,$days)) $criteria['thu'] = 'Thursday';
-					if(in_array(5,$days)) $criteria['fri'] = 'Friday';
-					if(in_array(6,$days)) $criteria['sat'] = 'Saturday';
-					unset($criteria['value']);
-					break;
-				case 'timeofday':
-					$from = DevblocksPlatform::importGPC($_REQUEST['timeofday_from'],'string','');
-					$to = DevblocksPlatform::importGPC($_REQUEST['timeofday_to'],'string','');
-					$criteria['from'] = $from;
-					$criteria['to'] = $to;
-					unset($criteria['value']);
-					break;
-				case 'event':
-					@$events = DevblocksPlatform::importGPC($_REQUEST['value_event'],'array',array());
-					if(is_array($events))
-					foreach($events as $event)
-						$criteria[$event] = true;
-					unset($criteria['value']);
-					break;
-				case 'alert_last_ran':
-					@$from = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_from'],'string','');
-					@$to = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_to'],'string','');
-					$criteria['from'] = $from;
-					$criteria['to'] = $to;
-					unset($criteria['value']);
-					break;
-				case 'sensor_name':
-					break;
-				case 'sensor_fail_count':
-					$oper = DevblocksPlatform::importGPC($_REQUEST['oper_sensor_fail_count'],'string','=');
-					$criteria['oper'] = $oper;
-					break;
-				case 'sensor_type':
-					@$types = DevblocksPlatform::importGPC($_REQUEST['value_sensor_types'],'array',array());
-					if(is_array($types))
-					foreach($types as $type)
-						$criteria[$type] = true;
-					unset($criteria['value']);
-					break;
-				default: // ignore invalids // [TODO] Very redundant
-					// Custom fields
-					if("cf_" == substr($rule,0,3)) {
-						$field_id = intval(substr($rule,3));
-						
-						if(!isset($custom_fields[$field_id]))
-							continue;
-
-						// [TODO] Operators
+			$alert_criteria_exts = DevblocksPlatform::getExtensions('portsensor.alert.criteria', false);
+			
+			// Criteria
+			if(is_array($rules))
+			foreach($rules as $rule) {
+				$rule = DevblocksPlatform::strAlphaNumDash($rule);
+				@$value = DevblocksPlatform::importGPC($_POST['value_'.$rule],'string','');
+				
+				// [JAS]: Allow empty $value (null/blank checking)
+				
+				$criteria = array(
+					'value' => $value,
+				);
+				
+				// Any special rule handling
+				switch($rule) {
+					case 'dayofweek':
+						// days
+						$days = DevblocksPlatform::importGPC($_REQUEST['value_dayofweek'],'array',array());
+						if(in_array(0,$days)) $criteria['sun'] = 'Sunday';
+						if(in_array(1,$days)) $criteria['mon'] = 'Monday';
+						if(in_array(2,$days)) $criteria['tue'] = 'Tuesday';
+						if(in_array(3,$days)) $criteria['wed'] = 'Wednesday';
+						if(in_array(4,$days)) $criteria['thu'] = 'Thursday';
+						if(in_array(5,$days)) $criteria['fri'] = 'Friday';
+						if(in_array(6,$days)) $criteria['sat'] = 'Saturday';
+						unset($criteria['value']);
+						break;
+					case 'timeofday':
+						$from = DevblocksPlatform::importGPC($_REQUEST['timeofday_from'],'string','');
+						$to = DevblocksPlatform::importGPC($_REQUEST['timeofday_to'],'string','');
+						$criteria['from'] = $from;
+						$criteria['to'] = $to;
+						unset($criteria['value']);
+						break;
+					case 'event':
+						@$events = DevblocksPlatform::importGPC($_REQUEST['value_event'],'array',array());
+						if(is_array($events))
+						foreach($events as $event)
+							$criteria[$event] = true;
+						unset($criteria['value']);
+						break;
+					case 'alert_last_ran':
+						@$from = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_from'],'string','');
+						@$to = DevblocksPlatform::importGPC($_REQUEST['value_alert_last_ran_to'],'string','');
+						$criteria['from'] = $from;
+						$criteria['to'] = $to;
+						unset($criteria['value']);
+						break;
+					case 'sensor_name':
+						break;
+					case 'sensor_fail_count':
+						$oper = DevblocksPlatform::importGPC($_REQUEST['oper_sensor_fail_count'],'string','=');
+						$criteria['oper'] = $oper;
+						break;
+					case 'sensor_type':
+						@$types = DevblocksPlatform::importGPC($_REQUEST['value_sensor_types'],'array',array());
+						if(is_array($types))
+						foreach($types as $type)
+							$criteria[$type] = true;
+						unset($criteria['value']);
+						break;
+					default: // ignore invalids // [TODO] Very redundant
+						// Custom fields
+						if("cf_" == substr($rule,0,3)) {
+							$field_id = intval(substr($rule,3));
 							
-						switch($custom_fields[$field_id]->type) {
-							case 'S': // string
-							case 'T': // clob
-							case 'U': // URL
-								@$oper = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_oper'],'string','regexp');
-								$criteria['oper'] = $oper;
-								break;
-							case 'D': // dropdown
-							case 'M': // multi-dropdown
-							case 'X': // multi-checkbox
-							case 'W': // worker
-								@$in_array = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id],'array',array());
-								$out_array = array();
+							if(!isset($custom_fields[$field_id]))
+								continue;
+	
+							// [TODO] Operators
 								
-								// Hash key on the option for quick lookup later
-								if(is_array($in_array))
-								foreach($in_array as $k => $v) {
-									$out_array[$v] = $v;
-								}
-								
-								$criteria['value'] = $out_array;
-								break;
-							case 'E': // date
-								@$from = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_from'],'string','0');
-								@$to = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_to'],'string','now');
-								$criteria['from'] = $from;
-								$criteria['to'] = $to;
-								unset($criteria['value']);
-								break;
-							case 'N': // number
-								@$oper = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_oper'],'string','=');
-								$criteria['oper'] = $oper;
-								$criteria['value'] = intval($value);
-								break;
-							case 'C': // checkbox
-								$criteria['value'] = intval($value);
-								break;
+							switch($custom_fields[$field_id]->type) {
+								case 'S': // string
+								case 'T': // clob
+								case 'U': // URL
+									@$oper = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_oper'],'string','regexp');
+									$criteria['oper'] = $oper;
+									break;
+								case 'D': // dropdown
+								case 'M': // multi-dropdown
+								case 'X': // multi-checkbox
+								case 'W': // worker
+									@$in_array = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id],'array',array());
+									$out_array = array();
+									
+									// Hash key on the option for quick lookup later
+									if(is_array($in_array))
+									foreach($in_array as $k => $v) {
+										$out_array[$v] = $v;
+									}
+									
+									$criteria['value'] = $out_array;
+									break;
+								case 'E': // date
+									@$from = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_from'],'string','0');
+									@$to = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_to'],'string','now');
+									$criteria['from'] = $from;
+									$criteria['to'] = $to;
+									unset($criteria['value']);
+									break;
+								case 'N': // number
+									@$oper = DevblocksPlatform::importGPC($_REQUEST['value_cf_'.$field_id.'_oper'],'string','=');
+									$criteria['oper'] = $oper;
+									$criteria['value'] = intval($value);
+									break;
+								case 'C': // checkbox
+									$criteria['value'] = intval($value);
+									break;
+							}
+							
+						} elseif(isset($alert_criteria_exts[$rule])) { // Extensions
+							// Save custom criteria properties
+							try {
+								$crit_ext = $alert_criteria_exts[$rule]->createInstance();
+								/* @var $crit_ext Extension_AlertCriteria */
+								$criteria = $crit_ext->saveConfig();
+							} catch(Exception $e) {
+								// print_r($e);
+							}
+						} else {
+							continue;
 						}
 						
-					} elseif(isset($alert_criteria_exts[$rule])) { // Extensions
-						// Save custom criteria properties
-						try {
-							$crit_ext = $alert_criteria_exts[$rule]->createInstance();
-							/* @var $crit_ext Extension_AlertCriteria */
-							$criteria = $crit_ext->saveConfig();
-						} catch(Exception $e) {
-							// print_r($e);
-						}
-					} else {
-						continue;
-					}
-					
-					break;
+						break;
+				}
+				
+				$criterion[$rule] = $criteria;
 			}
 			
-			$criterion[$rule] = $criteria;
-		}
-		
-		$alert_action_exts = DevblocksPlatform::getExtensions('portsensor.alert.action', false);
-		
-		// Actions
-		if(is_array($do))
-		foreach($do as $act) {
-			$action = array();
+			$alert_action_exts = DevblocksPlatform::getExtensions('portsensor.alert.action', false);
 			
-			switch($act) {
-				// Forward a copy to...
-				case 'email':
-					@$emails = DevblocksPlatform::importGPC($_REQUEST['do_email'],'array',array());
-					if(!empty($emails)) {
-						$action = array(
-							'to' => $emails
-						);
-					}
-					break;
-					
-				// Watcher notification
-				case 'notify':
-					//@$emails = DevblocksPlatform::importGPC($_REQUEST['do_email'],'array',array());
-					//if(!empty($emails)) {
-						$action = array(
-							//'to' => $emails
-						);
-					//}
-					break;
-				default: // ignore invalids
-					// Custom fields
-					if("cf_" == substr($act,0,3)) {
-						$field_id = intval(substr($act,3));
+			// Actions
+			if(is_array($do))
+			foreach($do as $act) {
+				$action = array();
+				
+				switch($act) {
+					// Forward a copy to...
+					case 'email':
+						@$emails = DevblocksPlatform::importGPC($_REQUEST['do_email'],'array',array());
+						if(!empty($emails)) {
+							$action = array(
+								'to' => $emails
+							);
+						}
+						break;
 						
-						if(!isset($custom_fields[$field_id]))
+					// Watcher notification
+					case 'notify':
+						//@$emails = DevblocksPlatform::importGPC($_REQUEST['do_email'],'array',array());
+						//if(!empty($emails)) {
+							$action = array(
+								//'to' => $emails
+							);
+						//}
+						break;
+					default: // ignore invalids
+						// Custom fields
+						if("cf_" == substr($act,0,3)) {
+							$field_id = intval(substr($act,3));
+							
+							if(!isset($custom_fields[$field_id]))
+								continue;
+	
+							$action = array();
+								
+							switch($custom_fields[$field_id]->type) {
+								case 'S': // string
+								case 'T': // clob
+								case 'U': // URL
+								case 'D': // dropdown
+								case 'W': // worker
+									$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
+									$action['value'] = $value;
+									break;
+								case 'M': // multi-dropdown
+								case 'X': // multi-checkbox
+									$in_array = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'array',array());
+									$out_array = array();
+									
+									// Hash key on the option for quick lookup later
+									if(is_array($in_array))
+									foreach($in_array as $k => $v) {
+										$out_array[$v] = $v;
+									}
+									
+									$action['value'] = $out_array;
+									break;
+								case 'E': // date
+									$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
+									$action['value'] = $value;
+									break;
+								case 'N': // number
+								case 'C': // checkbox
+									$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
+									$action['value'] = intval($value);
+									break;
+							}
+							
+						} elseif(isset($alert_action_exts[$act])) {
+							// Save custom action properties
+							try {
+								$action_ext = $alert_action_exts[$act]->createInstance();
+								$action = $action_ext->saveConfig();
+								
+							} catch(Exception $e) {
+								// print_r($e);
+							}
+						} else {
 							continue;
-
-						$action = array();
-							
-						switch($custom_fields[$field_id]->type) {
-							case 'S': // string
-							case 'T': // clob
-							case 'U': // URL
-							case 'D': // dropdown
-							case 'W': // worker
-								$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
-								$action['value'] = $value;
-								break;
-							case 'M': // multi-dropdown
-							case 'X': // multi-checkbox
-								$in_array = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'array',array());
-								$out_array = array();
-								
-								// Hash key on the option for quick lookup later
-								if(is_array($in_array))
-								foreach($in_array as $k => $v) {
-									$out_array[$v] = $v;
-								}
-								
-								$action['value'] = $out_array;
-								break;
-							case 'E': // date
-								$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
-								$action['value'] = $value;
-								break;
-							case 'N': // number
-							case 'C': // checkbox
-								$value = DevblocksPlatform::importGPC($_REQUEST['do_cf_'.$field_id],'string','');
-								$action['value'] = intval($value);
-								break;
 						}
-						
-					} elseif(isset($alert_action_exts[$act])) {
-						// Save custom action properties
-						try {
-							$action_ext = $alert_action_exts[$act]->createInstance();
-							$action = $action_ext->saveConfig();
-							
-						} catch(Exception $e) {
-							// print_r($e);
-						}
-					} else {
-						continue;
-					}
-					break;					
+						break;					
+				}
+				
+				$actions[$act] = $action;
 			}
-			
-			$actions[$act] = $action;
+	
+	   		$fields = array(
+	   			DAO_Alert::NAME => $name,
+	   			DAO_Alert::IS_DISABLED => $is_disabled,
+	   			DAO_Alert::WORKER_ID => $worker_id,
+	   			DAO_Alert::CRITERIA_JSON => json_encode($criterion),
+	   			DAO_Alert::ACTIONS_JSON => json_encode($actions),
+	   		);
+	
+	   		// Create
+	   		if(empty($id)) {
+	   			$fields[DAO_Alert::POS] = 0;
+		   		$id = DAO_Alert::create($fields);
+		   		
+		   	// Update
+	   		} else {
+	   			DAO_Alert::update($id, $fields);
+	   		}			
 		}
-
-   		$fields = array(
-   			DAO_Alert::NAME => $name,
-   			DAO_Alert::IS_DISABLED => $is_disabled,
-   			DAO_Alert::WORKER_ID => $worker_id,
-   			DAO_Alert::CRITERIA_JSON => json_encode($criterion),
-   			DAO_Alert::ACTIONS_JSON => json_encode($actions),
-   		);
-
-   		// Create
-   		if(empty($id)) {
-   			$fields[DAO_Alert::POS] = 0;
-	   		$id = DAO_Alert::create($fields);
-	   		
-	   	// Update
-   		} else {
-   			DAO_Alert::update($id, $fields);
-   		}
-
+		
 		if(!empty($view_id)) {
 			$view = Ps_AbstractViewLoader::getView($view_id);
 			$view->render();

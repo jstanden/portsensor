@@ -3,6 +3,7 @@
 <input type="hidden" name="a" value="saveAlertPeek">
 <input type="hidden" name="id" value="{$alert->id}">
 <input type="hidden" name="view_id" value="{$view_id}">
+<input type="hidden" name="do_delete" value="0">
 
 <h2>Add Alert</h2>
 
@@ -202,5 +203,7 @@
 <br>
 
 <button type="button" onclick="genericPanel.hide();genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
+{if !empty($alert->id)}{* [TODO] ACL *}<button type="button" onclick="if(confirm('Are you sure you want to delete this alert?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.hide();genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
+<button type="button" onclick="genericPanel.hide();genericAjaxPostAfterSubmitEvent.unsubscribeAll();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 </form>
 <br>
