@@ -156,6 +156,9 @@
 		<tu tuid='activity.home'>
 			<tuv xml:lang="en_US"><seg>%s is displaying their workspaces</seg></tuv>
 		</tu>
+		<tu tuid='activity.sensors'>
+			<tuv xml:lang="en_US"><seg>%s is displaying sensors</seg></tuv>
+		</tu>
 		<tu tuid='activity.setup'>
 			<tuv xml:lang="en_US"><seg>%s is configuring the application</seg></tuv>
 		</tu>
