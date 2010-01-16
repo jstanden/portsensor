@@ -41,7 +41,7 @@
 				{/foreach}
 			</select>
 			<blockquote id="divExtensionParams" style="margin:5px;background-color:rgb(255,255,255);padding:5px;border:1px dotted rgb(120,120,120);display:{if 1}block{else}none{/if};">
-				{if !empty($sensor_extension) && $sensor_extension instanceof Extension_Sensor}
+				{if !empty($sensor_extension) && is_a($sensor_extension,'Extension_Sensor')}
 					{$sensor_extension->renderConfig($sensor)}
 				{/if}
 			</blockquote>

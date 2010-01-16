@@ -1,7 +1,6 @@
-{assign var=col value=$column|explode:'_'}
-{assign var=col_id value=$col.1}
-{assign var=col value=$custom_fields.$col_id}
-
+{$col = explode('_',$column)}
+{$col_id = $col[1]}
+{$col = $custom_fields[$col_id]}
 {if $col->type=='S'}
 	<td>{$result.$column}</td>
 {elseif $col->type=='U'}
@@ -26,10 +25,12 @@
 	<td>
 	{assign var=worker_id value=$result.$column}
 	{if empty($workers) && !empty($worker_id)}
-		{php}$this->assign('workers',DAO_Worker::getAll());{/php}
+		{$workers = DAO_Worker::getAll()}
 	{/if}
 	{if !empty($worker_id) && isset($workers.$worker_id)}
 		{$workers.$worker_id->getName()}
 	{/if}
 	</td>
+{else}
+	<td></td>
 {/if}
