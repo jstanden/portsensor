@@ -60,8 +60,21 @@ class PsAlertActionSendMail extends Extension_AlertAction {
 		
 		// Build template
 		$tpl_builder = DevblocksPlatform::getTemplateBuilder();
-		$subject = $tpl_builder->build($template_subject); 
-		$body = $tpl_builder->build($template_body); 
+		$errors = array();
+
+		// Subject
+		if(false == ($subject = $tpl_builder->build($template_subject)))
+			$errors += $tpl_builder->getErrors();
+		
+		// Body
+		if(false == ($body = $tpl_builder->build($template_body))) {
+			$errors += $tpl_builder->getErrors();
+		}
+
+		if(!empty($errors)) {
+			$logger->err(sprintf("Errors in mail template (skipping): %s",implode("<br>\r\n", $errors)));
+			return false;
+		}
 		
 		if(is_array($to))
 		foreach($to as $address) {

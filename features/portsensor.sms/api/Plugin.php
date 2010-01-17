@@ -47,7 +47,21 @@ class PsAlertActionSms extends Extension_AlertAction {
 		
 		// Build template
 		$tpl_builder = DevblocksPlatform::getTemplateBuilder();
-		$text = $tpl_builder->build($template_msg); 
+		$errors = array();
+
+		// Body
+		if(false == ($text = $tpl_builder->build($template_msg))) {
+			$errors += $tpl_builder->getErrors();
+		}
+
+		if(!empty($errors)) {
+			$logger->err(sprintf("Errors in SMS template (skipping): %s",implode("<br>\r\n", $errors)));
+			return false;
+		}
+		
+		// Truncate message to 155 chars
+		if(155 <= strlen($text))
+			$text = substr($text, 0, 152) . '...';
 		
 		// Clickatell SMS gateways
 		$user = $settings->get('portsensor.sms','clickatell_username','');
