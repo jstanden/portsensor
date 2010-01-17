@@ -154,10 +154,17 @@ class Cron_Alerts extends PortSensorCronExtension {
 		
 		$alerts = DAO_Alert::getAll();
 		$check_sensors = DAO_Sensor::getAll();
+		$workers = DAO_Worker::getAll();
 
 		if(is_array($alerts))
-		foreach($alerts as $alert) {
-			$logger->info(sprintf("[Alerts] Checking %s...", $alert->name));
+		foreach($alerts as $alert) { /* @var $alert Model_Alert */
+			if(!isset($workers[$alert->worker_id]))
+				continue;
+				
+			$logger->info(sprintf("[Alerts] Checking '%s' for %s...", 
+				$alert->name,
+				$workers[$alert->worker_id]->getName()
+			));
 			$hit_sensors = $alert->getMatches($check_sensors);
 			
 			if(is_array($hit_sensors))
