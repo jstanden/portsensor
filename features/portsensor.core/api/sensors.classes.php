@@ -37,7 +37,6 @@ class PsExternalSensor extends Extension_Sensor {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->assign('sensor', $sensor);
 
-		$tpl->cache_lifetime = "0";
 		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/config/external.tpl');
 	}
 
@@ -104,7 +103,6 @@ class PsHttpSensor extends Extension_Sensor {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->assign('sensor', $sensor);
 
-		$tpl->cache_lifetime = "0";
 		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/config/http.tpl');
 	}
 
@@ -164,7 +162,6 @@ class PsPortSensor extends Extension_Sensor {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl->assign('sensor', $sensor);
 
-		$tpl->cache_lifetime = "0";
 		$tpl->display('file:' . $this->_TPL_PATH . 'sensors/config/port.tpl');
 	}
 

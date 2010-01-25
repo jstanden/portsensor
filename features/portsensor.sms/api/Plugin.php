@@ -132,7 +132,6 @@ class PsSmsSetupTab extends Extension_SetupTab {
 		$tpl_path = dirname(dirname(__FILE__)) . '/templates/';
 		$core_tplpath = dirname(dirname(dirname(__FILE__))) . '/portsensor.core/templates/';
 		$tpl->assign('core_tplpath', $core_tplpath);
-		$tpl->cache_lifetime = "0";
 
 		$settings = DevblocksPlatform::getPluginSettingsService();
 		$tpl->assign('settings', $settings);

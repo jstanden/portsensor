@@ -30,7 +30,6 @@ class PsSensorsPage extends PortSensorPageExtension {
 		$visit = PortSensorApplication::getVisit();
 		
 		$tpl = DevblocksPlatform::getTemplateService();
-		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
 
 		$response = DevblocksPlatform::getHttpResponse();
@@ -77,7 +76,6 @@ class PsSensorsPage extends PortSensorPageExtension {
 		@$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string','');
 		
 		$tpl = DevblocksPlatform::getTemplateService();
-		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
 		
 		$tpl->assign('view_id', $view_id);

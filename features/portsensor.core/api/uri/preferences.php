@@ -27,7 +27,6 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl_path = $this->_TPL_PATH;
 		$tpl->assign('path', $tpl_path);
-		$tpl->cache_lifetime = "0";
 
 		$response = DevblocksPlatform::getHttpResponse();
 		$path = $response->path;
@@ -95,7 +94,6 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl_path = $this->_TPL_PATH;
 		$tpl->assign('path', $tpl_path);
-		$tpl->cache_lifetime = "0";
 		
 		$worker = PortSensorApplication::getActiveWorker();
 		$tpl->assign('worker', $worker);
@@ -166,7 +164,6 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		$tpl = DevblocksPlatform::getTemplateService();
 		$tpl_path = $this->_TPL_PATH;
 		$tpl->assign('path', $tpl_path);
-		$tpl->cache_lifetime = "0";
 		
 		$active_worker = PortSensorApplication::getActiveWorker();
 //		$tpl->assign('worker', $worker);
@@ -211,7 +208,6 @@ class PsPreferencesPage extends PortSensorPageExtension {
 		@$view_id = DevblocksPlatform::importGPC($_REQUEST['view_id'],'string','');
 		
 		$tpl = DevblocksPlatform::getTemplateService();
-		$tpl->cache_lifetime = "0";
 		$tpl->assign('path', $this->_TPL_PATH);
 		$tpl->assign('view_id', $view_id);
 

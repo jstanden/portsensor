@@ -442,7 +442,6 @@ class PsInternalController extends DevblocksControllerExtension {
 		
 	    $tpl->assign('callout',$callout);
 		
-		$tpl->cache_lifetime = "0";
 	    $tpl->display('file:' . $this->_TPL_PATH . 'internal/tour/callout.tpl');
 	}
 	
