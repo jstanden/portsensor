@@ -1,13 +1,13 @@
 {assign var=results value=$view->getData()}
 {assign var=total value=$results[1]}
 {assign var=data value=$results[0]}
-<table cellpadding="0" cellspacing="0" border="0" class="tableBlue" width="100%">
+<table cellpadding="0" cellspacing="0" border="0" class="worklist" width="100%">
 	<tr>
-		<td nowrap="nowrap" class="tableThBlue">{$view->name} {if $view->id == 'search'}<a href="#{$view->id}_actions" style="color:rgb(255,255,255);font-size:11px;">{$translate->_('views.jump_to_actions')}</a>{/if}</td>
-		<td nowrap="nowrap" class="tableThBlue" align="right">
-			<a href="javascript:;" onclick="genericAjaxGet('customize{$view->id}','c=internal&a=viewCustomize&id={$view->id}');toggleDiv('customize{$view->id}','block');" class="tableThLink">{$translate->_('common.customize')|lower}</a>
-			{if 1||$active_worker->hasPriv('core.home.workspaces')}<span style="font-size:12px"> | </span><a href="javascript:;" onclick="genericAjaxGet('{$view->id}_tips','c=internal&a=viewShowCopy&view_id={$view->id}');toggleDiv('{$view->id}_tips','block');" class="tableThLink">{$translate->_('common.copy')|lower}</a>{/if}
-			<span style="font-size:12px"> | </span><a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewRefresh&id={$view->id}');" class="tableThLink"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/refresh.gif{/devblocks_url}" border="0" align="absmiddle" title="{$translate->_('common.refresh')|lower}" alt="{$translate->_('common.refresh')|lower}"></a>
+		<td nowrap="nowrap"><span class="title">{$view->name}</span> {if $view->id == 'search'}<a href="#{$view->id}_actions" style="color:rgb(255,255,255);font-size:11px;">{$translate->_('views.jump_to_actions')}</a>{/if}</td>
+		<td nowrap="nowrap" align="right">
+			<a href="javascript:;" onclick="genericAjaxGet('customize{$view->id}','c=internal&a=viewCustomize&id={$view->id}');toggleDiv('customize{$view->id}','block');">{$translate->_('common.customize')|lower}</a>
+			{if 1||$active_worker->hasPriv('core.home.workspaces')} | <a href="javascript:;" onclick="genericAjaxGet('{$view->id}_tips','c=internal&a=viewShowCopy&view_id={$view->id}');toggleDiv('{$view->id}_tips','block');">{$translate->_('common.copy')|lower}</a>{/if}
+			 | <a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewRefresh&id={$view->id}');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/refresh.gif{/devblocks_url}" border="0" align="absmiddle" title="{$translate->_('common.refresh')|lower}" alt="{$translate->_('common.refresh')|lower}"></a>
 		</td>
 	</tr>
 </table>
@@ -18,17 +18,15 @@
 <input type="hidden" name="view_id" value="{$view->id}">
 <input type="hidden" name="c" value="sensors">
 <input type="hidden" name="a" value="">
-<table cellpadding="1" cellspacing="0" border="0" width="100%" class="tableRowBg">
+<table cellpadding="1" cellspacing="0" border="0" width="100%" class="worklistBody">
 
 	{* Column Headers *}
-	<tr class="tableTh">
+	<tr>
 		<th style="text-align:center"><input type="checkbox" onclick="checkAll('view{$view->id}',this.checked);"></th>
 		{foreach from=$view->view_columns item=header name=headers}
 			{* start table header, insert column title and link *}
 			<th nowrap="nowrap">
-			{if $header=="x"}<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy=s_id');">{$translate->_('contact_org.id')|capitalize}</a>
-			{else}<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy={$header}');">{$view_fields.$header->db_label}</a>
-			{/if}
+			<a href="javascript:;" onclick="genericAjaxGet('view{$view->id}','c=internal&a=viewSortBy&id={$view->id}&sortBy={$header}');">{$view_fields.$header->db_label}</a>
 			
 			{* add arrow if sorting by this column, finish table header tag *}
 			{if $header==$view->renderSortBy}
@@ -47,15 +45,15 @@
 
 	{assign var=rowIdPrefix value="row_"|cat:$view->id|cat:"_"|cat:$result.s_id}
 	{if $smarty.foreach.results.iteration % 2}
-		{assign var=tableRowBg value="tableRowBg"}
+		{assign var=tableRowBg value="even"}
 	{else}
-		{assign var=tableRowBg value="tableRowAltBg"}
+		{assign var=tableRowBg value="odd"}
 	{/if}
 	
-		<tr class="{$tableRowBg}" id="{$rowIdPrefix}_s" onmouseover="toggleClass(this.id,'tableRowHover');toggleClass('{$rowIdPrefix}','tableRowHover');" onmouseout="toggleClass(this.id,'{$tableRowBg}');toggleClass('{$rowIdPrefix}','{$tableRowBg}');" onclick="if(getEventTarget(event)=='TD' || getEventTarget(event)=='DIV') checkAll('{$rowIdPrefix}_s');">
+		<tr class="{$tableRowBg}" id="{$rowIdPrefix}_s" onmouseover="$(this).addClass('hover');$('#{$rowIdPrefix}').addClass('hover');" onmouseout="$(this).removeClass('hover');$('#{$rowIdPrefix}').removeClass('hover');" onclick="if(getEventTarget(event)=='TD' || getEventTarget(event)=='DIV') checkAll('{$rowIdPrefix}_s');">
 			<td align="center" rowspan="2"><input type="checkbox" name="row_id[]" value="{$result.s_id}"></td>
 		</tr>
-		<tr class="{$tableRowBg}" id="{$rowIdPrefix}" onmouseover="toggleClass(this.id,'tableRowHover');toggleClass('{$rowIdPrefix}_s','tableRowHover');" onmouseout="toggleClass(this.id,'{$tableRowBg}');toggleClass('{$rowIdPrefix}_s','{$tableRowBg}');" onclick="if(getEventTarget(event)=='TD') checkAll('{$rowIdPrefix}_s');">
+		<tr class="{$tableRowBg}" id="{$rowIdPrefix}" onmouseover="$(this).addClass('hover');$('#{$rowIdPrefix}_s').addClass('hover');" onmouseout="$(this).removeClass('hover');$('#{$rowIdPrefix}_s').removeClass('hover');" onclick="if(getEventTarget(event)=='TD') checkAll('{$rowIdPrefix}_s');">
 		{foreach from=$view->view_columns item=column name=columns}
 			{if substr($column,0,3)=="cf_"}
 				{include file="file:$core_tpl/internal/custom_fields/view/cell_renderer.tpl"}
@@ -86,7 +84,7 @@
 						<img src="{devblocks_url}c=resource&p=portsensor.core&f=images/led_red.png{/devblocks_url}" align="top">
 					{/if}
 				{/if}
-				<a href="javascript:;" onclick="genericAjaxPanel('c=sensors&a=showSensorPeek&id={$result.s_id}&view_id={$view->id}',this,false,'500px');" style="color:rgb(75,75,75);font-size:12px;font-weight:bold;">{$result.s_name}</a>
+				<a href="javascript:;" onclick="genericAjaxPanel('c=sensors&a=showSensorPeek&id={$result.s_id}&view_id={$view->id}',null,false,'500');" class="subject">{$result.s_name}</a>
 			</td>
 			{elseif $column=="s_updated_date"}
 			<td valign="top"><abbr title="{$result.s_updated_date|devblocks_date}">{$result.s_updated_date|devblocks_prettytime}</abbr>&nbsp;</td>
@@ -128,7 +126,7 @@
 	{/foreach}
 	
 </table>
-<table cellpadding="2" cellspacing="0" border="0" width="100%" class="tableBg" id="{$view->id}_actions">
+<table cellpadding="2" cellspacing="0" border="0" width="100%" id="{$view->id}_actions">
 	{if $total}
 	<tr>
 		<td colspan="2">

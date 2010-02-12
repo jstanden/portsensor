@@ -1,23 +1,9 @@
-<table cellpadding="0" cellspacing="0" border="0" width="98%">
-	<tr>
-		<td width="100%">
-			{if empty($worker->id)}
-			<h1>Add Worker</h1>
-			{else}
-			<h1>Worker: {$worker->getName()}</h1>
-			{/if}
-		</td>
-	</tr>
-</table>
-
 <form action="{devblocks_url}{/devblocks_url}" method="POST" id="formWorkerPeek" name="formWorkerPeek" onsubmit="return false;">
 <input type="hidden" name="c" value="setup">
 <input type="hidden" name="a" value="saveWorkerPeek">
 <input type="hidden" name="id" value="{$worker->id}">
 <input type="hidden" name="view_id" value="{$view_id}">
 <input type="hidden" name="do_delete" value="0">
-
-<div style="height:350px;overflow:auto;margin:2px;padding:3px;">
 
 <table cellpadding="0" cellspacing="2" border="0" width="98%">
 	<tr>
@@ -102,17 +88,22 @@
 {include file="file:$core_tpl/internal/custom_fields/bulk/form.tpl" bulk=false}
 <br>
 
-</div>
-
 {if $active_worker->is_superuser}
-	<button type="button" onclick="genericPanel.hide();genericAjaxPost('formWorkerPeek', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
+	<button type="button" onclick="genericPanel.dialog('close');genericAjaxPost('formWorkerPeek', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
 	{if !$disabled}
-		{if $active_worker->is_superuser && $active_worker->id != $worker->id}<button type="button" onclick="if(confirm('Are you sure you want to delete this worker and their history?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.hide();genericAjaxPost('formWorkerPeek', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
+		{if $active_worker->is_superuser && $active_worker->id != $worker->id}<button type="button" onclick="if(confirm('Are you sure you want to delete this worker and their history?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.dialog('close');genericAjaxPost('formWorkerPeek', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
 	{/if}
 {else}
 	<div class="error">{$translate->_('error.core.no_acl.edit')}</div>	
 {/if}
-<button type="button" onclick="genericPanel.hide();genericAjaxPostAfterSubmitEvent.unsubscribeAll();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 
 <br>
 </form>
+
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title','Worker'); 
+	} );
+</script>
+

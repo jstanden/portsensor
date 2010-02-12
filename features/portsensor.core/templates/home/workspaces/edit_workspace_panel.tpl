@@ -2,14 +2,11 @@
 <input type="hidden" name="c" value="home">
 <input type="hidden" name="a" value="doEditWorkspace">
 <input type="hidden" name="workspace" value="{$workspace}">
-<h1 style="color:rgb(0,150,0);">{$workspace}</h1>
-<br>
 
 <b>{'home.workspaces.rename'|devblocks_translate|capitalize}:</b><br>
 <input type="text" name="rename_workspace" value="" size="35" style="width:100%;"><br>
 <br>
 
-<div style="height:300px;overflow:auto;margin:2px;padding:3px;">
 <table width="100%">
 	<tr>
 		<td align="center"><b>{$translate->_('common.order')|capitalize}</b></td>
@@ -33,8 +30,15 @@
 	</tr>
 	{/foreach}
 </table>
-</div>
+<br>
 
 <button type="submit"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
-<button type="button" onclick="genericPanel.hide();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 </form>
+
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title',"{$workspace|escape}"); 
+	} );
+</script>
+

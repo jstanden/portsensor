@@ -2,8 +2,6 @@
 <input type="hidden" name="c" value="translators">
 <input type="hidden" name="a" value="saveAddLanguagePanel">
 
-<h1>{$translate->_('translators.languages')|capitalize}</h1>
-
 {if is_array($codes) && count($codes) > 1}
 <div style="margin:5px;padding:5px;height:100px;border:1px solid rgb(200,200,200);background-color:rgb(250,250,250);overflow:auto;">
 <table cellspacing="0" cellpadding="2" border="0">
@@ -54,7 +52,13 @@
 </div>
 
 <button type="submit"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')|capitalize}</button>
-<button type="button" onclick="genericPanel.hide();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 
 </form>
+
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title',"{$translate->_('translators.languages')|capitalize|escape}"); 
+	} );
+</script>
 

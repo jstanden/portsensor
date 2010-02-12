@@ -489,7 +489,7 @@ abstract class Ps_AbstractView {
 
 	protected function _renderCriteriaCustomField($tpl, $field_id) {
 		$field = DAO_CustomField::get($field_id);
-		$tpl_path = APP_PATH . 'portsensor.core/templates/';
+		$tpl_path = APP_PATH . '/features/portsensor.core/templates/';
 		
 		switch($field->type) {
 			case Model_CustomField::TYPE_DROPDOWN:

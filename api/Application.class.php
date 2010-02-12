@@ -92,26 +92,6 @@ class PortSensorApplication extends DevblocksApplication {
 			$errors[] = APP_STORAGE_PATH ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
 		}
 		
-//		if(!is_writeable(APP_STORAGE_PATH . "/import/fail")) {
-//			$errors[] = APP_STORAGE_PATH . "/import/fail/" ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
-//		}
-//		
-//		if(!is_writeable(APP_STORAGE_PATH . "/import/new")) {
-//			$errors[] = APP_STORAGE_PATH . "/import/new/" ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
-//		}
-//		
-//		if(!is_writeable(APP_STORAGE_PATH . "/attachments/")) {
-//			$errors[] = APP_STORAGE_PATH . "/attachments/" ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
-//		}
-//		
-//		if(!is_writeable(APP_STORAGE_PATH . "/mail/new/")) {
-//			$errors[] = APP_STORAGE_PATH . "/mail/new/" ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
-//		}
-		
-//		if(!is_writeable(APP_STORAGE_PATH . "/mail/fail/")) {
-//			$errors[] = APP_STORAGE_PATH . "/mail/fail/" ." is not writeable by the webserver.  Please adjust permissions and reload this page.";
-//		}
-		
 		// Requirements
 		
 		// PHP Version
@@ -167,12 +147,6 @@ class PortSensorApplication extends DevblocksApplication {
 		} else {
 			$errors[] = "The 'IMAP' PHP extension is required.  Please enable it.";
 		}
-		
-//		// Extension: MailParse
-//		if(extension_loaded("mailparse")) {
-//		} else {
-//			$errors[] = "The 'MailParse' PHP extension is required.  Please enable it.";
-//		}
 		
 		// Extension: mbstring
 		if(extension_loaded("mbstring")) {

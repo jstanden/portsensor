@@ -5,9 +5,6 @@
 <input type="hidden" name="view_id" value="{$view_id}">
 <input type="hidden" name="do_delete" value="0">
 
-<h2>Add Alert</h2>
-
-<div style="height:400;overflow:auto;">
 <b>Alert Name:</b> (e.g. Weekend Emergencies to SMS)<br>
 <input type="text" name="name" value="{$alert->name|escape}" size="45" style="width:95%;"><br>
 
@@ -198,11 +195,16 @@
 {/foreach}
 {/if}
 
-</div>
 <br>
 
-<button type="button" onclick="genericPanel.hide();genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
-{if !empty($alert->id)}{* [TODO] ACL *}<button type="button" onclick="if(confirm('Are you sure you want to delete this alert?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.hide();genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
-<button type="button" onclick="genericPanel.hide();genericAjaxPostAfterSubmitEvent.unsubscribeAll();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
+{if !empty($alert->id)}{* [TODO] ACL *}<button type="button" onclick="if(confirm('Are you sure you want to delete this alert?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.dialog('close');genericAjaxPost('frmAlertFilter', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 </form>
 <br>
+
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title','Alert'); 
+	} );
+</script>

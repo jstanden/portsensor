@@ -1,29 +1,9 @@
-<table cellpadding="0" cellspacing="0" border="0" width="98%">
-	<tr>
-		<td width="99%" valign="top">
-			{if empty($sensor->id)}
-			<h1>Add Sensor</h1>
-			{else}
-			<h1>Sensor: {$sensor->name|escape}</h1>
-			{/if}
-		</td>
-		<td width="1%" align="right" valign="top" nowrap="nowrap">
-			{if !empty($sensor->id)}
-				<b>{$translate->_('common.id')|upper}:</b>			
-				{$sensor->id|escape}
-			{/if}
-		</td>
-	</tr>
-</table>
-
 <form action="{devblocks_url}{/devblocks_url}" method="POST" id="formSensorPeek" name="formSensorPeek" onsubmit="return false;">
 <input type="hidden" name="c" value="sensors">
 <input type="hidden" name="a" value="saveSensorPeek">
 <input type="hidden" name="id" value="{$sensor->id}">
 <input type="hidden" name="view_id" value="{$view_id}">
 <input type="hidden" name="do_delete" value="0">
-
-<div style="height:350px;overflow:auto;margin:2px;padding:3px;">
 
 <table cellpadding="0" cellspacing="2" border="0" width="98%">
 	<tr>
@@ -61,16 +41,21 @@
 {include file="file:$core_tpl/internal/custom_fields/bulk/form.tpl" bulk=false}
 <br>
 
-</div>
-
 {* [TODO] ACL *}
 {if 1 || $active_worker->is_superuser}
-	<button type="button" onclick="genericPanel.hide();genericAjaxPost('formSensorPeek', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
-	{if !empty($sensor->id)}{* [TODO] ACL *}<button type="button" onclick="if(confirm('Are you sure you want to delete this sensor?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.hide();genericAjaxPost('formSensorPeek', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
+	<button type="button" onclick="genericPanel.dialog('close');genericAjaxPost('formSensorPeek', 'view{$view_id}', '');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')}</button>
+	{if !empty($sensor->id)}{* [TODO] ACL *}<button type="button" onclick="if(confirm('Are you sure you want to delete this sensor?')){literal}{{/literal}this.form.do_delete.value='1';genericPanel.dialog('close');genericAjaxPost('formSensorPeek', 'view{$view_id}', '');{literal}}{/literal}"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete2.gif{/devblocks_url}" align="top"> {$translate->_('common.delete')|capitalize}</button>{/if}
 {else}
 	<div class="error">{$translate->_('error.core.no_acl.edit')}</div>	
 {/if}
-<button type="button" onclick="genericPanel.hide();genericAjaxPostAfterSubmitEvent.unsubscribeAll();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 
 <br>
 </form>
+
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title','Sensor'); 
+	} );
+</script>
+

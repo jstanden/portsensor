@@ -2,7 +2,6 @@
 <input type="hidden" name="c" value="translators">
 <input type="hidden" name="a" value="saveFindStringsPanel">
 
-<h1>{$translate->_('common.synchronize')|capitalize}</h1>
 This will find text defined in U.S. English and not yet translated to other languages.  
 Leaving new text blank allows you to easily find translation work with a search.
 <br>
@@ -40,7 +39,12 @@ Leaving new text blank allows you to easily find translation work with a search.
 {/if}
 
 {if count($codes) > 1}<button type="submit"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/check.gif{/devblocks_url}" align="top"> {$translate->_('common.save_changes')|capitalize}</button>{/if}
-<button type="button" onclick="genericPanel.hide();"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
+<button type="button" onclick="genericPanel.dialog('close');"><img src="{devblocks_url}c=resource&p=portsensor.core&f=images/delete.gif{/devblocks_url}" align="top"> {$translate->_('common.cancel')|capitalize}</button>
 
 </form>
 
+<script type="text/javascript" language="JavaScript1.2">
+	$(genericPanel).one('dialogopen',function(event,ui) {
+		genericPanel.dialog('option','title',"{$translate->_('common.synchronize')|capitalize|escape}"); 
+	} );
+</script>

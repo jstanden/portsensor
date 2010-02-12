@@ -1,15 +1,16 @@
 @CHARSET "ISO-8859-1";
 
+body,td,form {
+	color: rgb(80, 80, 80);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
 a {
 	color: rgb(102, 102, 102);
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-body,td {
-	color: rgb(80, 80, 80);
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
-}
 
 h1 {
 	font-weight: bold;
@@ -50,16 +51,16 @@ form {
 	margin: 0px;
 }
 
-.headerMenu {
+#headerMenu {
 	background-color: rgb(240,240,240);
 	color: rgb(50,50,50);
 }
 
-.headerMenu a {
+#headerMenu a {
 	color: rgb(50,50,50);
 }
 
-#headerMenuSelected,#headerMenuSelected a,.headerUnderline {
+#headerMenuSelected,#headerMenuSelected a {
 	background-color: rgb(102, 102, 255);
 	color: rgb(255, 255, 255);
 }
@@ -82,79 +83,74 @@ form {
 	color: rgb(255, 255, 255);
 }
 
-.tableBlue {
-	border: 1px solid rgb(0, 102, 204);
-	background-color: rgb(240, 240, 255);
-}
+/* Worklists */
 
-.tableThBlue {
-	padding: 3px;
+table.worklist {
+	border: 1px solid rgb(0, 102, 204);
 	background-image: url(bg_ltblue.jpg);
 	background-repeat: repeat-x;
-	color: rgb(255, 255, 255);
-	font-size: 18px;
-	font-weight: bold;
-	font-family: Arial, Helvetica, sans-serif;
 	background-color: rgb(140, 175, 229);
 }
 
-.tableTh th {
+table.worklist td {
+	padding: 3px;
+	color: rgb(255, 255, 255);
+}
+
+table.worklist td a {
+	color: rgb(255, 255, 255);
+	font-weight: normal;
+}
+
+table.worklist td span.title {
+	color: rgb(255, 255, 255);
+	font-weight:bold;
+	font-size:18px;
+}
+
+table.worklistBody th {
 	border-right: 1px solid rgb(150, 150, 150);
-	border-bottom: 1px solid rgb(50, 50, 50);
+	border-bottom: 1px solid rgb(150, 150, 150);
 	background-color: rgb(200, 200, 200);
-	padding-bottom: 2px;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 2px 2px 2px 5px;
 	text-align: left;
 }
 
-.tableTh a {
+table.worklistBody th a {
 	font-size: 12px;
 	font-weight: bold;
 	color: rgb(68, 68, 68);
-	font-family: Arial, Helvetica, sans-serif;
 }
 
-.tableBg {
-	background-color: rgb(255, 255, 255);
+table.worklistBody td {
+	font-size:11px;
 }
 
-.tableRowBg {
-	background-color: rgb(254, 254, 254);
+table.worklistBody td a.subject {
+	font-size: 12px;
+	font-weight: bold;
+	color: rgb(75, 75, 75);
+}
+table.worklistBody tr.even {
+	background-color:rgb(254,254,254); 
 }
 
-.tableRowAltBg {
-	background-color: rgb(244, 244, 244);
+table.worklistBody tr.odd { 
+	background-color:rgb(244,244,244); 
 }
 
-.tableRowHover {
-	background-color: rgb(255, 255, 206);
+table.worklistBody tr.hover {
+	background-color: rgb(255, 255, 206); 
 }
 
-.tableRowBg TD,.tableRowAltBg TD {
-	font-size: 11px;
-}
-
-.tableThLink {
-	color: rgb(255, 255, 255);
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
-
-.line {
-	margin: 0px;
-	padding: 0px;
-	display: block;
-	background-color: rgb(220, 220, 220);
-	height: 1px;
-}
+/* Divs */
 
 DIV.block {
 	padding:5px;
 	background-image:url(bg_block.jpg);
 	background-repeat: repeat-x;
 	background-color: rgb(255,255,255);
-	border:1px solid rgb(120,120,120);
+	border:1px solid rgb(180,180,180);
 }
 
 DIV.block H2 {
@@ -219,26 +215,36 @@ DIV.subtle2 {
 	color:rgb(200,200,200);
 }
 
-/* YUI Tabs */
-.yui-skin-sam .yui-navset .yui-content {
-	padding: 5px;
-	background-image: url(bg_block.jpg);
-	background-repeat: repeat-x;
-	background-color: rgb(255, 255, 255);
-	border: 1px solid rgb(120, 120, 120);
-}
+/* jQueryUI (Redmond theme) */
 
-.yui-skin-sam .yui-navset .yui-content H2 {
-	font-weight: bold;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 18px;
-	margin: 0px;
-	color: rgb(0, 150, 0);
-}
+.ui-widget-content { background: #fcfdfd none; }
+.ui-widget-header { background: #5c9ccc none; }
+.ui-state-default, .ui-widget-content .ui-state-default { background: rgb(232,242,254) none; font-weight: normal; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus { background: #d0e5f5 none; }
+.ui-state-active, .ui-widget-content .ui-state-active { background: #f5f8f9 none; font-weight: bold; }
 
-.yui-skin-sam .yui-navset .yui-content,.yui-skin-sam .yui-navset .yui-navset-top .yui-content {
-	border: 0px; /* content border */
-	border-top-color: #243356; /* different border color */
-	padding: 0.25em 0.5em; /* content padding */
-}
+.ui-state-highlight, .ui-widget-content .ui-state-highlight { background: #fbec88 none; }
+.ui-state-error, .ui-widget-content .ui-state-error { background: #fef1ec none; } 
 
+.ui-tabs { border: 0px; padding: 0px; }
+.ui-tabs .ui-tabs-panel { padding: 1em; }
+.ui-tabs .ui-tabs-panel { background: #ffffff none; }
+.ui-tabs .ui-tabs-nav { background: #ffffff none; border: none; border-bottom: 1px solid rgb(197,219,236); }
+.ui-tabs .ui-tabs-nav li { margin: 0 0.2em 0 0; background: rgb(255,255,255) none; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0px; background: rgb(232,242,254) none; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a { color: rgb(74,110,158); font-weight:bold; }
+
+.ui-dialog .ui-dialog-titlebar { background: rgb(119,153,224) url(bg_ltblue.jpg) repeat-x; border: 0px; font-size: 14px; }
+
+/* jQuery Validation */
+
+label.error { color: rgb(255,0,0); padding-left: .5em; vertical-align: top; }
+
+/* jQuery Autocomplete */
+
+.ac_results { padding: 0px;	border: 1px solid black; background-color: white; overflow: hidden; z-index: 99999; }
+.ac_results ul { width: 100%; list-style-position: outside; list-style: none; padding: 0; margin: 0; }
+.ac_results li { margin: 0px; padding: 2px 5px; cursor: default; display: block; font: menu; font-size: 12px; line-height: 16px; overflow: hidden; }
+.ac_loading { background: white url('indicator.gif') right center no-repeat; }
+.ac_odd { background-color: rgb(240, 240, 240); }
+.ac_over { background-color: rgb(112, 168, 210); color: rgb(255, 255, 255); }

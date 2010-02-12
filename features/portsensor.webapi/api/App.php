@@ -131,13 +131,13 @@ abstract class Ps_RestController implements DevblocksHttpRequestHandler {
 	}
 	
 	protected function _render($xml) {
-		if('json' == $this->_format) {
-			header("Content-type: text/javascript; charset=utf-8");
-			echo Zend_Json::fromXml($xml, true);
-		} else {
-			header("Content-type: text/xml; charset=utf-8");
-			echo $xml;
-		}
+//		if('json' == $this->_format) {
+//			header("Content-type: text/javascript; charset=utf-8");
+//			echo JSON::fromXml($xml, true);
+//		} else {
+		header("Content-type: text/xml; charset=utf-8");
+		echo $xml;
+//		}
 		exit;
 	}
 	
