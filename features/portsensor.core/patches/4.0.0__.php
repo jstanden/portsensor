@@ -1,339 +1,227 @@
 <?php
-/***********************************************************************
-| PortSensor(tm) developed by WebGroup Media, LLC.
-|-----------------------------------------------------------------------
-| All source code & content (c) Copyright 2009, WebGroup Media LLC
-|   unless specifically noted otherwise.
-|
-| By using this software, you acknowledge having read the license
-| and agree to be bound thereby.
-| ______________________________________________________________________
-|	http://www.portsensor.com	  http://www.webgroupmedia.com/
-***********************************************************************/
 $db = DevblocksPlatform::getDatabaseService();
-$datadict = NewDataDictionary($db); /* @var $datadict ADODB_DataDict */ // ,'mysql' 
-
-$tables = $datadict->MetaTables();
-$tables = array_flip($tables);
+$tables = $db->metaTables();
 
 // `worker` =============================
 if(!isset($tables['worker'])) {
-    $flds = "
-		id I2 DEFAULT 0 NOTNULL PRIMARY,
-		first_name C(255) DEFAULT '' NOTNULL,
-		last_name C(255) DEFAULT '' NOTNULL,
-		title C(255) DEFAULT '' NOTNULL,
-		email C(255) DEFAULT '' NOTNULL,
-		pass C(32) DEFAULT '' NOTNULL,
-		is_superuser I1 DEFAULT 0 NOTNULL,
-		last_activity_date I4 DEFAULT 0 NOTNULL,
-		last_activity XL,
-		is_disabled I1 DEFAULT 0 NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worker', $flds);
-    $datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker (
+			id SMALLINT UNSIGNED DEFAULT 0 NOT NULL,
+			first_name VARCHAR(255) DEFAULT '' NOT NULL,
+			last_name VARCHAR(255) DEFAULT '' NOT NULL,
+			title VARCHAR(255) DEFAULT '' NOT NULL,
+			email VARCHAR(255) DEFAULT '' NOT NULL,
+			pass VARCHAR(32) DEFAULT '' NOT NULL,
+			is_superuser TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			last_activity_date INT UNSIGNED DEFAULT 0 NOT NULL,
+			last_activity MEDIUMTEXT,
+			is_disabled TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
-$columns = $datadict->MetaColumns('worker');
-$indexes = $datadict->MetaIndexes('worker',false);
+list($columns, $indexes) = $db->metaTable('worker');
 
 if(!isset($indexes['last_activity_date'])) {
-	$sql = $datadict->CreateIndexSQL('last_activity_date','worker','last_activity_date');
-	$datadict->ExecuteSQLArray($sql);
+	$db->Execute("ALTER TABLE worker ADD INDEX last_activity_date (last_activity_date)");
 }
 
 // `worker_pref` =============================
 if(!isset($tables['worker_pref'])) {
-    $flds = "
-		worker_id I2 DEFAULT 0 NOTNULL PRIMARY,
-		setting C(255) DEFAULT '' NOTNULL PRIMARY,
-		value XL
-    ";
-    $sql = $datadict->CreateTableSQL('worker_pref', $flds);
-    $datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker_pref (
+			worker_id SMALLINT UNSIGNED DEFAULT 0 NOT NULL,
+			setting VARCHAR(255) DEFAULT '' NOT NULL,
+			value MEDIUMTEXT,
+			PRIMARY KEY (worker_id, setting)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `custom_field` =============================
 if(!isset($tables['custom_field'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		name C(255) DEFAULT '' NOTNULL,
-		type C(1) DEFAULT 'S' NOTNULL,
-		pos I2 DEFAULT 0 NOTNULL,
-		options XL,
-		source_extension C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('custom_field', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('custom_field');
-$indexes = $datadict->MetaIndexes('custom_field',false);
-
-if(!isset($indexes['pos'])) {
-	$sql = $datadict->CreateIndexSQL('pos','custom_field','pos');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['source_extension'])) {
-	$sql = $datadict->CreateIndexSQL('source_extension','custom_field','source_extension');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS custom_field (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			name VARCHAR(255) DEFAULT '' NOT NULL,
+			type VARCHAR(1) DEFAULT 'S' NOT NULL,
+			pos SMALLINT UNSIGNED DEFAULT 0 NOT NULL,
+			options MEDIUMTEXT,
+			source_extension VARCHAR(255) DEFAULT '' NOT NULL,
+			PRIMARY KEY (id),
+			INDEX pos (pos),
+			INDEX source_extension (source_extension)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `custom_field_clobvalue` =============================
 if(!isset($tables['custom_field_clobvalue'])) {
-    $flds = "
-		field_id I4 DEFAULT 0 NOTNULL,
-		source_id I4 DEFAULT 0 NOTNULL,
-		field_value XL,
-		source_extension C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('custom_field_clobvalue', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('custom_field_clobvalue');
-$indexes = $datadict->MetaIndexes('custom_field_clobvalue',false);
-
-if(!isset($indexes['field_id'])) {
-	$sql = $datadict->CreateIndexSQL('field_id','custom_field_clobvalue','field_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['source_id'])) {
-	$sql = $datadict->CreateIndexSQL('source_id','custom_field_clobvalue','source_id');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS custom_field_clobvalue (
+			field_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			source_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			field_value MEDIUMTEXT,
+			source_extension VARCHAR(255) DEFAULT '' NOT NULL,
+			INDEX field_id (field_id),
+			INDEX source_id (source_id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `custom_field_numbervalue` =============================
-if(!isset($tables['custom_field_clobvalue'])) {
-    $flds = "
-		field_id I4 DEFAULT 0 NOTNULL,
-		source_id I4 DEFAULT 0 NOTNULL,
-		field_value I4 DEFAULT 0 NOTNULL,
-		source_extension C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('custom_field_numbervalue', $flds);
-    $datadict->ExecuteSQLArray($sql);
+if(!isset($tables['custom_field_numbervalue'])) {
+	$sql = "
+		CREATE TABLE IF NOT EXISTS custom_field_numbervalue (
+			field_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			source_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			field_value INT UNSIGNED DEFAULT 0 NOT NULL,
+			source_extension VARCHAR(255) DEFAULT '' NOT NULL,
+			INDEX field_id (field_id),
+			INDEX source_id (source_id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
-$columns = $datadict->MetaColumns('custom_field_numbervalue');
-$indexes = $datadict->MetaIndexes('custom_field_numbervalue',false);
-
-if(!isset($indexes['field_id'])) {
-	$sql = $datadict->CreateIndexSQL('field_id','custom_field_numbervalue','field_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['source_id'])) {
-	$sql = $datadict->CreateIndexSQL('source_id','custom_field_numbervalue','source_id');
-	$datadict->ExecuteSQLArray($sql);
-}
 // `custom_field_stringvalue` =============================
 if(!isset($tables['custom_field_stringvalue'])) {
-    $flds = "
-		field_id I4 DEFAULT 0 NOTNULL,
-		source_id I4 DEFAULT 0 NOTNULL,
-		field_value C(255) DEFAULT '' NOTNULL,
-		source_extension C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('custom_field_stringvalue', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('custom_field_stringvalue');
-$indexes = $datadict->MetaIndexes('custom_field_stringvalue',false);
-
-if(!isset($indexes['field_id'])) {
-	$sql = $datadict->CreateIndexSQL('field_id','custom_field_stringvalue','field_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['source_id'])) {
-	$sql = $datadict->CreateIndexSQL('source_id','custom_field_stringvalue','source_id');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS custom_field_stringvalue (
+			field_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			source_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			field_value VARCHAR(255) DEFAULT '' NOT NULL,
+			source_extension VARCHAR(255) DEFAULT '' NOT NULL,
+			INDEX field_id (field_id),
+			INDEX source_id (source_id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `worker_role` =============================
 if(!isset($tables['worker_role'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		name C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worker_role', $flds);
-    $datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker_role (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			name VARCHAR(255) DEFAULT '' NOT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `worker_role_acl` =============================
 if(!isset($tables['worker_role_acl'])) {
-    $flds = "
-		role_id I4 DEFAULT 0 NOTNULL,
-		priv_id C(255) DEFAULT '' NOTNULL,
-		has_priv I1 DEFAULT 0 NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worker_role_acl', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('worker_role_acl');
-$indexes = $datadict->MetaIndexes('worker_role_acl',false);
-
-if(!isset($indexes['role_id'])) {
-	$sql = $datadict->CreateIndexSQL('role_id','worker_role_acl','role_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['priv_id'])) {
-	$sql = $datadict->CreateIndexSQL('priv_id','worker_role_acl','priv_id');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker_role_acl (
+			role_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			priv_id VARCHAR(255) DEFAULT '' NOT NULL,
+			has_priv TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			INDEX role_id (role_id),
+			INDEX priv_id (priv_id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `worker_to_role` =============================
 if(!isset($tables['worker_to_role'])) {
-    $flds = "
-		worker_id I4 DEFAULT 0 NOTNULL,
-		role_id I4 DEFAULT 0 NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worker_to_role', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('worker_to_role');
-$indexes = $datadict->MetaIndexes('worker_to_role',false);
-
-if(!isset($indexes['role_id'])) {
-	$sql = $datadict->CreateIndexSQL('role_id','worker_to_role','role_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['worker_id'])) {
-	$sql = $datadict->CreateIndexSQL('worker_id','worker_to_role','worker_id');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker_to_role (
+			worker_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			role_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			INDEX worker_id (worker_id),
+			INDEX role_id (role_id)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `worker_event` =============================
 if(!isset($tables['worker_event'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		created_date I4 DEFAULT 0 NOTNULL,
-		worker_id I4 DEFAULT 0 NOTNULL,
-		title C(255) DEFAULT '' NOTNULL,
-		content XL,
-		is_read I1 DEFAULT 0 NOTNULL,
-		url C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worker_event', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('worker_event');
-$indexes = $datadict->MetaIndexes('worker_event',false);
-
-if(!isset($indexes['created_date'])) {
-	$sql = $datadict->CreateIndexSQL('created_date','worker_event','created_date');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['worker_id'])) {
-	$sql = $datadict->CreateIndexSQL('worker_id','worker_event','worker_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['is_read'])) {
-	$sql = $datadict->CreateIndexSQL('is_read','worker_event','is_read');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worker_event (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			created_date INT UNSIGNED DEFAULT 0 NOT NULL,
+			worker_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			title VARCHAR(255) DEFAULT '' NOT NULL,
+			content MEDIUMTEXT,
+			is_read TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			url VARCHAR(255) DEFAULT '' NOT NULL,
+			PRIMARY KEY (id),
+			INDEX created_date (created_date),
+			INDEX worker_id (worker_id),
+			INDEX is_read (is_read)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `sensor` =============================
 if(!isset($tables['sensor'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		name C(255) DEFAULT '' NOTNULL,
-		extension_id C(255) DEFAULT '' NOTNULL,
-		params_json XL,
-		status I1 DEFAULT 0 NOTNULL,
-		updated_date I4 DEFAULT 0 NOTNULL,
-		is_disabled I1 DEFAULT 0 NOTNULL,
-		metric XL,
-		output XL,
-		fail_count I1 DEFAULT 0 NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('sensor', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('sensor');
-$indexes = $datadict->MetaIndexes('sensor',false);
-
-if(!isset($indexes['updated_date'])) {
-	$sql = $datadict->CreateIndexSQL('updated_date','sensor','updated_date');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['status'])) {
-	$sql = $datadict->CreateIndexSQL('status','sensor','status');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['is_disabled'])) {
-	$sql = $datadict->CreateIndexSQL('is_disabled','sensor','is_disabled');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS sensor (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			name VARCHAR(255) DEFAULT '' NOT NULL,
+			extension_id VARCHAR(255) DEFAULT '' NOT NULL,
+			params_json MEDIUMTEXT,
+			status TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			updated_date INT UNSIGNED DEFAULT 0 NOT NULL,
+			is_disabled TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			metric MEDIUMTEXT,
+			output MEDIUMTEXT,
+			fail_count TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			PRIMARY KEY (id),
+			INDEX updated_date (updated_date),
+			INDEX status (status),
+			INDEX is_disabled (is_disabled)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `alert` =============================
 if(!isset($tables['alert'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		pos I1 DEFAULT 0 NOTNULL,
-		name C(255) DEFAULT '' NOTNULL,
-		last_alert_date I4 DEFAULT 0 NOTNULL,
-		worker_id I4 DEFAULT 0 NOTNULL,
-		criteria_json XL,
-		actions_json XL,
-		is_disabled I1 DEFAULT 0 NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('alert', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('alert');
-$indexes = $datadict->MetaIndexes('alert',false);
-
-if(!isset($indexes['worker_id'])) {
-	$sql = $datadict->CreateIndexSQL('worker_id','alert','worker_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['is_disabled'])) {
-	$sql = $datadict->CreateIndexSQL('is_disabled','alert','is_disabled');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS alert (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			pos TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			name VARCHAR(255) DEFAULT '' NOT NULL,
+			last_alert_date INT UNSIGNED DEFAULT 0 NOT NULL,
+			worker_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			criteria_json MEDIUMTEXT,
+			actions_json MEDIUMTEXT,
+			is_disabled TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			PRIMARY KEY (id),
+			INDEX worker_id (worker_id),
+			INDEX is_disabled (is_disabled)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // `worklist` =============================
 if(!isset($tables['worklist'])) {
-    $flds = "
-		id I4 DEFAULT 0 NOTNULL PRIMARY,
-		worker_id I4 DEFAULT 0 NOTNULL,
-		workspace C(128) DEFAULT '' NOTNULL,
-		view_serialized XL,
-		view_pos I1 DEFAULT 0 NOTNULL,
-		source_extension C(255) DEFAULT '' NOTNULL
-    ";
-    $sql = $datadict->CreateTableSQL('worklist', $flds);
-    $datadict->ExecuteSQLArray($sql);
-}
-
-$columns = $datadict->MetaColumns('worklist');
-$indexes = $datadict->MetaIndexes('worklist',false);
-
-if(!isset($indexes['worker_id'])) {
-	$sql = $datadict->CreateIndexSQL('worker_id','worklist','worker_id');
-	$datadict->ExecuteSQLArray($sql);
-}
-
-if(!isset($indexes['workspace'])) {
-	$sql = $datadict->CreateIndexSQL('workspace','worklist','workspace');
-	$datadict->ExecuteSQLArray($sql);
+	$sql = "
+		CREATE TABLE IF NOT EXISTS worklist (
+			id INT UNSIGNED DEFAULT 0 NOT NULL,
+			worker_id INT UNSIGNED DEFAULT 0 NOT NULL,
+			workspace VARCHAR(128) DEFAULT '' NOT NULL,
+			view_serialized TEXT,
+			view_pos TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
+			source_extension VARCHAR(255) DEFAULT '' NOT NULL,
+			PRIMARY KEY (id),
+			INDEX worker_id (worker_id),
+			INDEX workspace (workspace)
+		) ENGINE=MyISAM;
+	";
+	$db->Execute($sql);	
 }
 
 // ===========================================================================
@@ -344,9 +232,7 @@ if(isset($tables['setting']) && isset($tables['devblocks_setting'])) {
 		"SELECT 'portsensor.core', setting, value FROM setting";
 	$db->Execute($sql);
 	
-	$sql = $datadict->DropTableSQL('setting');
-	$datadict->ExecuteSQLArray($sql);
-	
+	$db->Execute("DROP TABLE setting");
     unset($tables['setting']);
 }
 

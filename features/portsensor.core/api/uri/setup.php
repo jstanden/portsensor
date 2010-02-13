@@ -103,7 +103,7 @@ class PsSetupPage extends PortSensorPageExtension  {
 		$tpl->assign('license', $license);
 		
 		$db = DevblocksPlatform::getDatabaseService();
-		$rs = $db->Execute("SHOW TABLE STATUS");
+		$results = $db->GetArray("SHOW TABLE STATUS");
 
 		$total_db_size = 0;
 		$total_db_data = 0;
@@ -113,19 +113,16 @@ class PsSetupPage extends PortSensorPageExtension  {
 		
 		// [TODO] This would likely be helpful to the /debug controller
 		
-		if(is_a($rs,'ADORecordSet'))
-		while(!$rs->EOF) {
-			$table_name = $rs->fields['Name'];
-			$table_size_data = intval($rs->fields['Data_length']);
-			$table_size_indexes = intval($rs->fields['Index_length']);
-			$table_size_slack = intval($rs->fields['Data_free']);
+		foreach($results as $row) {
+			$table_name = $row['Name'];
+			$table_size_data = intval($row['Data_length']);
+			$table_size_indexes = intval($row['Index_length']);
+			$table_size_slack = intval($row['Data_free']);
 			
 			$total_db_size += $table_size_data + $table_size_indexes;
 			$total_db_data += $table_size_data;
 			$total_db_indexes += $table_size_indexes;
 			$total_db_slack += $table_size_slack;
-			
-			$rs->MoveNext();
 		}
 		
 //		$sql = "SELECT SUM(file_size) FROM attachment";

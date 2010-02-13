@@ -83,6 +83,10 @@ class PsUpdateController extends DevblocksControllerExtension {
 						// [JAS]: Clear all caches
 						$cache->clean();
 						DevblocksPlatform::getClassLoaderService()->destroy();
+						
+						// Clear compiled templates
+						$tpl = DevblocksPlatform::getTemplateService();
+						$tpl->clear_compiled_tpl();
 
 						// Reload plugin translations
 						DAO_Translation::reloadPluginStrings();

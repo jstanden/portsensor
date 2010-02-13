@@ -2,7 +2,7 @@
 /***********************************************************************
 | PortSensor(tm) developed by WebGroup Media, LLC.
 |-----------------------------------------------------------------------
-| All source code & content (c) Copyright 2009, WebGroup Media LLC
+| All source code & content (c) Copyright 2010, WebGroup Media LLC
 |   unless specifically noted otherwise.
 |
 | By using this software, you acknowledge having read the license
@@ -10,7 +10,7 @@
 | ______________________________________________________________________
 |	http://www.cerberusweb.com	  http://www.webgroupmedia.com/
 ***********************************************************************/
-define("APP_BUILD", 2010011101);
+define("APP_BUILD", 2010021202);
 
 require_once(APP_PATH . "/api/DAO.class.php");
 require_once(APP_PATH . "/api/Model.class.php");
