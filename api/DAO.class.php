@@ -158,7 +158,7 @@ class DAO_Alert extends Ps_ORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_Alert[]
 	 */
 	static private function _getObjectsFromResult($rs) {
@@ -1034,7 +1034,7 @@ class DAO_Sensor extends Ps_ORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_Sensor[]
 	 */
 	static private function _getObjectsFromResult($rs) {
@@ -1367,7 +1367,7 @@ class DAO_Worker extends Ps_ORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_Worker[]
 	 */
 	static private function _getObjectsFromResult($rs) {
@@ -1694,7 +1694,7 @@ class DAO_WorkerEvent extends DevblocksORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_WorkerEvent[]
 	 */
 	static private function _getObjectsFromResult($rs) {
@@ -2039,7 +2039,7 @@ class DAO_WorkerRole extends DevblocksORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_WorkerRole[]
 	 */
 	static private function _getObjectsFromResult($rs) {
@@ -2223,7 +2223,7 @@ class DAO_Worklist extends DevblocksORMHelper {
 	}
 	
 	/**
-	 * @param ADORecordSet $rs
+	 * @param resource $rs
 	 * @return Model_Worklist[]
 	 */
 	static private function _getObjectsFromResult($rs) {
