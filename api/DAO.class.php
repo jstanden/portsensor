@@ -1852,6 +1852,18 @@ class SearchFields_WorkerEvent implements IDevblocksSearchFields {
 class DAO_WorkerPref extends DevblocksORMHelper {
     const CACHE_PREFIX = 'ps_workerpref_';
     
+    static function delete($worker_id, $key) {
+    	$db = DevblocksPlatform::getDatabaseService();
+    	$db->Execute(sprintf("DELETE FROM worker_pref WHERE worker_id = %d AND setting = %s",
+    		$worker_id,
+    		$db->qstr($key)
+    	));
+    	
+		// Invalidate cache
+		$cache = DevblocksPlatform::getCacheService();
+		$cache->remove(self::CACHE_PREFIX.$worker_id);
+    }
+    
 	static function set($worker_id, $key, $value) {
 		// Persist long-term
 		$db = DevblocksPlatform::getDatabaseService();

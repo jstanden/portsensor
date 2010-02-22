@@ -16,16 +16,11 @@ if(!isset($tables['worker'])) {
 			last_activity_date INT UNSIGNED DEFAULT 0 NOT NULL,
 			last_activity MEDIUMTEXT,
 			is_disabled TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
-			PRIMARY KEY (id)
+			PRIMARY KEY (id),
+			INDEX last_activity_date (last_activity_date)
 		) ENGINE=MyISAM;
 	";
 	$db->Execute($sql);	
-}
-
-list($columns, $indexes) = $db->metaTable('worker');
-
-if(!isset($indexes['last_activity_date'])) {
-	$db->Execute("ALTER TABLE worker ADD INDEX last_activity_date (last_activity_date)");
 }
 
 // `worker_pref` =============================
