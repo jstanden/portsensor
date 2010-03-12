@@ -173,7 +173,6 @@ class PsSensorsPage extends PortSensorPageExtension {
 				}
 			}
 		}
-		
 	}
 	
 	function viewRunNowAction() {

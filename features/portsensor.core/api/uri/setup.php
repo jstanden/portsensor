@@ -171,6 +171,7 @@ class PsSetupPage extends PortSensorPageExtension  {
         DevblocksPlatform::readPlugins();
 		
 		$plugins = DevblocksPlatform::getPluginRegistry();
+		unset($plugins['devblocks.core']);
 		unset($plugins['portsensor.core']);
 		$tpl->assign('plugins', $plugins);
 		
